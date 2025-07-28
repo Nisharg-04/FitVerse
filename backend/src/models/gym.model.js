@@ -63,6 +63,9 @@ const gymSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Indexs
+
+// Create a 2dsphere index for geospatial queries
 gymSchema.index({ location: "2dsphere" });
 
 export const Gym = mongoose.model("Gym", gymSchema);
