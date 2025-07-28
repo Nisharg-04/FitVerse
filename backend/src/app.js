@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
+import { logger } from "./utils/logger.js";
 const app = express();
 
 // CORS options on the backend
@@ -35,9 +36,38 @@ app.use(express.static("public"));
 // Middleware to parse cookies
 app.use(cookieParser());
 
+// Middleware to log each request
+app.use((req, res, next) => {
+  logger.info({
+    message: "Incoming request",
+    method: req.method,
+    url: req.originalUrl,
+    ip: req.ip,
+  });
+  next();
+});
+
 // Basic route for testing
 app.get("/api/test", (req, res) => {
   res.json({ message: "Hello from the backend!" });
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  logger.error({
+    message: err.message,
+    status: err.statusCode || 500,
+    stack: err.stack,
+  });
+
+  res.status(err.statusCode || 500).json(
+    new ApiResponse({
+      statusCode: err.statusCode || 500,
+      message: err.message,
+      data: null,
+      success: false,
+    })
+  );
 });
 
 export { app };
