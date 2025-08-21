@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import DeliveryMap from '../../pages/DeliveryMap';
 
 const GymDiscovery = () => {
   const nearbyGyms = [
@@ -139,7 +140,7 @@ const GymDiscovery = () => {
           </CardHeader>
           <CardContent>
             <div className="h-64 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-lg flex items-center justify-center">
-              <p className="text-muted-foreground">Interactive Map Coming Soon</p>
+             <DeliveryMap height={30} width={70} />
             </div>
           </CardContent>
         </Card>

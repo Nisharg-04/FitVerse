@@ -63,10 +63,9 @@ const Navbar: React.FC = () => {
 
   const navItems = [
     { title: 'Home', link: '/', protected: false },
-    { title: 'Gyms', link: '/gyms', protected: true },
-    { title: 'Tracker', link: '/tracker', protected: true },
-    { title: 'Nutrition', link: '/nutrition', protected: true },
-    { title: 'Store', link: '/store', protected: false },
+    { title: 'About Us', link: '/about', protected: false },
+    { title: 'Contact Us', link: '/contact', protected: false },
+
   ];
 
   const renderAuthLinks = () => {

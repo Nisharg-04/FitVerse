@@ -26,7 +26,7 @@ const Register = () => {
     confirmPassword: "",
     phoneNumber: "",
     avatar: null,
-    role: "user",
+    role: isOwner ? 'owner' : 'user',
   });
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -115,7 +115,10 @@ const Register = () => {
           title: `Welcome to FitVerse${isOwner ? ' Business' : ''}!`,
           description: `Your ${isOwner ? 'gym owner' : 'user'} account has been created successfully.`,
         });
-        navigate('/dashboard');
+        if(isOwner)
+          navigate('/gymdashboard');
+        else
+          navigate('/dashboard');
       } else {
         toast({
           title: "Sign up failed",

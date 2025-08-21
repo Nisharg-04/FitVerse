@@ -1,10 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
+import gymReducer from './slices/gymSlice.ts';
 import authReducer from './slices/authSlice.ts';
 
 export const store = configureStore({
   reducer: {
-    auth: authReducer,
+        auth: authReducer,
+        // Add other slices here
+        gym: gymReducer, // Assuming gymSlice is imported from gymSlice.ts    
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

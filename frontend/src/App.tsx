@@ -18,11 +18,19 @@ import AboutUs from "./pages/AboutUs";
 import ContactUs from "./pages/ContactUs";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import GymDashboard from "./pages/GymDashboard";
+import AddNewGym from "./pages/Addnewgym";
+import SelectLocation from "./pages/SelectLocation";
+import { useState } from "react";
+
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+const App: React.FC = () => {
+  const [selectedPosition, setSelectedPosition] =
+    useState<LatLngExpression | null>(null);
+
+  return(<GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
  
       <TooltipProvider>
         <Toaster />
@@ -31,7 +39,8 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Layout />}>
               <Route index element={<Index />} />
-              <Route path="dashboard" element={<Dashboard />} />
+            <Route path="dashboard" element={<Dashboard />} />
+              <Route path="/gymdashboard" element={<GymDashboard />} /> 
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="*" element={<NotFound />} />
@@ -42,14 +51,21 @@ const App = () => (
               <Route path="/about" element={<AboutUs />} />
               <Route path="/contact" element={<ContactUs />} />
               <Route path="/terms" element={<TermsAndConditions />} />
-              <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/add-new-gym" element={<AddNewGym />} />
+            <Route path="/gyms" element={ <SelectLocation
+        height={30}
+        width={70}
+        setSelectedPosition={setSelectedPosition}
+        selectedPosition={selectedPosition}
+      />} />
               
               {/* Auth routes will be handled separately */}
             </Route>
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
-  </GoogleOAuthProvider>
-);
+  </GoogleOAuthProvider>)
+}
 
 export default App;
