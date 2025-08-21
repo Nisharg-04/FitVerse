@@ -54,9 +54,13 @@ app.get("/api/test", (req, res) => {
 });
 
 import userRoutes from "./routes/user.route.js";
+import gymRoutes from "./routes/gym.route.js";
+import adminRoutes from "./routes/admin.route.js";
 
 // Use user routes
 app.use("/api/user", userRoutes);
+app.use("/api/gym", gymRoutes);
+app.use("/api/admin", adminRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
