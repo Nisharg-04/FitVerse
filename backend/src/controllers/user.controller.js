@@ -48,7 +48,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
   // if avatar is present, upload it to cloudinary
   const avatarLocalPath = req?.files?.avatar?.[0]?.path || null;
-  if(!avatarLocalPath){
+  if (!avatarLocalPath) {
     throw new ApiError(400, "Avatar is required");
   }
   let avatarResponse;
@@ -66,6 +66,7 @@ const registerUser = asyncHandler(async (req, res) => {
     role,
     isEmailVerified: false,
     googleVerificationStatus: "notVerified",
+    isProfileComplete: true,
   });
 
   // generate access and refresh tokens

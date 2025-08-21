@@ -110,7 +110,7 @@ const getGymById = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Gym ID is required");
   }
 
-  const gym = await Gym.findById(gymId);
+  const gym = await Gym.findById(gymId).populate("ownerId", "name email");
 
   if (!gym) {
     throw new ApiError(404, "Gym not found");

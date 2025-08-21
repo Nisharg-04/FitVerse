@@ -15,7 +15,7 @@ router.post(
   upload.fields([{ name: "images", maxCount: 10 }]),
   addGymRequest
 );
-router.get("/nearby-gyms", verifyJWT, getNearbyGyms);
-router.get("/:gymId", verifyJWT, getGymById);
+router.post("/nearby-gyms", getNearbyGyms);
+router.get("/:gymId", getGymById);
 
 export default router;
