@@ -19,7 +19,7 @@ import ContactUs from "./pages/ContactUs";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import GymDashboard from "./pages/GymDashboard";
-import AddNewGym from "./pages/Addnewgym";
+import AddNewGym from "./pages/AddNewGym";
 import SelectLocation from "./pages/SelectLocation";
 import { useState } from "react";
 
