@@ -71,9 +71,8 @@ const DeliveryMap: React.FC<DeliveryMapProps> = ({
   width = 80,
 }) => {
   const defaultPosition: LatLngExpression = [22.3072, 73.1812]; // fallback: Vadodara
-  const [userPosition, setUserPosition] = useState<LatLngExpression | null>(
-    null
-  );
+  const [userPosition, setUserPosition] = useState<LatLngExpression | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const [gymsCoord, setGymsCoord] = useState<
     { position: LatLngExpression; name: string; _id: string }[]
@@ -81,14 +80,44 @@ const DeliveryMap: React.FC<DeliveryMapProps> = ({
 
   const [selectedGym, setSelectedGym] = useState<GymDetails | null>(null);
 
+  // Get user's location
+  useEffect(() => {
+    if (!navigator.geolocation) {
+      console.error("Geolocation is not supported");
+      setUserPosition(defaultPosition);
+      setLoading(false);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setUserPosition([latitude, longitude]);
+        setLoading(false);
+      },
+      (error) => {
+        console.error("Error getting location:", error);
+        setUserPosition(defaultPosition);
+        setLoading(false);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 0
+      }
+    );
+  }, []);
+
   useEffect(() => {
     async function fetchGyms() {
+      if (!userPosition) return;
+      
       try {
         const res = await axios.post(
           "http://localhost:8000/api/gym/nearby-gyms",
           {
-            longitude: userPosition?.[1],
-            latitude: userPosition?.[0],
+            longitude: userPosition[1],
+            latitude: userPosition[0],
             radius: 10,
           }
         );
@@ -159,22 +188,36 @@ const DeliveryMap: React.FC<DeliveryMapProps> = ({
 
   const center = userPosition || defaultPosition;
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center" style={{ height: `${height}rem`, width: `${width}%` }}>
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
   return (
     <MapContainer
       center={center}
-      zoom={13}
+      zoom={15}
       style={{
         height: `${height}rem`,
-        width: `${width}rem`,
+        width: `${width}%`,
+        minHeight: '300px'
       }}
     >
-      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+      <TileLayer 
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      />
 
       <RecenterMap center={center} />
 
       {/* User marker */}
       <Marker position={center} icon={userIcon}>
-        <Popup>You are here</Popup>
+        <Popup>
+          <div className="font-semibold">Your Location</div>
+        </Popup>
       </Marker>
 
       {/* Gym markers */}
@@ -187,7 +230,6 @@ const DeliveryMap: React.FC<DeliveryMapProps> = ({
             click: () => fetchGymDetails(gym._id),
           }}
         >
-          selectedGym && selectedGym._id === gym._id && (
           <Popup>
             {selectedGym && selectedGym._id === gym._id ? (
               <div>
