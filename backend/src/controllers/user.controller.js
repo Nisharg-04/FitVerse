@@ -26,12 +26,13 @@ const generateAccessAndRefreshToken = async (user) => {
 };
 
 const registerUser = asyncHandler(async (req, res) => {
+  console.log(req.body);
   // get user details from request body
   const { name, email, password, phoneNumber, role } = req.body;
 
   // validation - not empty
   if (!name || !email || !password || !phoneNumber || !role) {
-    throw new ApiError(400, "All fields are required");
+    throw new ApiError(400, "All fields are required sssss");
   }
 
   // check for valid role
@@ -48,8 +49,8 @@ const registerUser = asyncHandler(async (req, res) => {
 
   // if avatar is present, upload it to cloudinary
   const avatarLocalPath = req?.files?.avatar?.[0]?.path || null;
-  if(!avatarLocalPath){
-    throw new ApiError(400, "Avatar is required");
+  if (!avatarLocalPath) {
+    throw new ApiError(400, "Avatar is required avatar");
   }
   let avatarResponse;
   if (avatarLocalPath) {
@@ -301,10 +302,14 @@ const googleOAuth = asyncHandler(async (req, res) => {
       audience: process.env.GOOGLE_CLIENT_ID,
     });
 
+
     const payload = ticket.getPayload();
 
+
     if (payload?.email_verified) {
+
       const user = await User.findOne({ email: payload?.email });
+
 
       if (user) {
         const { accessToken, refreshToken } =
@@ -316,7 +321,7 @@ const googleOAuth = asyncHandler(async (req, res) => {
           accessToken,
           refreshToken,
         };
-
+        ;
         const options = {
           httpOnly: true,
           secure: false,
@@ -336,12 +341,12 @@ const googleOAuth = asyncHandler(async (req, res) => {
             })
           );
       } else {
+
         const newUser = await User.create({
           name: payload?.name,
           email: payload?.email,
           avatar: payload?.picture,
-          isEmailVerified: true,
-          googleVerificationStatus: "profileIncomplete",
+          emailVerified: true
         });
 
         const { accessToken, refreshToken } =
@@ -350,7 +355,6 @@ const googleOAuth = asyncHandler(async (req, res) => {
         const userResponse = {
           ...newUser.toJSON(),
           password: undefined,
-          accessToken,
           refreshToken,
         };
 
@@ -381,22 +385,20 @@ const googleOAuth = asyncHandler(async (req, res) => {
 });
 
 const completeProfile = asyncHandler(async (req, res) => {
-  const { password, phoneNumber, role } = req?.body;
-  if (!password || !phoneNumber || !role) {
+  console.log(req.body);
+  const { password, phoneNumber } = req?.body;
+  if (!password || !phoneNumber) {
     throw new ApiError(400, "All fields are required");
   }
 
-  if (!roles.includes(role)) {
-    throw new ApiError(400, "Invalid role");
-  }
+
 
   const user = req.user;
 
-  if (user?.googleVerificationStatus === "profileIncomplete") {
+  if (user?.isProfileComplete === false) {
     user.password = password;
     user.phoneNumber = phoneNumber;
-    user.role = role;
-    user.googleVerificationStatus = "completed";
+    user.isProfileComplete = true;
     await user.save({ validateBeforeSave: false });
 
     const userResponse = {
@@ -411,10 +413,8 @@ const completeProfile = asyncHandler(async (req, res) => {
         message: "Profile completed successfully",
       })
     );
-  } else if (user?.googleVerificationStatus === "completed") {
+  } else if (user?.isProfileComplete === true) {
     throw new ApiError(400, "Profile already completed");
-  } else if (user?.googleVerificationStatus === "notVerified") {
-    throw new ApiError(400, "Google verification pending");
   }
 });
 
@@ -489,6 +489,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
 
 const resetPassword = asyncHandler(async (req, res) => {
   // get reset token from frontend
+
   const resetToken = req?.params?.resetToken;
   if (!resetToken) {
     throw new ApiError(400, "Reset token is required");
@@ -507,17 +508,10 @@ const resetPassword = asyncHandler(async (req, res) => {
   }
 
   // update password
-  // console.log(req.body);
-  const { password, confirmPassword } = req?.body;
+  console.log(req.body);
+  const { password } = req?.body;
   // console.log(password);
   // console.log(confirmPassword);
-  if (!password && !confirmPassword) {
-    throw new ApiError(400, "Password and passwordConfirm are required");
-  }
-
-  if (password !== confirmPassword) {
-    throw new ApiError(400, "Password and passwordConfirm do not match");
-  }
 
   user.password = password;
   user.resetPasswordToken = undefined;
