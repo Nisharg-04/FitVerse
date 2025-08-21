@@ -3,6 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 import { logger } from "./utils/logger.js";
+import { ApiResponse } from "./utils/ApiResponse.js";
 const app = express();
 
 // CORS options on the backend
@@ -51,6 +52,11 @@ app.use((req, res, next) => {
 app.get("/api/test", (req, res) => {
   res.json({ message: "Hello from the backend!" });
 });
+
+import userRoutes from "./routes/user.route.js";
+
+// Use user routes
+app.use("/api/user", userRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

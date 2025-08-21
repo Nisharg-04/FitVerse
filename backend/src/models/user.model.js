@@ -2,10 +2,12 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { generateHash } from "../utils/generateHash.js";
+import { roles } from "../constants.js";
+import crypto from "crypto";
 
 const userSchema = new mongoose.Schema(
   {
-    userName: {
+    name: {
       type: String,
       required: true,
       unique: true,
@@ -24,15 +26,14 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    phone: {
+    phoneNumber: {
       type: String,
       required: true,
-      unique: true,
       trim: true,
     },
     role: {
       type: String,
-      enum: ["user", "admin"],
+      enum: roles,
       default: "user",
     },
     balance: {
@@ -153,9 +154,9 @@ userSchema.methods.generateAccessToken = function () {
       _id: this._id,
       email: this.email,
     },
-    process.env.jwt.ACCESS_TOKEN_SECRET,
+    process.env.ACCESS_TOKEN_SECRET,
     {
-      expiresIn: process.env.jwt.ACCESS_TOKEN_EXPIRY,
+      expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
     }
   );
 };
@@ -167,9 +168,9 @@ userSchema.methods.generateRefreshToken = function () {
       _id: this._id,
       email: this.email,
     },
-    process.env.jwt.REFRESH_TOKEN_SECRET,
+    process.env.REFRESH_TOKEN_SECRET,
     {
-      expiresIn: process.env.jwt.REFRESH_TOKEN_EXPIRY,
+      expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
     }
   );
 };
