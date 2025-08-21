@@ -6,6 +6,7 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { roles } from "../constants.js";
 import { OAuth2Client } from "google-auth-library";
 import { sendMail } from "../utils/sendMail.js";
+import { generateHash } from "../utils/generateHash.js";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 
@@ -441,7 +442,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
   await user.save();
 
   // send email with reset token
-  const resetUrl = `${process.env.FRONTEND_URL}:${process.env.FRONTEND_PORT}/reset-password/${resetToken}`;
+  const resetUrl = `${process.env.FRONTEND_HOST}:${process.env.FRONTEND_PORT}/reset-password/${resetToken}`;
   const htmlContent = `
   <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background-color: #f9f9f9;">
   <h2 style="text-align: center; color: #333;">Password Reset Request</h2>
@@ -454,7 +455,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
   </a>
   </div>
   <p>If you didn’t request a password reset, please ignore this email.</p>
-  <p>Thanks, <br/> <b>AgriMitra Team</b></p>
+  <p>Thanks, <br/> <b>FitVerse Team</b></p>
   </div>
   `;
 
@@ -462,7 +463,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
     await sendMail({
       to: user.email,
 
-      subject: "Reset Password - Agrimitra",
+      subject: "Reset Password - FitVerse",
 
       content: htmlContent,
       isHtml: true,
@@ -493,10 +494,7 @@ const resetPassword = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Reset token is required");
   }
 
-  const hashedToken = crypto
-    .createHash("sha256")
-    .update(resetToken)
-    .digest("hex");
+  const hashedToken = generateHash(resetToken);
 
   // get user from reset token and check expiry
   const user = await User.findOne({
@@ -536,27 +534,6 @@ const resetPassword = asyncHandler(async (req, res) => {
   );
 });
 
-const getAllUsers = asyncHandler(async (req, res) => {
-  const keywords = req.query.search
-    ? {
-        $or: [
-          { name: { $regex: req.query.search, $options: "i" } },
-          { email: { $regex: req.query.search, $options: "i" } },
-        ],
-      }
-    : {};
-  // console.log(keywords)
-  const users = await User.find(keywords).find({ _id: { $ne: req.user._id } });
-
-  return res.status(200).json(
-    new ApiResponse({
-      statusCode: 200,
-      data: users,
-      message: "Users fetched successfully",
-    })
-  );
-});
-
 export {
   registerUser,
   loginUser,
@@ -568,5 +545,4 @@ export {
   forgotPassword,
   resetPassword,
   refreshAccessToken,
-  getAllUsers,
 };

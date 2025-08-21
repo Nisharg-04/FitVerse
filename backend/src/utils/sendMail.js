@@ -21,7 +21,7 @@ const sendMail = async ({
 
   // send mail with defined transport object
   const mailOptions = {
-    from: "AgriMitra " + process.env.SMTP_EMAIL,
+    from: "FitVerse " + process.env.SMTP_EMAIL,
     to,
     subject,
     [isHtml ? "html" : "text"]: content,
