@@ -85,7 +85,7 @@ const getNearbyGyms = asyncHandler(async (req, res) => {
 
   // Find nearby gyms
   const nearbyGyms = await Gym.find({
-    isVerified: true,
+    isVerified: 1,
     location: {
       $geoWithin: {
         $centerSphere: [[longitude, latitude], radius / 6378.1],
