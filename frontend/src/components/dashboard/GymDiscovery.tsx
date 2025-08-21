@@ -1,15 +1,44 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, Star, Clock, Dumbbell, QrCode, Search, Filter } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import DeliveryMap from '../../pages/DeliveryMap';
+import { axiosApi } from '@/lib/axios';
+import axios from 'axios';
+
+interface GymData {
+  _id: string;
+  name: string;
+  location: {
+    coordinates: [number, number];
+  };
+  distance: number;
+  rating: number;
+  reviewCount: number;
+  operatingHours: string;
+  services: string[];
+  monthlyFee: number;
+}
+
+interface FormattedGym {
+  id: string;
+  name: string;
+  distance: string;
+  rating: number;
+  reviews: number;
+  hours: string;
+  services: string[];
+  price: string;
+  image: string;
+}
 
 const GymDiscovery = () => {
-  const nearbyGyms = [
+  const [nearbyGyms, setNearbyGyms] = useState<FormattedGym[]>([
     {
-      id: 1,
+      id: "1",
       name: "PowerHouse Fitness",
       distance: "0.3 km",
       rating: 4.8,
@@ -20,7 +49,7 @@ const GymDiscovery = () => {
       image: "/gym-placeholder.jpg"
     },
     {
-      id: 2,
+      id: "2",
       name: "FitZone Gym",
       distance: "0.7 km",
       rating: 4.6,
@@ -31,17 +60,51 @@ const GymDiscovery = () => {
       image: "/gym-placeholder.jpg"
     },
     {
-      id: 3,
+      id: "3",
       name: "Elite Fitness Club",
       distance: "1.2 km",
       rating: 4.9,
       reviews: 256,
       hours: "24/7",
-      services: ["Cardio", "Strength", "Swimming", "Spa", "Personal Training"],
+      services: ["Cardio", "Strength", "Swimming", "Spa"],
       price: "₹3500/month",
       image: "/gym-placeholder.jpg"
     }
-  ];
+  ]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchNearbyGyms = async () => {
+      try {
+        const { data } = await axios.post("http://localhost:8000/api/gym/nearby-gyms",{ "longitude": 72.92299183119165,
+    "latitude": 22.550397327332604,
+          "radius": 2
+        });
+        
+        const formattedGyms = data.data.slice(0, 3).map(gym => ({
+          id: gym._id,
+          name: gym.name,
+          distance: `0.3 km`,
+          rating: gym.rating || 4.5,
+          reviews: gym.reviewCount || 0,
+          hours: gym.operatingHours || "24/7",
+          services: gym.services || ["Cardio", "Strength"],
+          price: `₹${gym.monthlyFee}/month`,
+          image: "/gym-placeholder.jpg"
+        }));
+        console.log("Fetched gyms:", formattedGyms);
+        console.log("Fetched gyms:", formattedGyms);
+        setNearbyGyms(formattedGyms);
+      } catch (error) {
+        console.error('Error fetching nearby gyms:', error);
+        // Default gyms are already set in the initial state
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchNearbyGyms();
+  }, []);
 
   return (
     <div className="w-full h-full rounded-2xl p-6 bg-gradient-to-br from-background via-background/95 to-background/90 border border-border/50">
@@ -74,7 +137,12 @@ const GymDiscovery = () => {
 
         {/* Gym Cards */}
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-          {nearbyGyms.map((gym, index) => (
+          {loading ? (
+            <div className="col-span-full flex justify-center items-center h-32">
+              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+            </div>
+          ) : (
+            nearbyGyms.map((gym, index) => (
             <motion.div
               key={gym.id}
               initial={{ opacity: 0, y: 20 }}
@@ -126,7 +194,7 @@ const GymDiscovery = () => {
                 </CardContent>
               </Card>
             </motion.div>
-          ))}
+          )))}
         </div>
 
         {/* Map Placeholder */}
@@ -138,8 +206,8 @@ const GymDiscovery = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-64 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-lg flex items-center justify-center">
-              <p className="text-muted-foreground">Interactive Map Coming Soon</p>
+            <div className="relative w-full h-[400px] rounded-lg overflow-hidden border border-border/50">
+              <DeliveryMap height={100} width={100} />
             </div>
           </CardContent>
         </Card>

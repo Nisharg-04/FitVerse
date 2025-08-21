@@ -29,13 +29,22 @@ const Login = () => {
     try {
       setLoading(true);
       const resultAction = await dispatch(loginUser(formData));
+      console.log("resultAction", resultAction.payload.data);
+
       if (loginUser.fulfilled.match(resultAction)) {
         toast({
           title: "Login successful",
           description: "Welcome back to FitVerse!",
           variant: "default"
         });
-        navigate("/");
+
+ if(resultAction.payload.data.role=== 'owner')
+          navigate('/gymdashboard');
+        else
+          navigate('/dashboard');
+
+        
+        
       } else {
         toast({
           title: "Login failed",
