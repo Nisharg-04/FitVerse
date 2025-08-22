@@ -13,7 +13,7 @@ const getAllPendingGymRequest = asyncHandler(async (req, res) => {
   // Fetch all gym requests that are not verified
   let gyms = await Gym.aggregate([
     {
-      $match: { isVerified: false },
+      $match: { isVerified: 0 },
     },
     {
       $lookup: {
@@ -89,7 +89,7 @@ const setGymVerification = asyncHandler(async (req, res) => {
     { isVerified, reasonForRejection },
     { new: true }
   );
-
+  console.log("Gym verification status updated:", gym);
   if (!gym) {
     throw new ApiError(404, "Gym not found");
   }

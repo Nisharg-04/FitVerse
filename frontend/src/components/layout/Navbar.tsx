@@ -63,6 +63,8 @@ const Navbar: React.FC = () => {
 
   const navItems = [
     { title: 'Home', link: '/', protected: false },
+    { title: 'Dashboard', link: '/dashboard', protected: true },
+
     { title: 'About Us', link: '/about', protected: false },
     { title: 'Contact Us', link: '/contact', protected: false },
 

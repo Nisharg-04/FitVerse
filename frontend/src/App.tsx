@@ -21,6 +21,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import GymDashboard from "./pages/GymDashboard";
 import AddNewGym from "./pages/AddNewGym";
 import SelectLocation from "./pages/SelectLocation";
+import GymApprovals from "./pages/admin/GymApprovals";
 import { useState } from "react";
 
 
@@ -53,6 +54,7 @@ const App: React.FC = () => {
               <Route path="/terms" element={<TermsAndConditions />} />
             <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/add-new-gym" element={<AddNewGym />} />
+            <Route path="/admin/gym-approvals" element={<GymApprovals />} />
             <Route path="/gyms" element={ <SelectLocation
         height={30}
         width={70}

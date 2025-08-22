@@ -4,6 +4,37 @@
 @tailwind components;
 @tailwind utilities;
 
+.leaflet-routing-container {
+  background-color: white !important;
+  color: black !important;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+
+  /* ✅ make it scrollable */
+  max-height: 250px; /* adjust as you like */
+  overflow-y: auto;
+}
+
+/* Links inside the routing box */
+.leaflet-routing-container a {
+  color: #007bff !important;
+  text-decoration: none;
+}
+
+.leaflet-routing-container a:hover {
+  text-decoration: underline;
+}
+
+/* Optional: improve headers */
+.leaflet-routing-alt h2 {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: black !important;
+}
+
 /* FitVerse Design System - Modern Fitness Platform */
 
 @layer utilities {
