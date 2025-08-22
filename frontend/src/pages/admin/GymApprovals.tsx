@@ -147,7 +147,7 @@ const GymApprovals = () => {
                     <Button
                       variant="destructive"
                       className="flex-1"
-                      onClick={() => handleGymStatus(gym._id, 0)}
+                      onClick={() => handleGymStatus(gym._id, 2)}
                     >
                       <X className="h-4 w-4 mr-2" />
                       Reject
