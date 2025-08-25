@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Eye, EyeOff, Mail, Lock, Dumbbell } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useToast } from '@/hooks/use-toast';
-import { useAppDispatch } from '@/redux/store';
-import { GoogleLogin } from '@react-oauth/google';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { Eye, EyeOff, Mail, Lock, Dumbbell } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
+import { useAppDispatch } from "@/redux/store";
+import { GoogleLogin } from "@react-oauth/google";
 import { loginUser, setUser } from "@/redux/slices/authSlice";
-import axios from '@/lib/axios';
+import axios from "axios";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -35,35 +35,35 @@ const Login = () => {
         toast({
           title: "Login successful",
           description: "Welcome back to FitVerse!",
-          variant: "default"
+          variant: "default",
         });
+        console.log("User role:", resultAction.payload.data.role);
 
- if(resultAction.payload.data.role=== 'owner')
-          navigate('/gymdashboard');
-        else
-          navigate('/dashboard');
-
-        
-        
+        if (resultAction.payload.data.role === "owner")
+          navigate("/gymdashboard");
+        else if (resultAction.payload.data.role === "admin") navigate("/admin");
+        else navigate("/dashboard");
       } else {
         toast({
           title: "Login failed",
           description: resultAction?.error?.message || "Something went wrong.",
-          variant: "destructive"
+          variant: "destructive",
         });
       }
     } catch (error) {
       toast({
         title: "Login failed",
         description: "An error occurred during login.",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleLoginSuccess = async (credentialResponse: { credential: string }) => {
+  const handleLoginSuccess = async (credentialResponse: {
+    credential: string;
+  }) => {
     const token = credentialResponse.credential;
 
     if (!token) {
@@ -79,25 +79,29 @@ const Login = () => {
         )
         .then((res) => res.data);
       dispatch(setUser(response.data));
+      toast({
+        title: "Login successful",
+        description: "Welcome back to FitVerse!",
+        variant: "default",
+      });
       navigate("/complete-profile");
     } catch (error) {
       toast({
         title: "Google login failed",
         description: "Could not verify your Google credentials.",
-        variant: "destructive"
+        variant: "destructive",
       });
     }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     }));
   };
 
   return (
-    
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-muted/20 to-background relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0 -z-10">
@@ -120,13 +124,19 @@ const Login = () => {
           >
             <Dumbbell className="h-8 w-8 text-white" />
           </motion.div>
-          <h1 className="text-3xl font-bold text-gradient mb-2">Welcome Back</h1>
-          <p className="text-muted-foreground">Sign in to continue your fitness journey</p>
+          <h1 className="text-3xl font-bold text-gradient mb-2">
+            Welcome Back
+          </h1>
+          <p className="text-muted-foreground">
+            Sign in to continue your fitness journey
+          </p>
         </div>
 
         <Card className="fitness-card border-0 shadow-2xl">
           <CardHeader className="space-y-1 pb-4">
-            <CardTitle className="text-2xl font-bold text-center">Sign In</CardTitle>
+            <CardTitle className="text-2xl font-bold text-center">
+              Sign In
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -158,7 +168,7 @@ const Login = () => {
                   <Input
                     id="password"
                     name="password"
-                    type={showPassword ? 'text' : 'password'}
+                    type={showPassword ? "text" : "password"}
                     placeholder="Enter your password"
                     value={formData.password}
                     onChange={handleChange}
@@ -182,8 +192,8 @@ const Login = () => {
               </div>
 
               <div className="flex items-center justify-between">
-                <Link 
-                  to="/forgot-password" 
+                <Link
+                  to="/forgot-password"
                   className="text-sm text-primary hover:text-primary-dark transition-colors"
                 >
                   Forgot password?
@@ -198,11 +208,15 @@ const Login = () => {
                 {loading ? (
                   <motion.div
                     animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    transition={{
+                      duration: 1,
+                      repeat: Infinity,
+                      ease: "linear",
+                    }}
                     className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
                   />
                 ) : (
-                  'Sign In'
+                  "Sign In"
                 )}
               </Button>
 
@@ -211,7 +225,9 @@ const Login = () => {
                   <div className="w-full border-t border-border" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
+                  <span className="bg-card px-2 text-muted-foreground">
+                    Or continue with
+                  </span>
                 </div>
               </div>
 
@@ -222,7 +238,7 @@ const Login = () => {
                     toast({
                       title: "Google login failed",
                       description: "Could not complete Google login.",
-                      variant: "destructive"
+                      variant: "destructive",
                     });
                   }}
                 />
@@ -231,9 +247,9 @@ const Login = () => {
 
             <div className="mt-6 text-center">
               <p className="text-sm text-muted-foreground">
-                Don't have an account?{' '}
-                <Link 
-                  to="/register" 
+                Don't have an account?{" "}
+                <Link
+                  to="/register"
                   className="text-primary hover:text-primary-dark font-medium transition-colors"
                 >
                   Sign up here

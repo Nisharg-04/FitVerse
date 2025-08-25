@@ -1,18 +1,27 @@
-import React, { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Bell, Menu, Moon, Sun, User, ShoppingCart, Dumbbell, LogOut } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
+import React, { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import {
+  Bell,
+  Menu,
+  Moon,
+  Sun,
+  User,
+  ShoppingCart,
+  Dumbbell,
+  LogOut,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from "@/hooks/useAuth";
 import {
   Navbar as ResizableNavbar,
   NavBody,
@@ -25,9 +34,12 @@ import {
   MobileNavMenu,
 } from "@/components/ui/resizable-navbar";
 
-import { useStore } from '@/store/useStore';
+import { useStore } from "@/store/useStore";
+import { link } from "fs";
 
 const FitVerseNavbarLogo = () => {
+  const { user } = useAuth();
+
   return (
     <Link
       to="/"
@@ -51,28 +63,20 @@ const Navbar: React.FC = () => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { isAuthenticated, user, logout } = useAuth();
-  const { 
-    theme, 
-    toggleTheme,
-    unreadCount,
-    cart 
-  } = useStore();
+  const { theme, toggleTheme, unreadCount, cart } = useStore();
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const cartItemsCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
-  const navItems = [
-    { title: 'Home', link: '/', protected: false },
-    { title: 'Dashboard', link: '/dashboard', protected: true },
+  const navItems = [{ title: "Home", link: "/", protected: false }];
 
-    { title: 'About Us', link: '/about', protected: false },
-    { title: 'Contact Us', link: '/contact', protected: false },
-
+  const afterNavItems = [
+    { title: "About Us", link: "/about", protected: false },
+    { title: "Contact Us", link: "/contact", protected: false },
   ];
-
   const renderAuthLinks = () => {
     if (!isAuthenticated) return null;
-    
+
     return (
       <>
         <Link to="/cart">
@@ -90,8 +94,8 @@ const Navbar: React.FC = () => {
           <Button variant="ghost" size="icon" className="relative">
             <Bell className="h-4 w-4" />
             {unreadCount > 0 && (
-              <Badge 
-                variant="destructive" 
+              <Badge
+                variant="destructive"
                 className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 text-[10px]"
               >
                 {unreadCount}
@@ -103,19 +107,23 @@ const Navbar: React.FC = () => {
     );
   };
 
-  const renderAuthButtons = () => (
+  const renderAuthButtons = () =>
     isAuthenticated ? (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="relative hover:bg-accent">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="relative hover:bg-accent"
+          >
             <Avatar className="h-8 w-8">
               <AvatarImage src={user?.avatar} />
-              <AvatarFallback>{user?.name?.[0] || 'U'}</AvatarFallback>
+              <AvatarFallback>{user?.name?.[0] || "U"}</AvatarFallback>
             </Avatar>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56">
-          <DropdownMenuItem onClick={() => navigate('/profile')}>
+          <DropdownMenuItem onClick={() => navigate("/profile")}>
             <User className="mr-2 h-4 w-4" />
             Profile
           </DropdownMenuItem>
@@ -128,10 +136,12 @@ const Navbar: React.FC = () => {
     ) : (
       <div className="flex items-center gap-2">
         <Link to="/login">
-          <Button variant="ghost" size="sm">Sign in</Button>
+          <Button variant="ghost" size="sm">
+            Sign in
+          </Button>
         </Link>
         <Link to="/register">
-          <Button 
+          <Button
             size="sm"
             className="bg-gradient-to-r from-primary to-secondary text-white hover:opacity-90"
           >
@@ -139,12 +149,27 @@ const Navbar: React.FC = () => {
           </Button>
         </Link>
       </div>
-    )
-  );
+    );
 
   const renderNavItems = () => {
     return navItems
-      .filter(item => !item.protected || isAuthenticated)
+      .filter((item) => !item.protected || isAuthenticated)
+      .map((item, idx) => (
+        <Link
+          key={idx}
+          to={item.link}
+          className={cn(
+            "transition-colors hover:text-foreground/80",
+            pathname === item.link ? "text-foreground" : "text-foreground/60"
+          )}
+        >
+          {item.title}
+        </Link>
+      ));
+  };
+  const renderafterNavItems = () => {
+    return afterNavItems
+      .filter((item) => !item.protected || isAuthenticated)
       .map((item, idx) => (
         <Link
           key={idx}
@@ -166,16 +191,57 @@ const Navbar: React.FC = () => {
         <div className="flex items-center">
           <FitVerseNavbarLogo />
         </div>
-        
+
         {/* Desktop Navigation Links */}
         <nav className="hidden md:flex items-center gap-6 px-6 text-sm">
           {renderNavItems()}
+
+          {isAuthenticated && user?.role === "admin" && (
+            <Link
+              to="/admin"
+              className={cn(
+                "transition-colors hover:text-foreground/80",
+                pathname.startsWith("/admin")
+                  ? "text-foreground"
+                  : "text-foreground/60"
+              )}
+            >
+              Admin Panel
+            </Link>
+          )}
+          {isAuthenticated && user?.role === "user" && (
+            <Link
+              to="/dashboard"
+              className={cn(
+                "transition-colors hover:text-foreground/80",
+                pathname.startsWith("/dashboard")
+                  ? "text-foreground"
+                  : "text-foreground/60"
+              )}
+            >
+              Dashboard
+            </Link>
+          )}
+          {isAuthenticated && user?.role === "owner" && (
+            <Link
+              to="/gymdashboard"
+              className={cn(
+                "transition-colors hover:text-foreground/80",
+                pathname.startsWith("/gymdashboard")
+                  ? "text-foreground"
+                  : "text-foreground/60"
+              )}
+            >
+              Gym Dashboard
+            </Link>
+          )}
+          {renderafterNavItems()}
         </nav>
 
         <div className="flex items-center gap-3">
           {renderAuthLinks()}
           {renderAuthButtons()}
-          
+
           {/* Theme Toggle */}
           <Button
             variant="ghost"
@@ -189,7 +255,7 @@ const Navbar: React.FC = () => {
               animate={{ scale: 1, rotate: 0 }}
               transition={{ duration: 0.3 }}
             >
-              {theme === 'light' ? (
+              {theme === "light" ? (
                 <Moon className="h-4 w-4" />
               ) : (
                 <Sun className="h-4 w-4" />
@@ -211,13 +277,13 @@ const Navbar: React.FC = () => {
               onClick={toggleTheme}
               className="h-9 w-9 hover:bg-accent shrink-0"
             >
-              {theme === 'light' ? (
+              {theme === "light" ? (
                 <Moon className="h-4 w-4" />
               ) : (
                 <Sun className="h-4 w-4" />
               )}
             </Button>
-            
+
             <MobileNavToggle
               isOpen={isMobileMenuOpen}
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -232,7 +298,7 @@ const Navbar: React.FC = () => {
         >
           {/* Navigation Items */}
           {navItems
-            .filter(item => !item.protected || isAuthenticated)
+            .filter((item) => !item.protected || isAuthenticated)
             .map((item, idx) => (
               <Link
                 key={`mobile-link-${idx}`}
@@ -243,14 +309,18 @@ const Navbar: React.FC = () => {
                 <span className="block">{item.title}</span>
               </Link>
             ))}
-          
+
           {/* Auth Section */}
           <div className="flex w-full flex-col gap-4 pt-6 border-t border-border">
             {isAuthenticated ? (
               <>
                 <div className="flex flex-col gap-3">
                   <Link to="/cart" onClick={() => setIsMobileMenuOpen(false)}>
-                    <Button variant="ghost" size="sm" className="relative w-full justify-start">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="relative w-full justify-start"
+                    >
                       <ShoppingCart className="h-4 w-4 mr-2" />
                       Cart
                       {cartItemsCount > 0 && (
@@ -260,9 +330,16 @@ const Navbar: React.FC = () => {
                       )}
                     </Button>
                   </Link>
-                  
-                  <Link to="/notifications" onClick={() => setIsMobileMenuOpen(false)}>
-                    <Button variant="ghost" size="sm" className="relative w-full justify-start">
+
+                  <Link
+                    to="/notifications"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="relative w-full justify-start"
+                    >
                       <Bell className="h-4 w-4 mr-2" />
                       Alerts
                       {unreadCount > 0 && (
@@ -273,16 +350,23 @@ const Navbar: React.FC = () => {
                     </Button>
                   </Link>
 
-                  <Link to="/profile" onClick={() => setIsMobileMenuOpen(false)}>
-                    <Button variant="ghost" size="sm" className="relative w-full justify-start">
+                  <Link
+                    to="/profile"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="relative w-full justify-start"
+                    >
                       <User className="h-4 w-4 mr-2" />
                       Profile
                     </Button>
                   </Link>
                 </div>
-                
-                <Button 
-                  variant="secondary" 
+
+                <Button
+                  variant="secondary"
                   className="w-full justify-start"
                   onClick={() => {
                     setIsMobileMenuOpen(false);
@@ -301,7 +385,7 @@ const Navbar: React.FC = () => {
                   </NavbarButton>
                 </Link>
                 <Link to="/register" onClick={() => setIsMobileMenuOpen(false)}>
-                  <NavbarButton 
+                  <NavbarButton
                     variant="primary"
                     className="w-full bg-gradient-to-r from-primary to-secondary text-white"
                   >
