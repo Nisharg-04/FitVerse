@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, Star, Clock, Dumbbell, QrCode, Search, Filter } from 'lucide-react';
+import { MapPin, Star, Clock, Dumbbell, QrCode, Search, Filter, ArrowRight } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import DeliveryMap from '../../pages/DeliveryMap';
 import { axiosApi } from '@/lib/axios';
@@ -36,6 +37,7 @@ interface FormattedGym {
 }
 
 const GymDiscovery = () => {
+  const navigate = useNavigate();
   const [nearbyGyms, setNearbyGyms] = useState<FormattedGym[]>([
     {
       id: "1",
@@ -184,9 +186,22 @@ const GymDiscovery = () => {
                       ))}
                     </div>
                     
-                    <div className="flex justify-between items-center pt-2">
-                      <span className="font-bold text-primary">{gym.price}</span>
-                      <Button size="sm" className="bg-gradient-to-r from-primary to-secondary">
+                    <div className="flex justify-between items-center gap-2 pt-2">
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        className="flex-1 border-primary/20 hover:bg-primary/5 transition-colors"
+                        onClick={() => navigate(`/gym/${gym.id}`)}
+                      >
+                        <span className="flex items-center gap-1">
+                          More Details
+                          <ArrowRight className="h-3.5 w-3.5" />
+                        </span>
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        className="flex-1 bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-opacity"
+                      >
                         Check In
                       </Button>
                     </div>

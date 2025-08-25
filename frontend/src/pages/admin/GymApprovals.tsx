@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check, X, MapPin, Phone, Mail, User } from 'lucide-react';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 interface PendingGym {
   _id: string;
@@ -30,6 +31,7 @@ interface PendingGym {
 }
 
 const GymApprovals = () => {
+  const navigate = useNavigate();
   const [pendingGyms, setPendingGyms] = useState<PendingGym[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -53,6 +55,7 @@ const GymApprovals = () => {
   }, []);
 
   const handleGymStatus = async (gymId: string, isVerified: number) => {
+    navigate('/admin/gym-approvals');
     try {
       await axiosApi.post('/admin/set-gym-status', {
         gymId,
@@ -63,6 +66,9 @@ const GymApprovals = () => {
       });
 
       toast.success(isVerified === 1 ? 'Gym approved successfully' : 'Gym rejected');
+      if (isVerified === 1) {
+        navigate('/admin/gym-approvals', { replace: true });
+      }
       // Refresh the list
       fetchPendingGyms();
     } catch (error) {

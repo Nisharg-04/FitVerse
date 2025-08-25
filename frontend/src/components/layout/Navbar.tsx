@@ -28,6 +28,8 @@ import {
 import { useStore } from '@/store/useStore';
 
 const FitVerseNavbarLogo = () => {
+      const { user } = useAuth();
+  
   return (
     <Link
       to="/"
@@ -63,13 +65,16 @@ const Navbar: React.FC = () => {
 
   const navItems = [
     { title: 'Home', link: '/', protected: false },
-    { title: 'Dashboard', link: '/dashboard', protected: true },
+  
 
-    { title: 'About Us', link: '/about', protected: false },
-    { title: 'Contact Us', link: '/contact', protected: false },
+   
 
   ];
 
+  const afterNavItems = [
+     { title: 'About Us', link: '/about', protected: false },
+    { title: 'Contact Us', link: '/contact', protected: false },
+  ]
   const renderAuthLinks = () => {
     if (!isAuthenticated) return null;
     
@@ -158,6 +163,23 @@ const Navbar: React.FC = () => {
         </Link>
       ));
   };
+   const renderafterNavItems = () => {
+    return afterNavItems
+      .filter(item => !item.protected || isAuthenticated)
+      .map((item, idx) => (
+        <Link
+          key={idx}
+          to={item.link}
+          className={cn(
+            "transition-colors hover:text-foreground/80",
+            pathname === item.link ? "text-foreground" : "text-foreground/60"
+          )}
+        >
+          {item.title}
+        </Link>
+      ));
+  };
+
 
   return (
     <ResizableNavbar className="fixed inset-x-0 top-0 z-50 w-full">
@@ -170,6 +192,63 @@ const Navbar: React.FC = () => {
         {/* Desktop Navigation Links */}
         <nav className="hidden md:flex items-center gap-6 px-6 text-sm">
           {renderNavItems()}
+
+          {
+            isAuthenticated && user?.role === 'admin' && (
+              <Link
+                to="/admin"
+                className={cn(
+                  "transition-colors hover:text-foreground/80",
+                  pathname.startsWith('/admin') ? "text-foreground" : "text-foreground/60"
+                )}
+              >
+                Admin Panel
+              </Link>
+
+
+            )
+            
+
+            
+          }
+           {
+            isAuthenticated && user?.role === 'user' && (
+              <Link
+                to="/dashboard"
+                className={cn(
+                  "transition-colors hover:text-foreground/80",
+                  pathname.startsWith('/admin') ? "text-foreground" : "text-foreground/60"
+                )}
+              >
+                Dashboard
+              </Link>
+
+
+            )
+            
+
+            
+          }
+           {
+            isAuthenticated && user?.role === 'owner' && (
+              <Link
+                to="/gymdashboard"
+                className={cn(
+                  "transition-colors hover:text-foreground/80",
+                  pathname.startsWith('/admin') ? "text-foreground" : "text-foreground/60"
+                )}
+              >
+                Gym Dashboard
+              </Link>
+
+
+            )
+            
+            
+
+            
+        }
+{renderafterNavItems()}
         </nav>
 
         <div className="flex items-center gap-3">
