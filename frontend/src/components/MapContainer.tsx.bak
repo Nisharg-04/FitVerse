@@ -29,3 +29,8 @@ export const MapContainer: React.FC<MapContainerProps> = ({
     </div>
   );
 };
+    >
+      {children}
+    </div>
+  );
+};

@@ -54,8 +54,10 @@ export function LocationPicker({
           mapTypeControl: false,
           streetViewControl: false,
           fullscreenControl: false,
-          gestureHandling: isStandalone ? "cooperative" : "auto", // Better touch handling in PWA mode
-          zoomControl: !isStandalone, // Hide zoom controls on mobile PWA for more space
+          // Standard handling - allows pinch-to-zoom and other native gestures
+          gestureHandling: "auto",
+          // Always show zoom controls for accessibility
+          zoomControl: true,
         });
 
         const markerInstance = new google.maps.Marker({
@@ -64,23 +66,15 @@ export function LocationPicker({
           position: initialLocation,
         });
 
-        // Disable pinch-zoom on the map to prevent conflicts with browser gestures in PWA
-        if (isStandalone) {
-          // Add a listener to handle touch events better in PWA mode
-          mapInstance.addListener("drag", () => {
-            mapInstance.setOptions({ draggable: true });
+        // Add touch event handling
+        if (mapRef.current) {
+          // Ensure touch events are properly handled
+          mapRef.current.addEventListener("touchmove", (e) => {
+            // Allow default touch behavior - this enables natural zoom
+            if (e.touches.length === 1) {
+              e.stopPropagation();
+            }
           });
-
-          // Add custom touch handlers for better PWA experience
-          mapRef.current.addEventListener(
-            "touchstart",
-            (e) => {
-              if (e.touches.length > 1) {
-                e.preventDefault(); // Prevent pinch zoom on the map container
-              }
-            },
-            { passive: false }
-          );
         }
 
         mapInstance.addListener("click", (e: any) => {
@@ -111,11 +105,16 @@ export function LocationPicker({
     };
 
     initMap();
-  }, [initialLocation, onLocationSelect, isStandalone]);
+  }, [initialLocation, onLocationSelect]);
 
   return (
     <div
-      className="map-container w-full h-full touch-manipulation"
+      className="map-container"
+      style={{
+        width: "100%",
+        height: "100%",
+        position: "relative",
+      }}
       ref={mapRef}
     />
   );

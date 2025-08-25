@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 /**
  * Hook to handle viewport scaling issues in PWA mode
  * This helps prevent the app from appearing zoomed in on mobile devices
+ * while still allowing user control
  */
 export function useViewportScaling() {
   useEffect(() => {
@@ -13,49 +14,41 @@ export function useViewportScaling() {
       document.referrer.includes('android-app://');
     
     if (isStandalone) {
-      // Set meta viewport dynamically for better control in PWA mode
-      const viewportMeta = document.querySelector('meta[name="viewport"]');
-      if (viewportMeta) {
-        // This provides better control over scaling in PWA mode
-        // Note: Using maximum-scale and user-scalable is necessary for PWAs even though
-        // it may trigger accessibility warnings in development
-        viewportMeta.setAttribute(
-          'content',
-          'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover'
-        );
-      }
-
-      // Add event listener to ensure correct viewport when orientation changes
-      const handleResize = () => {
-        // Force re-render at correct scale after orientation change
-        document.body.style.opacity = '0.99';
+      // Handle orientation changes to fix rendering issues
+      const handleOrientationChange = () => {
+        // Force reflow to ensure proper rendering after orientation change
         setTimeout(() => {
-          document.body.style.opacity = '1';
-        }, 10);
+          window.scrollTo(0, 0);
+        }, 100);
       };
 
-      window.addEventListener('orientationchange', handleResize);
+      window.addEventListener('orientationchange', handleOrientationChange);
       
-      // Apply iOS-specific fixes
-      if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-        // Add iOS-specific class for additional styling
-        document.documentElement.classList.add('ios-pwa');
-        
-        // Prevent bouncing/rubber-banding effect on iOS
-        document.body.style.position = 'fixed';
-        document.body.style.width = '100%';
-        document.body.style.height = '100%';
-        
-        // Re-enable scrolling on the main content
+      // Remove any fixed positioning that might prevent scrolling
+      const fixScrolling = () => {
         const appRoot = document.getElementById('root');
         if (appRoot) {
-          appRoot.style.overflow = 'auto';
           appRoot.style.height = '100%';
+          appRoot.style.overflowY = 'auto';
+          appRoot.style.overflowX = 'hidden';
+          // Use standard property with vendor prefix fallback
+          try {
+            (appRoot.style as any).webkitOverflowScrolling = 'touch';
+          } catch (e) {
+            // Ignore if not supported
+          }
         }
-      }
-
+        
+        // Make sure body doesn't have fixed positioning
+        document.body.style.position = '';
+        document.body.style.overflow = 'auto';
+      };
+      
+      // Apply fix after a short delay to ensure DOM is ready
+      setTimeout(fixScrolling, 100);
+      
       return () => {
-        window.removeEventListener('orientationchange', handleResize);
+        window.removeEventListener('orientationchange', handleOrientationChange);
       };
     }
   }, []);
