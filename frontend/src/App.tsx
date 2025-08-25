@@ -32,10 +32,14 @@ import { LatLngExpression } from "leaflet";
 import { useDispatch } from "react-redux";
 import { getUser } from "./redux/slices/authSlice";
 import { useEffect } from "react";
+import { useViewportScaling } from "./hooks/useViewportScaling";
 
 const App: React.FC = () => {
   const [selectedPosition, setSelectedPosition] =
     useState<LatLngExpression | null>(null);
+
+  // Use our custom hook to fix PWA viewport scaling
+  useViewportScaling();
 
   const dispatch = useDispatch();
   useEffect(() => {
