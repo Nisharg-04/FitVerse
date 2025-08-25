@@ -22,6 +22,7 @@ import GlobeSection from '@/components/sections/GlobeSection';
 import TimelineSection from '@/components/sections/TimelineSection';
 import Footer from '@/components/layout/Footer';
 import GoogleGeminiEffectDemo from '@/components/ui/google-gemini-effect-demo';
+import GoogleFitConnectButton from '../components/GoogleFitConnectButton';
 
 const Index = () => {
   const features = [
@@ -81,6 +82,10 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <div>
+        <h1>REMOVE IT</h1>
+        <GoogleFitConnectButton />
+      </div>
       {/* Next-Level Hero Section */}
       <section className="relative overflow-hidden min-h-screen flex items-center">
         <div className="container mx-auto px-4 py-20">

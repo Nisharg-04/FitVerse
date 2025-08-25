@@ -73,7 +73,7 @@ const Login = () => {
     try {
       const response = await axios
         .post(
-          `${import.meta.env.VITE_BACKEND_URL}/user/googleVerify`,
+          `${import.meta.env.VITE_BACKEND_URL}/google/login`,
           { token },
           { withCredentials: true }
         )
