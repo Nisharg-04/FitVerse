@@ -19,10 +19,9 @@ const CompleteProfile = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (user?.isProfileComplete) {
-      
-      navigate("/dashboard");
-    }
+    if (user?.role === "owner") navigate("/gymdashboard");
+    else if (user?.role === "admin") navigate("/admin");
+    else navigate("/dashboard");
   }, [user, navigate, toast]);
 
   const [formData, setFormData] = useState({
@@ -37,7 +36,7 @@ const CompleteProfile = () => {
       toast({
         title: "Passwords do not match",
         description: "Please check your passwords and try again",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
@@ -49,21 +48,21 @@ const CompleteProfile = () => {
         toast({
           title: "Profile completed successfully",
           description: "Welcome to FitVerse!",
-          variant: "default"
+          variant: "default",
         });
         navigate("/dashboard");
       } else {
         toast({
           title: "Profile completion failed",
           description: resultAction.error?.message || "Please try again",
-          variant: "destructive"
+          variant: "destructive",
         });
       }
     } catch (error) {
       toast({
         title: "Profile completion failed",
         description: "An error occurred during profile completion",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -71,9 +70,9 @@ const CompleteProfile = () => {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     }));
   };
 
@@ -99,13 +98,17 @@ const CompleteProfile = () => {
           >
             <UserPlus2 className="h-8 w-8 text-white" />
           </motion.div>
-          <h1 className="text-3xl font-bold text-gradient mb-2">Complete Your Profile</h1>
+          <h1 className="text-3xl font-bold text-gradient mb-2">
+            Complete Your Profile
+          </h1>
           <p className="text-muted-foreground">Set up your FitVerse account</p>
         </div>
 
         <Card className="fitness-card border-0 shadow-2xl">
           <CardHeader className="space-y-1 pb-4">
-            <CardTitle className="text-2xl text-center">Create Password</CardTitle>
+            <CardTitle className="text-2xl text-center">
+              Create Password
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -156,11 +159,15 @@ const CompleteProfile = () => {
                 {loading ? (
                   <motion.div
                     animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    transition={{
+                      duration: 1,
+                      repeat: Infinity,
+                      ease: "linear",
+                    }}
                     className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
                   />
                 ) : (
-                  'Complete Profile'
+                  "Complete Profile"
                 )}
               </Button>
             </form>

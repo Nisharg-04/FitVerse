@@ -157,6 +157,7 @@ const refreshAccessToken = async () => {
         });
         return res.data;
     } catch (error) {
+        console.error("Token refresh failed:", error);
         throw error;
     }
 };
@@ -168,6 +169,7 @@ export const getUser = createAsyncThunk(
             const response = await axios.get(`${API_URL}/user/current-user`, {
                 withCredentials: true,
             });
+            
             return response.data;
         } catch (error) {
             if (error.response?.status === 401) {
@@ -371,6 +373,19 @@ const authSlice = createSlice({
                 state.loading = false;
             })
             .addCase(resetPassword.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(getUser.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getUser.fulfilled, (state, action) => {
+                state.loading = false;
+                state.user = action.payload.data;
+                state.isAuthenticated = true;
+            })
+            .addCase(getUser.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             });

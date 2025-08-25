@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { axiosApi } from '@/lib/axios';
+import React, { useEffect, useState } from "react";
+
 import {
   Card,
   CardContent,
@@ -9,9 +9,10 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, X, MapPin, Phone, Mail, User } from 'lucide-react';
-import { toast } from 'sonner';
-import { useNavigate } from 'react-router-dom';
+import { Check, X, MapPin, Phone, Mail, User } from "lucide-react";
+import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 interface PendingGym {
   _id: string;
@@ -37,14 +38,14 @@ const GymApprovals = () => {
 
   const fetchPendingGyms = async () => {
     try {
-        const { data } = await axiosApi.get('/admin/pending-gym-requests', {
-          withCredentials: true
-        });
-    console.log("Fetched pending gyms:", data.data);
+      const { data } = await axios.get("/admin/pending-gym-requests", {
+        withCredentials: true,
+      });
+      console.log("Fetched pending gyms:", data.data);
       setPendingGyms(data.data);
     } catch (error) {
-      console.error('Error fetching pending gyms:', error);
-      toast.error('Failed to fetch pending gym requests');
+      console.error("Error fetching pending gyms:", error);
+      toast.error("Failed to fetch pending gym requests");
     } finally {
       setLoading(false);
     }
@@ -55,25 +56,34 @@ const GymApprovals = () => {
   }, []);
 
   const handleGymStatus = async (gymId: string, isVerified: number) => {
-    navigate('/admin/gym-approvals');
+    navigate("/admin/gym-approvals");
     try {
-      await axiosApi.post('/admin/set-gym-status', {
-        gymId,
-        isVerified,
-        reasonForRejection: isVerified === 0 ? "Your gym application does not meet our current requirements. Please ensure all information is accurate and complete." : undefined
-      }, {
-          withCredentials:true
-      });
+      await axios.post(
+        "/admin/set-gym-status",
+        {
+          gymId,
+          isVerified,
+          reasonForRejection:
+            isVerified === 0
+              ? "Your gym application does not meet our current requirements. Please ensure all information is accurate and complete."
+              : undefined,
+        },
+        {
+          withCredentials: true,
+        }
+      );
 
-      toast.success(isVerified === 1 ? 'Gym approved successfully' : 'Gym rejected');
+      toast.success(
+        isVerified === 1 ? "Gym approved successfully" : "Gym rejected"
+      );
       if (isVerified === 1) {
-        navigate('/admin/gym-approvals', { replace: true });
+        navigate("/admin/gym-approvals", { replace: true });
       }
       // Refresh the list
       fetchPendingGyms();
     } catch (error) {
-      console.error('Error updating gym status:', error);
-      toast.error('Failed to update gym status');
+      console.error("Error updating gym status:", error);
+      toast.error("Failed to update gym status");
     }
   };
 
@@ -137,8 +147,8 @@ const GymApprovals = () => {
                   <div className="flex items-center gap-2 text-sm">
                     <User className="h-4 w-4 text-muted-foreground" />
                     <div>
-                      <p><span className="font-medium">Owner:</span> {gym.owner?.name}</p>
-                      <p className="text-muted-foreground">{gym.owner?.email}</p>
+                      {/* <p><span className="font-medium">Owner:</span> {gym.owner?.name}</p>
+                      <p className="text-muted-foreground">{gym.owner?.email}</p> */}
                     </div>
                   </div>
 

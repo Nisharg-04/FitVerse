@@ -1,20 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { axiosApi } from '@/lib/axios';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { 
-  MapPin, 
-  Phone, 
-  Mail, 
-  User, 
-  Clock, 
-  DollarSign, 
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  MapPin,
+  Phone,
+  Mail,
+  User,
+  Clock,
+  DollarSign,
   Dumbbell,
   Star,
-  Users
-} from 'lucide-react';
-import axios from 'axios';
+  Users,
+} from "lucide-react";
+import axios from "axios";
 
 interface GymDetails {
   _id: string;
@@ -56,15 +55,18 @@ const GymDetails = () => {
   useEffect(() => {
     const fetchGymDetails = async () => {
       try {
-          const { data } = await axios.get(`http://localhost:8000/api/gym/${gymId}`, {
-            withCredentials: true
-          });
-          console.log("Fetched gym details:", data.data);
+        const { data } = await axios.get(
+          `http://localhost:8000/api/gym/${gymId}`,
+          {
+            withCredentials: true,
+          }
+        );
+        console.log("Fetched gym details:", data.data);
         setGym(data.data);
         setError(null);
       } catch (err) {
-        console.error('Error fetching gym details:', err);
-        setError('Failed to fetch gym details');
+        console.error("Error fetching gym details:", err);
+        setError("Failed to fetch gym details");
       } finally {
         setLoading(false);
       }
@@ -88,7 +90,7 @@ const GymDetails = () => {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-destructive">Error</h2>
-          <p className="text-muted-foreground">{error || 'Gym not found'}</p>
+          <p className="text-muted-foreground">{error || "Gym not found"}</p>
         </div>
       </div>
     );
@@ -105,7 +107,8 @@ const GymDetails = () => {
             </h1>
             <p className="text-muted-foreground flex items-center mt-2">
               <MapPin className="h-4 w-4 mr-2" />
-              {gym.address.addressLine}, {gym.address.city}, {gym.address.state} - {gym.address.pincode}
+              {gym.address.addressLine}, {gym.address.city}, {gym.address.state}{" "}
+              - {gym.address.pincode}
             </p>
           </div>
           <Badge variant={gym.isVerified ? "success" : "destructive"}>
@@ -143,7 +146,7 @@ const GymDetails = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  {gym.description || 'No description available.'}
+                  {gym.description || "No description available."}
                 </p>
               </CardContent>
             </Card>
@@ -224,7 +227,9 @@ const GymDetails = () => {
                     <User className="h-4 w-4 mr-2 text-muted-foreground" />
                     <div>
                       <p>{gym.ownerId.name}</p>
-                      <p className="text-sm text-muted-foreground">{gym.ownerId.email}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {gym.ownerId.email}
+                      </p>
                     </div>
                   </div>
                 </div>
