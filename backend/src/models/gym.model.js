@@ -5,7 +5,6 @@ const gymSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
-      unique: true,
       trim: true,
       index: true,
     },
@@ -47,7 +46,7 @@ const gymSchema = new mongoose.Schema(
       trim: true,
       lowercase: true,
     },
-    perDayPrice: {
+    perHourPrice: {
       type: Number,
       required: true,
     },
@@ -58,6 +57,29 @@ const gymSchema = new mongoose.Schema(
     paymentRemaining: {
       type: Number,
       default: 0,
+    },
+    isVerified: {
+      type: Number,
+      default: 0,
+    },
+    verifierAdminId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    ownerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    images: [
+      {
+        type: String,
+        required: true,
+      },
+    ],
+    reasonForRejection: {
+      type: String,
+      trim: true,
     },
   },
   { timestamps: true }

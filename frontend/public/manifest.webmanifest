@@ -1,0 +1,32 @@
+{
+    "name": "FitVerse - Your Gym. Your Time. Your Way",
+    "short_name": "FitVerse",
+    "description": "Transform your fitness journey with FitVerse - the all-in-one platform for gym discovery, workout tracking, nutrition planning, and community support.",
+    "start_url": "/",
+    "scope": "/",
+    "display": "standalone",
+    "orientation": "portrait-primary",
+    "background_color": "#ffffff",
+    "theme_color": "#000000",
+    "categories": [
+        "health",
+        "fitness",
+        "lifestyle"
+    ],
+    "lang": "en",
+    "dir": "ltr",
+    "icons": [
+        {
+            "src": "fitverse-logo.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "fitverse-logo-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}

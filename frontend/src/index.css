@@ -1,0 +1,412 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.leaflet-routing-container {
+  background-color: white !important;
+  color: black !important;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+
+  /* ✅ make it scrollable */
+  max-height: 250px; /* adjust as you like */
+  overflow-y: auto;
+}
+
+/* Links inside the routing box */
+.leaflet-routing-container a {
+  color: #007bff !important;
+  text-decoration: none;
+}
+
+.leaflet-routing-container a:hover {
+  text-decoration: underline;
+}
+
+/* Optional: improve headers */
+.leaflet-routing-alt h2 {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: black !important;
+}
+
+/* FitVerse Design System - Modern Fitness Platform */
+
+@layer utilities {
+  .delay-2000 {
+    animation-delay: 2000ms;
+  }
+}
+
+:root {
+  /* Base Colors */
+  --background: 0 0% 100%;
+  --foreground: 222 84% 4.9%;
+
+  /* Brand Colors - From FitVerse Logo */
+  --primary: 330 85% 55%; /* Magenta/Pink */
+  --primary-foreground: 0 0% 100%;
+  --primary-light: 330 85% 65%;
+  --primary-dark: 330 85% 45%;
+
+  /* Secondary - Blue from logo */
+  --secondary: 210 85% 55%;
+  --secondary-foreground: 0 0% 100%;
+  --secondary-light: 210 85% 65%;
+  --secondary-dark: 210 85% 45%;
+
+  /* Fitness Color Palette */
+  --success: 142 76% 36%; /* Fitness Green */
+  --success-foreground: 0 0% 100%;
+  --warning: 38 92% 50%; /* Energy Orange */
+  --warning-foreground: 0 0% 100%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+
+  /* Neutral Colors */
+  --muted: 210 40% 96%;
+  --muted-foreground: 215 16% 47%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 84% 4.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 84% 4.9%;
+  --accent: 210 40% 96%;
+  --accent-foreground: 222 47% 11%;
+
+  /* Border & Input */
+  --border: 214 32% 91%;
+  --input: 214 32% 91%;
+  --ring: 330 85% 55%;
+
+  /* Design System */
+  --radius: 0.75rem;
+
+  /* Gradients */
+  --gradient-primary: linear-gradient(
+    135deg,
+    hsl(var(--primary)),
+    hsl(var(--secondary))
+  );
+  --gradient-hero: linear-gradient(
+    135deg,
+    hsl(var(--primary) / 0.9),
+    hsl(var(--secondary) / 0.9)
+  );
+  --gradient-card: linear-gradient(
+    145deg,
+    hsl(var(--card)),
+    hsl(var(--muted) / 0.3)
+  );
+  --gradient-success: linear-gradient(
+    135deg,
+    hsl(var(--success)),
+    hsl(142 76% 45%)
+  );
+
+  /* Shadows */
+  --shadow-fitness: 0 10px 30px -10px hsl(var(--primary) / 0.3);
+  --shadow-card: 0 4px 20px -4px hsl(222 84% 4.9% / 0.1);
+  --shadow-glow: 0 0 40px hsl(var(--primary) / 0.2);
+
+  /* Animations */
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  --sidebar-background: 0 0% 98%;
+  --sidebar-foreground: 240 5.3% 26.1%;
+  --sidebar-primary: 240 5.9% 10%;
+  --sidebar-primary-foreground: 0 0% 98%;
+  --sidebar-accent: 240 4.8% 95.9%;
+  --sidebar-accent-foreground: 240 5.9% 10%;
+  --sidebar-border: 220 13% 91%;
+  --sidebar-ring: 217.2 91.2% 59.8%;
+}
+
+.dark {
+  /* Base Colors */
+  --background: 222 84% 4.9%;
+  --foreground: 210 40% 98%;
+
+  /* Brand Colors - Darker versions */
+  --primary: 330 85% 60%;
+  --primary-foreground: 0 0% 100%;
+  --primary-light: 330 85% 70%;
+  --primary-dark: 330 85% 40%;
+
+  --secondary: 210 85% 60%;
+  --secondary-foreground: 0 0% 100%;
+  --secondary-light: 210 85% 70%;
+  --secondary-dark: 210 85% 40%;
+
+  /* Cards & Content */
+  --card: 222 84% 7%;
+  --card-foreground: 210 40% 98%;
+  --popover: 222 84% 7%;
+  --popover-foreground: 210 40% 98%;
+  --muted: 217 33% 17%;
+  --muted-foreground: 215 20% 65%;
+  --accent: 217 33% 17%;
+  --accent-foreground: 210 40% 98%;
+
+  /* Borders & Inputs */
+  --border: 217 33% 17%;
+  --input: 217 33% 17%;
+  --ring: 330 85% 60%;
+
+  /* Updated gradients for dark mode */
+  --gradient-primary: linear-gradient(
+    135deg,
+    hsl(var(--primary)),
+    hsl(var(--secondary))
+  );
+  --gradient-hero: linear-gradient(
+    135deg,
+    hsl(var(--primary) / 0.8),
+    hsl(var(--secondary) / 0.8)
+  );
+  --gradient-card: linear-gradient(
+    145deg,
+    hsl(var(--card)),
+    hsl(var(--muted) / 0.5)
+  );
+  --shadow-fitness: 0 10px 30px -10px hsl(var(--primary) / 0.4);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-poppins;
+  }
+}
+
+@layer components {
+  /* Fitness Hero Button */
+  .btn-hero {
+    @apply bg-primary hover:bg-primary-dark text-primary-foreground px-8 py-4 rounded-2xl font-semibold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105;
+    box-shadow: var(--shadow-fitness);
+  }
+
+  /* Gradient Button */
+  .btn-gradient {
+    background: var(--gradient-primary);
+    @apply text-white px-6 py-3 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-0;
+  }
+
+  /* Fitness Card */
+  .fitness-card {
+    background: var(--gradient-card);
+    @apply p-6 rounded-2xl border border-border shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02];
+    box-shadow: var(--shadow-card);
+  }
+
+  /* Glowing Effect */
+  .glow-effect {
+    box-shadow: var(--shadow-glow);
+  }
+
+  /* Animated Gradient Background */
+  .animated-gradient {
+    background: linear-gradient(
+      -45deg,
+      hsl(var(--primary)),
+      hsl(var(--secondary)),
+      hsl(var(--primary-light)),
+      hsl(var(--secondary-light))
+    );
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+  }
+
+  /* Progress Ring */
+  .progress-ring {
+    @apply w-20 h-20 rounded-full border-4 border-muted relative;
+    background: conic-gradient(
+      from 0deg,
+      hsl(var(--primary)),
+      hsl(var(--secondary)),
+      hsl(var(--primary))
+    );
+  }
+}
+
+@layer utilities {
+  /* Text Gradients */
+  .text-gradient {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Smooth Transitions */
+  .transition-smooth {
+    transition: var(--transition-smooth);
+  }
+
+  .transition-bounce {
+    transition: var(--transition-bounce);
+  }
+}
+
+/* Keyframe Animations */
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes pulse-soft {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Fitness Hero Section Styles */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes rotate-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(var(--primary), 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(var(--primary), 0.6);
+  }
+}
+
+.fitness-hero-bg {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--primary) / 0.05) 0%,
+    transparent 50%,
+    hsl(var(--secondary) / 0.05) 100%
+  );
+}
+
+.stats-card {
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.hero-gradient-text {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--primary)),
+    hsl(var(--secondary)),
+    hsl(var(--success))
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Enhanced Button Styles */
+.btn-fitness-primary {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--primary)),
+    hsl(var(--secondary))
+  );
+  box-shadow: 0 10px 25px rgba(var(--primary), 0.3);
+  transition: all 0.3s ease;
+}
+
+.btn-fitness-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 35px rgba(var(--primary), 0.4);
+}
+
+/* Progress Ring Animation */
+@keyframes drawCircle {
+  from {
+    stroke-dashoffset: 251.2;
+  }
+  to {
+    stroke-dashoffset: 75.36;
+  }
+}
+
+.progress-ring {
+  animation: drawCircle 2s ease-out forwards;
+}
+
+/* Lamp Effect Styles */
+.bg-gradient-conic {
+  background: conic-gradient(
+    var(--conic-position, from 0deg),
+    var(--tw-gradient-stops)
+  );
+}
+
+/* Lamp container specific styles */
+.lamp-container {
+  background: #0f172a; /* slate-950 */
+}
+
+.lamp-glow {
+  background: radial-gradient(
+    circle at center,
+    hsl(var(--primary)) 0%,
+    transparent 70%
+  );
+}
