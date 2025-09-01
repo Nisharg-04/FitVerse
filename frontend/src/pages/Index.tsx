@@ -13,6 +13,7 @@ import {
   Star,
   ArrowRight,
   Play,
+  Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -28,6 +29,11 @@ import {
 import LoadingAnimation from "@/components/ui/LoadingAnimation";
 import PerformanceMonitor from "@/components/ui/PerformanceMonitor";
 import { isLowEndDevice } from "@/lib/optimizations";
+import GlobeSection from "@/components/sections/GlobeSection";
+import TimelineSection from "@/components/sections/TimelineSection";
+import Footer from "@/components/layout/Footer";
+import GoogleGeminiEffectDemo from "@/components/ui/google-gemini-effect-demo";
+import GoogleFitConnectButton from "../components/GoogleFitConnectButton";
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -124,6 +130,11 @@ const Index = () => {
       {/* Development Performance Monitor */}
       <PerformanceMonitor />
       {/* Next-Level Hero Section - Optimized for immediate loading */}
+      <div>
+        <h1>REMOVE IT</h1>
+        <GoogleFitConnectButton />
+      </div>
+      {/* Next-Level Hero Section */}
       <section className="relative overflow-hidden min-h-screen flex items-center">
         <div className="container mx-auto px-4 py-20">
           <div className="grid lg:grid-cols-2 gap-20 items-center">

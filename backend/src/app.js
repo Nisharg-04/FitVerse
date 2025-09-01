@@ -58,6 +58,7 @@ import gymRoutes from "./routes/gym.route.js";
 import adminRoutes from "./routes/admin.route.js";
 import chatroutes from "./routes/chatbot.routes.js";
 import adsRoutes from "./routes/ads.routes.js";
+import googleRoutes from "./routes/google.routes.js";
 
 // Use user routes
 app.use("/api/user", userRoutes);
@@ -65,6 +66,7 @@ app.use("/api/gym", gymRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/chatbot", chatroutes);
 app.use("/api/advertisement", adsRoutes);
+app.use("/api/google", googleRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
