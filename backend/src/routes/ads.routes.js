@@ -5,9 +5,9 @@ import {
   updateAdvertisement,
   deleteAdvertisement,
   restoreAdvertisement,
-  getActiveAdvertisements,
   getRandomAdvertisement,
   toggleAdClick,
+  getAdvertisementByUser,
 } from "../controllers/ads.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
@@ -34,10 +34,10 @@ router.delete("/deleteAdvertisement/:id", verifyJWT, deleteAdvertisement);
 
 router.patch("/restoreAdvertisement/:id", verifyJWT, restoreAdvertisement);
 
-router.get("/getActiveAdvertisement", verifyJWT, getActiveAdvertisements);
-
 router.get("/getRandomAdvertisement", getRandomAdvertisement);
 
 router.get("/toggleView/:id", toggleAdClick);
+
+router.get("/getAdvertisementByUser", verifyJWT, getAdvertisementByUser);
 
 export default router;

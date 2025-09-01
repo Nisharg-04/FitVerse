@@ -4,6 +4,7 @@ import {
   setGymVerification,
   getAllAdvertisements,
   deleteAdvertisement,
+  getActiveAdvertisements,
 } from "../controllers/admin.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 
@@ -17,5 +18,7 @@ router.post("/set-gym-status", verifyJWT, setGymVerification);
 router.get("/getAllAdvertisement", verifyJWT, getAllAdvertisements);
 
 router.delete("/deleteAdvertisement/:id", verifyJWT, deleteAdvertisement);
+
+router.get("/getActiveAdvertisement", verifyJWT, getActiveAdvertisements);
 
 export default router;

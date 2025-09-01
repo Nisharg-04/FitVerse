@@ -192,11 +192,7 @@ const deleteAdvertisement = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Reason is required");
   }
 
-  const ad = await Advertisement.findByIdAndUpdate(
-    id,
-    { isDeleted: true },
-    { new: true }
-  );
+  const ad = await Advertisement.findOne({ _id: id });
 
   if (!ad) {
     throw new ApiError(404, "No advertisement found");
@@ -226,6 +222,8 @@ const deleteAdvertisement = asyncHandler(async (req, res) => {
     isHtml: true,
   });
 
+  await Advertisement.deleteOne({ _id: id });
+
   return res.status(200).json(
     new ApiResponse({
       statusCode: 200,
@@ -235,9 +233,28 @@ const deleteAdvertisement = asyncHandler(async (req, res) => {
   );
 });
 
+// Get Active Advertisements for Users
+const getActiveAdvertisements = asyncHandler(async (req, res) => {
+  const query = {
+    isDeleted: false,
+    validUpto: { $gt: new Date() },
+  };
+
+  const ads = await Advertisement.find(query).sort({ createdAt: -1 });
+
+  return res.status(200).json(
+    new ApiResponse({
+      statusCode: 200,
+      message: "Active advertisements fetched successfully",
+      data: ads,
+    })
+  );
+});
+
 export {
   getAllPendingGymRequest,
   setGymVerification,
   getAllAdvertisements,
   deleteAdvertisement,
+  getActiveAdvertisements,
 };

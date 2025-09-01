@@ -88,7 +88,6 @@ const getAdvertisementById = asyncHandler(async (req, res) => {
   );
 });
 
-// TODO: check is user is valid
 // Update Advertisement
 const updateAdvertisement = asyncHandler(async (req, res) => {
   const { id } = req.params;
@@ -111,9 +110,22 @@ const updateAdvertisement = asyncHandler(async (req, res) => {
     updates.imageUrl = uploadedImage?.secure_url;
   }
 
-  const updatedAd = await Advertisement.findByIdAndUpdate(id, updates, {
-    new: true,
-  });
+  const ad = await Advertisement.findById(id);
+
+  if (!ad) {
+    throw new ApiError(404, "Advertisement not found");
+  }
+
+  if (ad.ownerId.toString() !== req.user._id.toString()) {
+    throw new ApiError(
+      403,
+      "You are not authorized to update this advertisement"
+    );
+  }
+
+  ad.set(updates);
+
+  const updatedAd = await ad.save();
 
   if (!updatedAd) {
     throw new ApiError(404, "Advertisement not found");
@@ -128,7 +140,6 @@ const updateAdvertisement = asyncHandler(async (req, res) => {
   );
 });
 
-// TODO: check is user is valid
 // Soft Delete Advertisement
 const deleteAdvertisement = asyncHandler(async (req, res) => {
   const { id } = req.params;
@@ -137,14 +148,22 @@ const deleteAdvertisement = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Advertisement id is required");
   }
 
-  const ad = await Advertisement.findByIdAndUpdate(
-    id,
-    { isDeleted: true },
-    { new: true }
-  );
+  const ad = await Advertisement.findById(id);
+
   if (!ad) {
-    throw new ApiError(404, "No advertisement found");
+    throw new ApiError(404, "Advertisement not found");
   }
+
+  if (ad.ownerId.toString() !== req.user._id.toString()) {
+    throw new ApiError(
+      403,
+      "You are not authorized to delete this advertisement"
+    );
+  }
+
+  ad.isDeleted = true;
+
+  await ad.save();
 
   return res.status(200).json(
     new ApiResponse({
@@ -155,7 +174,6 @@ const deleteAdvertisement = asyncHandler(async (req, res) => {
   );
 });
 
-// TODO: check is user is valid
 // Restore Advertisement
 const restoreAdvertisement = asyncHandler(async (req, res) => {
   const { id } = req.params;
@@ -164,40 +182,28 @@ const restoreAdvertisement = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Advertisement id is required");
   }
 
-  const ad = await Advertisement.findByIdAndUpdate(
-    id,
-    { isDeleted: false },
-    { new: true }
-  );
+  const ad = await Advertisement.findById(id);
 
   if (!ad) {
     throw new ApiError(404, "Advertisement not found");
   }
+
+  if (ad.ownerId.toString() !== req.user._id.toString()) {
+    throw new ApiError(
+      403,
+      "You are not authorized to restore this advertisement"
+    );
+  }
+
+  ad.isDeleted = false;
+
+  await ad.save();
 
   return res.status(200).json(
     new ApiResponse({
       statusCode: 200,
       message: "Advertisement restored successfully",
       data: ad,
-    })
-  );
-});
-
-// TODO: admin api
-// Get Active Advertisements for Users
-const getActiveAdvertisements = asyncHandler(async (req, res) => {
-  const query = {
-    isDeleted: false,
-    validUpto: { $gt: new Date() },
-  };
-
-  const ads = await Advertisement.find(query).sort({ createdAt: -1 });
-
-  return res.status(200).json(
-    new ApiResponse({
-      statusCode: 200,
-      message: "Active advertisements fetched successfully",
-      data: ads,
     })
   );
 });
@@ -270,8 +276,20 @@ const toggleAdClick = asyncHandler(async (req, res) => {
   );
 });
 
-// TODO: implement
-const getApiByUser = asyncHandler(async (req, res) => {});
+// TODO: test
+const getAdvertisementByUser = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+
+  const ads = await Advertisement.find({ ownerId: userId });
+
+  return res.status(200).json(
+    new ApiResponse({
+      statusCode: 200,
+      message: "Advertisements fetched successfully",
+      data: ads,
+    })
+  );
+});
 
 export {
   createAdvertisement,
@@ -279,7 +297,7 @@ export {
   updateAdvertisement,
   deleteAdvertisement,
   restoreAdvertisement,
-  getActiveAdvertisements,
   getRandomAdvertisement,
   toggleAdClick,
+  getAdvertisementByUser,
 };
