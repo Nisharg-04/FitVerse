@@ -1,247 +1,303 @@
 import { Advertisement } from "../models/advertisement.model.js";
-<<<<<<< HEAD
-// import { AdvertisementView } from "../models/advertisementView.model.js";
-=======
 import { AdvertisementView } from "../models/advertisementView.model.js";
->>>>>>> d9553b2d8aee4aa72ce182bccba71b28a4d94f9c
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import mongoose from "mongoose";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
 
-// ---------------------- Advertisement Management ---------------------- //
-
+// TODO: add payment
 // Create Advertisement
-export const createAdvertisement = async (req, res) => {
-  try {
-    const { title, link, description, advertiserName, contactEmail, validUpto } = req.body;
-    const imageFile = req.file; // multer file
+const createAdvertisement = asyncHandler(async (req, res) => {
+  const { title, link, description, advertiserName, contactEmail, validUpto } =
+    req.body;
 
-    const uploadedImage = imageFile ? await uploadOnCloudinary(imageFile.path) : null;
-
-    const ad = await Advertisement.create({
-      title,
-      link,
-      description,
-      advertiserName,
-      contactEmail,
-      validUpto,
-      imageUrl: uploadedImage?.secure_url || "",
-    });
-
-    res.status(201).json(ad);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  if (
+    !title ||
+    !link ||
+    !description ||
+    !advertiserName ||
+    !contactEmail ||
+    !validUpto
+  ) {
+    throw new ApiError(400, "All field are required");
   }
-};
 
-// Get All Advertisements with filters & pagination
-export const getAllAdvertisements = async (req, res) => {
-  try {
-    let { active, expired, advertiserName, search, page = 1, limit = 10 } = req.query;
-    const query = {};
+  const imageFile = req.file;
 
-    if (active === "true") query.isDeleted = false;
-    if (expired === "false") query.validUpto = { $gt: new Date() };
-    if (advertiserName) query.advertiserName = advertiserName;
-    if (search) query.title = { $regex: search, $options: "i" };
-
-    page = parseInt(page);
-    limit = parseInt(limit);
-
-    const ads = await Advertisement.find(query)
-      .sort({ createdAt: -1 })
-      .skip((page - 1) * limit)
-      .limit(limit);
-
-    const total = await Advertisement.countDocuments(query);
-
-    res.json({ total, page, limit, ads });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  if (!imageFile) {
+    throw new ApiError(400, "Advertisement image is required");
   }
-};
+
+  const uploadedImage = imageFile
+    ? await uploadOnCloudinary(imageFile.path)
+    : null;
+
+  if (!uploadedImage || !uploadedImage.secure_url) {
+    throw new ApiError(500, "Image upload failed");
+  }
+
+  const ad = await Advertisement.create({
+    title,
+    link,
+    description,
+    advertiserName,
+    contactEmail,
+    validUpto,
+    imageUrl: uploadedImage?.secure_url || "",
+    ownerId: req.user._id,
+  });
+
+  if (!ad) {
+    throw new ApiError(500, "Ad creation failed");
+  }
+
+  return res.status(201).json(
+    new ApiResponse({
+      statusCode: 201,
+      message: "Advertisement created successfully",
+      data: ad,
+    })
+  );
+});
 
 // Get Advertisement by ID
-export const getAdvertisementById = async (req, res) => {
-  try {
-    const { id } = req.params;
+const getAdvertisementById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(400).json({ error: "Invalid ID" });
-
-    const ad = await Advertisement.findById(id);
-    if (!ad) return res.status(404).json({ error: "Advertisement not found" });
-
-    res.json(ad);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  if (!id) {
+    throw new ApiError(400, "ID is required");
   }
-};
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw new ApiError(400, "Invalid ID");
+  }
+
+  const ad = await Advertisement.findById(id);
+
+  if (!ad) {
+    throw new ApiError(404, "Advertisement not found");
+  }
+
+  return res.status(200).json(
+    new ApiResponse({
+      statusCode: 200,
+      message: "Ad fetched successfully",
+      data: ad,
+    })
+  );
+});
 
 // Update Advertisement
-export const updateAdvertisement = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const updates = req.body;
-    const imageFile = req.file;
+const updateAdvertisement = asyncHandler(async (req, res) => {
+  const { id } = req.params;
 
-    if (imageFile) {
-      const uploadedImage = await uploadOnCloudinary(imageFile.path);
-      updates.imageUrl = uploadedImage?.secure_url;
+  if (!id) {
+    throw new ApiError(400, "Advertisement id is required");
+  }
+
+  const updates = req.body;
+
+  const imageFile = req.file;
+
+  if (imageFile) {
+    const uploadedImage = await uploadOnCloudinary(imageFile.path);
+
+    if (!uploadedImage || !uploadedImage.secure_url) {
+      throw new ApiError(500, "Image upload failed");
     }
 
-    const updatedAd = await Advertisement.findByIdAndUpdate(id, updates, { new: true });
-    if (!updatedAd) return res.status(404).json({ error: "Advertisement not found" });
-
-    res.json(updatedAd);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+    updates.imageUrl = uploadedImage?.secure_url;
   }
-};
+
+  const ad = await Advertisement.findById(id);
+
+  if (!ad) {
+    throw new ApiError(404, "Advertisement not found");
+  }
+
+  if (ad.ownerId.toString() !== req.user._id.toString()) {
+    throw new ApiError(
+      403,
+      "You are not authorized to update this advertisement"
+    );
+  }
+
+  ad.set(updates);
+
+  const updatedAd = await ad.save();
+
+  if (!updatedAd) {
+    throw new ApiError(404, "Advertisement not found");
+  }
+
+  return res.status(200).json(
+    new ApiResponse({
+      statusCode: 200,
+      message: "Advertisement updated successfully",
+      data: updatedAd,
+    })
+  );
+});
 
 // Soft Delete Advertisement
-export const deleteAdvertisement = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const ad = await Advertisement.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
-    if (!ad) return res.status(404).json({ error: "Advertisement not found" });
+const deleteAdvertisement = asyncHandler(async (req, res) => {
+  const { id } = req.params;
 
-    res.json({ message: "Advertisement deleted successfully", ad });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  if (!id) {
+    throw new ApiError(400, "Advertisement id is required");
   }
-};
+
+  const ad = await Advertisement.findById(id);
+
+  if (!ad) {
+    throw new ApiError(404, "Advertisement not found");
+  }
+
+  if (ad.ownerId.toString() !== req.user._id.toString()) {
+    throw new ApiError(
+      403,
+      "You are not authorized to delete this advertisement"
+    );
+  }
+
+  ad.isDeleted = true;
+
+  await ad.save();
+
+  return res.status(200).json(
+    new ApiResponse({
+      statusCode: 200,
+      message: "Advertisement deleted successfully",
+      data: ad,
+    })
+  );
+});
 
 // Restore Advertisement
-export const restoreAdvertisement = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const ad = await Advertisement.findByIdAndUpdate(id, { isDeleted: false }, { new: true });
-    if (!ad) return res.status(404).json({ error: "Advertisement not found" });
+const restoreAdvertisement = asyncHandler(async (req, res) => {
+  const { id } = req.params;
 
-    res.json({ message: "Advertisement restored successfully", ad });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  if (!id) {
+    throw new ApiError(400, "Advertisement id is required");
   }
-};
 
-// Get Active Advertisements for Users
-export const getActiveAdvertisements = async (req, res) => {
-  try {
-    const query = {
-      isDeleted: false,
-      validUpto: { $gt: new Date() },
-    };
+  const ad = await Advertisement.findById(id);
 
-    const ads = await Advertisement.find(query).sort({ createdAt: -1 });
-    res.json(ads);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  if (!ad) {
+    throw new ApiError(404, "Advertisement not found");
   }
-};
 
-<<<<<<< HEAD
-// // ---------------------- Advertisement Views ---------------------- //
-
-// // Track Ad View
-// export const trackAdView = async (req, res) => {
-//   try {
-//     const { userId, advertisementId } = req.body;
-
-//     let view = await AdvertisementView.findOne({ userId, advertisementId });
-//     if (!view) {
-//       view = await AdvertisementView.create({ userId, advertisementId });
-//     }
-
-//     res.json({ success: true, view });
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// };
-
-// // Track Ad Click
-// export const trackAdClick = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-
-//     const view = await AdvertisementView.findByIdAndUpdate(id, { clicked: true }, { new: true });
-//     if (!view) return res.status(404).json({ error: "Ad View not found" });
-
-//     res.json({ success: true, view });
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// };
-
-// // Get Views for an Ad
-// export const getAdViewsByAdId = async (req, res) => {
-//   try {
-//     const { adId } = req.params;
-
-//     const views = await AdvertisementView.find({ advertisementId: adId });
-//     const totalViews = views.length;
-//     const totalClicks = views.filter(v => v.clicked).length;
-
-//     res.json({ totalViews, totalClicks, CTR: totalViews ? (totalClicks / totalViews) * 100 : 0 });
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// };
-=======
-// ---------------------- Advertisement Views ---------------------- //
-
-// Track Ad View
-export const trackAdView = async (req, res) => {
-  try {
-    const { userId, advertisementId } = req.body;
-
-    let view = await AdvertisementView.findOne({ userId, advertisementId });
-    if (!view) {
-      view = await AdvertisementView.create({ userId, advertisementId });
-    }
-
-    res.json({ success: true, view });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  if (ad.ownerId.toString() !== req.user._id.toString()) {
+    throw new ApiError(
+      403,
+      "You are not authorized to restore this advertisement"
+    );
   }
-};
 
-// Track Ad Click
-export const trackAdClick = async (req, res) => {
-  try {
-    const { id } = req.params;
+  ad.isDeleted = false;
 
-    const view = await AdvertisementView.findByIdAndUpdate(id, { clicked: true }, { new: true });
-    if (!view) return res.status(404).json({ error: "Ad View not found" });
+  await ad.save();
 
-    res.json({ success: true, view });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  return res.status(200).json(
+    new ApiResponse({
+      statusCode: 200,
+      message: "Advertisement restored successfully",
+      data: ad,
+    })
+  );
+});
+
+const getRandomAdvertisement = asyncHandler(async (req, res) => {
+  const count = await Advertisement.countDocuments({
+    isDeleted: false,
+    validUpto: { $gt: new Date() },
+  });
+
+  const random = Math.floor(Math.random() * count);
+
+  const ad = await Advertisement.findOne({
+    isDeleted: false,
+    validUpto: { $gt: new Date() },
+  })
+    .sort({ createdAt: -1 })
+    .skip(random);
+
+  if (!ad) {
+    throw new ApiError(404, "No advertisement found");
   }
-};
 
-// Get Views for an Ad
-export const getAdViewsByAdId = async (req, res) => {
-  try {
-    const { adId } = req.params;
+  const view = await AdvertisementView.create({
+    userId: req.user ? req.user._id : null,
+    advertisementId: ad._id,
+  });
 
-    const views = await AdvertisementView.find({ advertisementId: adId });
-    const totalViews = views.length;
-    const totalClicks = views.filter(v => v.clicked).length;
-
-    res.json({ totalViews, totalClicks, CTR: totalViews ? (totalClicks / totalViews) * 100 : 0 });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  if (!view) {
+    throw new ApiError(500, "Failed to create advertisement view");
   }
-};
 
-// Get User's Viewed Ads
-export const getUserViewedAds = async (req, res) => {
-  try {
-    const { userId } = req.params;
+  const response = {
+    ...ad.toObject(),
+    viewId: view._id,
+  };
 
-    const views = await AdvertisementView.find({ userId }).populate("advertisementId");
-    res.json(views);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  return res.status(200).json(
+    new ApiResponse({
+      statusCode: 200,
+      message: "Random advertisement fetched successfully",
+      data: response,
+    })
+  );
+});
+
+const toggleAdClick = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    throw new ApiError(400, "Advertisement view id is required");
   }
+
+  const adView = await AdvertisementView.findById(id);
+
+  if (!adView) {
+    throw new ApiError(404, "Adview not found");
+  }
+
+  adView.clicked = true;
+
+  await adView.save();
+
+  return res.status(200).json(
+    new ApiResponse({
+      statusCode: 200,
+      message: "Advertisement view updated successfully",
+      data: adView,
+    })
+  );
+});
+
+// TODO: test
+const getAdvertisementByUser = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+
+  const ads = await Advertisement.find({ ownerId: userId });
+
+  return res.status(200).json(
+    new ApiResponse({
+      statusCode: 200,
+      message: "Advertisements fetched successfully",
+      data: ads,
+    })
+  );
+});
+
+export {
+  createAdvertisement,
+  getAdvertisementById,
+  updateAdvertisement,
+  deleteAdvertisement,
+  restoreAdvertisement,
+  getRandomAdvertisement,
+  toggleAdClick,
+  getAdvertisementByUser,
 };
->>>>>>> d9553b2d8aee4aa72ce182bccba71b28a4d94f9c

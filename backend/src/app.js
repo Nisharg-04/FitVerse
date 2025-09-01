@@ -53,30 +53,21 @@ app.get("/api/test", (req, res) => {
   res.json({ message: "Hello from the backend!" });
 });
 
-<<<<<<< HEAD
-import adsRoutes from "./routes/ads.routes.js";
-app.use("/api/advertisement", adsRoutes);
-
-import adsViewRoutes from "./routes/ads-view.routes.js";
-app.use("/api/advertisement-view", adsViewRoutes);
-
-import chatroutes from "./routes/chatbot.routes.js";
-app.use("/api/chatbot", chatroutes);
-
-
-=======
 import userRoutes from "./routes/user.route.js";
 import gymRoutes from "./routes/gym.route.js";
 import adminRoutes from "./routes/admin.route.js";
+import chatroutes from "./routes/chatbot.routes.js";
 import adsRoutes from "./routes/ads.routes.js";
+import googleRoutes from "./routes/google.routes.js";
 
 // Use user routes
 app.use("/api/user", userRoutes);
 app.use("/api/gym", gymRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/chatbot", chatroutes);
 app.use("/api/advertisement", adsRoutes);
+app.use("/api/google", googleRoutes);
 
->>>>>>> d9553b2d8aee4aa72ce182bccba71b28a4d94f9c
 // Error handling middleware
 app.use((err, req, res, next) => {
   logger.error({

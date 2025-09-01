@@ -28,7 +28,6 @@ router.route("/register").post(
 
 router.route("/login").post(loginUser);
 
-router.route("/googleVerify").post(googleOAuth);
 router.route("/refresh-token").get(refreshAccessToken);
 // secure routes
 router.route("/logout").post(verifyJWT, logoutUser);

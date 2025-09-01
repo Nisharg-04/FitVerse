@@ -291,6 +291,8 @@ const updateAvatar = asyncHandler(async (req, res) => {
 const googleOAuth = asyncHandler(async (req, res) => {
   const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
+  console.log(process.env.GOOGLE_CLIENT_ID);
+
   const { token } = req.body;
 
   if (!token) {
