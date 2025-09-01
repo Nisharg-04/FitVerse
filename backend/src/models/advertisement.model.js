@@ -41,6 +41,11 @@ const advertisementSchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
+    ownerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "User",
+    },
   },
   { timestamps: true }
 );

@@ -45,6 +45,7 @@ const createAdvertisement = asyncHandler(async (req, res) => {
     contactEmail,
     validUpto,
     imageUrl: uploadedImage?.secure_url || "",
+    ownerId: req.user._id,
   });
 
   if (!ad) {
@@ -58,52 +59,6 @@ const createAdvertisement = asyncHandler(async (req, res) => {
       data: ad,
     })
   );
-});
-
-// TODO: add mongo aggeregate pagination
-// TODO: admin api
-// Get All Advertisements with filters & pagination
-const getAllAdvertisements = asyncHandler(async (req, res) => {
-  let {
-    active,
-    expired,
-    advertiserName,
-    search,
-    page = 1,
-    limit = 10,
-  } = req.query;
-
-  const query = {};
-
-  if (active === "true") query.isDeleted = false;
-  if (expired === "false") query.validUpto = { $gt: new Date() };
-  if (advertiserName) query.advertiserName = advertiserName;
-  if (search) query.title = { $regex: search, $options: "i" };
-
-  page = parseInt(page);
-  limit = parseInt(limit);
-
-  const ads = await Advertisement.find(query)
-    .sort({ createdAt: -1 })
-    .skip((page - 1) * limit)
-    .limit(limit);
-
-  if (!ads || ads.length === 0) {
-    throw new ApiError(404, "No advertisements found");
-  }
-
-  const total = await Advertisement.countDocuments(query);
-
-  return res.status(200).json({
-    statusCode: 200,
-    message: "Advertisements fetched successfully",
-    data: {
-      total,
-      page,
-      limit,
-      ads,
-    },
-  });
 });
 
 // Get Advertisement by ID
@@ -320,7 +275,6 @@ const getApiByUser = asyncHandler(async (req, res) => {});
 
 export {
   createAdvertisement,
-  getAllAdvertisements,
   getAdvertisementById,
   updateAdvertisement,
   deleteAdvertisement,

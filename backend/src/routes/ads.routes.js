@@ -1,7 +1,6 @@
 import { Router } from "express";
 import {
   createAdvertisement,
-  getAllAdvertisements,
   getAdvertisementById,
   updateAdvertisement,
   deleteAdvertisement,
@@ -21,8 +20,6 @@ router.post(
   upload.single("image"),
   createAdvertisement
 );
-
-router.get("/getAllAdvertisement", verifyJWT, getAllAdvertisements);
 
 router.get("/getAdvertisementById/:id", verifyJWT, getAdvertisementById);
 
