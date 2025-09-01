@@ -137,4 +137,10 @@ const setGymVerification = asyncHandler(async (req, res) => {
   );
 });
 
+// TODO: implement
+const getAllAdvertisements = asyncHandler(async (req, res) => {});
+
+// TODO: implement
+const deleteAdvertisement = asyncHandler(async (req, res) => {});
+
 export { getAllPendingGymRequest, setGymVerification };

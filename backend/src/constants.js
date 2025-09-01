@@ -1,10 +1,7 @@
 export const DB_NAME = "FitVerse";
 
-<<<<<<< HEAD
-
-
 export const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
-=======
+
 export const roles = ["user", "owner", "admin"];
 
 export function getGymApproveMailContent(
@@ -183,4 +180,3 @@ export function getGymRejectMailContent(ownerName, gymName, reason, adminName) {
 </body>
 </html>`;
 }
->>>>>>> d9553b2d8aee4aa72ce182bccba71b28a4d94f9c
