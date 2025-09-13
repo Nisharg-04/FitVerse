@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useMemo, memo } from "react";
+import { useRef, useMemo, memo, useState, useEffect } from "react";
 import { motion, useInView } from "framer-motion";
 import DottedMap from "dotted-map";
 import { useStore } from "@/store/useStore";
@@ -20,11 +20,35 @@ const WorldMap = memo(function WorldMap({
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { once: true, margin: "-10%" });
+  const [isMapReady, setIsMapReady] = useState(false);
   
   const { theme } = useStore();
 
+  // Defer heavy computation until component is needed
+  useEffect(() => {
+    if (isInView && !isMapReady) {
+      // Use requestIdleCallback to avoid blocking the main thread
+      const idleCallback = (deadline: IdleDeadline) => {
+        if (deadline.timeRemaining() > 0 || deadline.didTimeout) {
+          setIsMapReady(true);
+        } else {
+          requestIdleCallback(idleCallback);
+        }
+      };
+      
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(idleCallback);
+      } else {
+        // Fallback for browsers without requestIdleCallback
+        setTimeout(() => setIsMapReady(true), 100);
+      }
+    }
+  }, [isInView, isMapReady]);
+
   // Memoize the map creation since it involves calculations
   const svgMap = useMemo(() => {
+    if (!isMapReady) return null;
+    
     const map = new DottedMap({ height: 100, grid: "diagonal" });
     return map.getSVG({
       radius: 0.22,
@@ -32,7 +56,7 @@ const WorldMap = memo(function WorldMap({
       shape: "circle",
       backgroundColor: theme === "dark" ? "black" : "white",
     });
-  }, [theme]);
+  }, [theme, isMapReady]);
 
   // Memoize point projection function
   const projectPoint = useMemo(() => (lat: number, lng: number) => {
@@ -64,16 +88,18 @@ const WorldMap = memo(function WorldMap({
       ref={containerRef}
       className="w-full aspect-[2/1] dark:bg-black bg-white rounded-lg relative font-sans"
     >
-      <img
-        src={`data:image/svg+xml;utf8,${encodeURIComponent(svgMap)}`}
-        className="h-full w-full [mask-image:linear-gradient(to_bottom,transparent,white_10%,white_90%,transparent)] pointer-events-none select-none"
-        alt="world map"
-        height="495"
-        width="1056"
-        draggable={false}
-      />
-      <svg
-        ref={svgRef}
+      {isMapReady && svgMap ? (
+        <>
+          <img
+            src={`data:image/svg+xml;utf8,${encodeURIComponent(svgMap)}`}
+            className="h-full w-full [mask-image:linear-gradient(to_bottom,transparent,white_10%,white_90%,transparent)] pointer-events-none select-none"
+            alt="world map"
+            height="495"
+            width="1056"
+            draggable={false}
+          />
+          <svg
+            ref={svgRef}
         viewBox="0 0 800 400"
         className="w-full h-full absolute inset-0 pointer-events-none select-none"
       >
@@ -217,7 +243,14 @@ const WorldMap = memo(function WorldMap({
             </g>
           </g>
         ))}
-      </svg>
+          </svg>
+        </>
+      ) : (
+        // Loading placeholder with same aspect ratio
+        <div className="w-full aspect-[2/1] bg-muted/20 rounded-lg flex items-center justify-center">
+          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+        </div>
+      )}
     </div>
   );
 });

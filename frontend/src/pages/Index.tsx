@@ -25,6 +25,8 @@ import {
   LazyTimelineSection,
   LazyGeminiEffect,
   LazyFooter,
+  LazyEarlySection,
+  GlobeSuspenseWrapper,
 } from "@/components/ui/LazyComponents";
 import LoadingAnimation from "@/components/ui/LoadingAnimation";
 import PerformanceMonitor from "@/components/ui/PerformanceMonitor";
@@ -34,6 +36,7 @@ import TimelineSection from "@/components/sections/TimelineSection";
 import Footer from "@/components/layout/Footer";
 import GoogleGeminiEffectDemo from "@/components/ui/google-gemini-effect-demo";
 import GoogleFitConnectButton from "../components/GoogleFitConnectButton";
+import CameraFeed from "../components/CameraFeed";
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -48,7 +51,7 @@ const Index = () => {
     // Simulate loading the essential content
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 0); // Shorter loading time
+    }, 2000); // Shorter loading time
 
     return () => clearTimeout(timer);
   }, []);
@@ -130,6 +133,7 @@ const Index = () => {
       {/* Development Performance Monitor */}
       <PerformanceMonitor />
       {/* Next-Level Hero Section - Optimized for immediate loading */}
+      <CameraFeed />
       <div>
         <h1>REMOVE IT</h1>
         <GoogleFitConnectButton />
@@ -671,12 +675,12 @@ const Index = () => {
         </section>
       </LazySection>
 
-      {/* Lazy-loaded complex sections */}
-      <LazySection>
-        <SuspenseWrapper>
+      {/* Lazy-loaded complex sections with early preloading */}
+      <LazyEarlySection preloadMargin="1200px" renderMargin="400px">
+        <GlobeSuspenseWrapper>
           <LazyGlobeSection />
-        </SuspenseWrapper>
-      </LazySection>
+        </GlobeSuspenseWrapper>
+      </LazyEarlySection>
 
       <LazySection>
         <SuspenseWrapper>
