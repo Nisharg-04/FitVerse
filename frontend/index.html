@@ -11,7 +11,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="FitVerse" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0" /> -->
+  <meta name="viewport" content="width=device-width, initial-scale=0.8" />
+
   <title>FitVerse - Your Gym. Your Time. Your Way.</title>
   <meta name="description"
     content="Transform your fitness journey with FitVerse - the all-in-one platform for gym discovery, workout tracking, nutrition planning, and community support." />
@@ -26,6 +28,13 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@fitverse" />
   <meta name="twitter:image" content="/fitverse-logo.png" />
+
+  <!-- Preload map resources for better performance -->
+  <link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" as="style"
+    onload="this.onload=null;this.rel='stylesheet'">
+  <noscript>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  </noscript>
 </head>
 
 <body>
