@@ -10,6 +10,11 @@ const CameraFeed = () => {
   const [error, setError] = useState("");
   // useState to store captured images
   const [capturedImage, setCapturedImage] = useState(null);
+  // useState to store saved images gallery
+  const [savedImages, setSavedImages] = useState([]);
+  // useState to track loading states
+  const [isSaving, setIsSaving] = useState(false);
+  const [isLoadingGallery, setIsLoadingGallery] = useState(false);
   // useState to track available cameras
   const [cameras, setCameras] = useState([]);
   const [selectedCameraId, setSelectedCameraId] = useState("");
@@ -18,28 +23,32 @@ const CameraFeed = () => {
   const getCameras = async () => {
     try {
       const devices = await navigator.mediaDevices.enumerateDevices();
-      const videoDevices = devices.filter(device => device.kind === 'videoinput');
+      const videoDevices = devices.filter(
+        (device) => device.kind === "videoinput"
+      );
       setCameras(videoDevices);
-      
-      // Try to find the main camera (usually not ultrawide)
-      // Main cameras typically have "back" or "rear" in their label and are not "wide" or "ultra"
-      const mainCamera = videoDevices.find(device => {
-        const label = device.label.toLowerCase();
-        return label.includes('back') || label.includes('rear') && 
-               !label.includes('wide') && !label.includes('ultra');
-      });
-      
-      // If main camera found, use it; otherwise use the first back camera
-      if (mainCamera) {
-        setSelectedCameraId(mainCamera.deviceId);
-      } else {
-        const backCamera = videoDevices.find(device => 
-          device.label.toLowerCase().includes('back') || 
-          device.label.toLowerCase().includes('rear')
+
+      // Prioritize camera 0 (usually the best back camera)
+      if (videoDevices.length > 0) {
+        // First try to use camera 0 (index 0)
+        const camera0 = videoDevices[0];
+        setSelectedCameraId(camera0.deviceId);
+        console.log("Selected Camera 0:", camera0.label || "Unknown Camera");
+        return;
+      }
+
+      // Fallback: Try to find back/rear camera if camera 0 doesn't exist
+      const backCamera = videoDevices.find(
+        (device) =>
+          device.label.toLowerCase().includes("back") ||
+          device.label.toLowerCase().includes("rear")
+      );
+      if (backCamera) {
+        setSelectedCameraId(backCamera.deviceId);
+        console.log(
+          "Selected back camera:",
+          backCamera.label || "Unknown Camera"
         );
-        if (backCamera) {
-          setSelectedCameraId(backCamera.deviceId);
-        }
       }
     } catch (err) {
       console.error("Error enumerating cameras:", err);
@@ -105,13 +114,105 @@ const CameraFeed = () => {
     }
   }, [capturedImage]);
 
+  // Function to save image to server
+  const saveImageToServer = async (imageDataUrl) => {
+    try {
+      setIsSaving(true);
+      setError(""); // Clear previous errors
+
+      console.log("Attempting to save image to server...");
+      console.log("Image data length:", imageDataUrl.length);
+
+      const response = await fetch("http://localhost:8000/api/image/save", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          imageData: imageDataUrl,
+          fileName: `fitness-photo-${Date.now()}.jpg`,
+        }),
+      });
+
+      console.log("Response status:", response.status);
+      console.log("Response headers:", response.headers);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Server response error:", errorText);
+        throw new Error(`Server error: ${response.status} - ${errorText}`);
+      }
+
+      const result = await response.json();
+      console.log("Server response:", result);
+
+      if (result.success) {
+        console.log("Image saved successfully:", result.data.imageUrl);
+        // Refresh gallery
+        loadSavedImages();
+        return result.data;
+      } else {
+        throw new Error(result.message || "Failed to save image");
+      }
+    } catch (error) {
+      console.error("Error saving image:", error);
+      setError(`Failed to save image to server: ${error.message}`);
+      return null;
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Function to load saved images from server
+  const loadSavedImages = async () => {
+    try {
+      setIsLoadingGallery(true);
+      const response = await fetch("http://localhost:8000/api/image/gallery");
+      const result = await response.json();
+
+      if (result.success) {
+        setSavedImages(result.data);
+      } else {
+        console.error("Failed to load images:", result.message);
+      }
+    } catch (error) {
+      console.error("Error loading images:", error);
+    } finally {
+      setIsLoadingGallery(false);
+    }
+  };
+
+  // Function to delete image from server
+  const deleteImageFromServer = async (fileName) => {
+    try {
+      const response = await fetch(
+        `http://localhost:8000/api/image/delete/${fileName}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Refresh gallery
+        loadSavedImages();
+        console.log("Image deleted successfully");
+      } else {
+        throw new Error(result.message || "Failed to delete image");
+      }
+    } catch (error) {
+      console.error("Error deleting image:", error);
+      setError("Failed to delete image");
+    }
+  };
   // Function to capture image from video stream
-  const captureImage = () => {
+  const captureImage = async () => {
     if (!videoRef.current || !canvasRef.current) return;
 
     const video = videoRef.current;
     const canvas = canvasRef.current;
-    const context = canvas.getContext('2d');
+    const context = canvas.getContext("2d");
 
     // Set canvas dimensions to match video
     canvas.width = video.videoWidth;
@@ -120,20 +221,21 @@ const CameraFeed = () => {
     // Draw the current video frame to the canvas
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    // Convert canvas to blob and create image URL
-    canvas.toBlob((blob) => {
-      if (blob) {
-        const imageUrl = URL.createObjectURL(blob);
-        setCapturedImage(imageUrl);
-      }
-    }, 'image/jpeg', 0.9); // High quality JPEG
+    // Convert canvas to data URL
+    const imageDataUrl = canvas.toDataURL("image/jpeg", 0.9);
+
+    // Set for local preview
+    setCapturedImage(imageDataUrl);
+
+    // Save to server
+    await saveImageToServer(imageDataUrl);
   };
 
   // Function to download captured image
   const downloadImage = () => {
     if (!capturedImage) return;
 
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = capturedImage;
     link.download = `fitness-photo-${Date.now()}.jpg`;
     document.body.appendChild(link);
@@ -145,7 +247,9 @@ const CameraFeed = () => {
   useEffect(() => {
     // Get available cameras when component mounts
     getCameras();
-    
+    // Load saved images gallery
+    loadSavedImages();
+
     // Return a cleanup function
     return () => {
       stopCamera(); // Stop the camera when the component is removed
@@ -165,14 +269,19 @@ const CameraFeed = () => {
   return (
     <div className="p-5 text-center max-w-2xl mx-auto">
       <h2 className="text-2xl font-bold mb-4">FitVerse Camera</h2>
-      
+
       {/* Camera Selection */}
       {cameras.length > 1 && (
         <div className="mb-4">
-          <label htmlFor="camera-select" className="block text-sm font-medium mb-2">Select Camera:</label>
-          <select 
+          <label
+            htmlFor="camera-select"
+            className="block text-sm font-medium mb-2"
+          >
+            Select Camera:
+          </label>
+          <select
             id="camera-select"
-            value={selectedCameraId} 
+            value={selectedCameraId}
             onChange={(e) => setSelectedCameraId(e.target.value)}
             className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             disabled={!!stream}
@@ -195,7 +304,7 @@ const CameraFeed = () => {
           muted
           className="w-full max-w-lg border-2 border-gray-300 rounded-lg shadow-lg"
         />
-        
+
         {/* Capture Button Overlay */}
         {stream && (
           <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
@@ -215,14 +324,14 @@ const CameraFeed = () => {
       {/* Control Buttons */}
       <div className="flex gap-3 justify-center mb-4">
         {!stream ? (
-          <button 
+          <button
             onClick={startCamera}
             className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg transition-colors duration-200 font-medium"
           >
             📹 Start Camera
           </button>
         ) : (
-          <button 
+          <button
             onClick={stopCamera}
             className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg transition-colors duration-200 font-medium"
           >
@@ -234,10 +343,10 @@ const CameraFeed = () => {
       {/* Captured Image Display */}
       {capturedImage && (
         <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-          <h3 className="text-lg font-semibold mb-3">Captured Photo:</h3>
-          <img 
-            src={capturedImage} 
-            alt="Captured" 
+          <h3 className="text-lg font-semibold mb-3">Latest Captured Photo:</h3>
+          <img
+            src={capturedImage}
+            alt="Captured"
             className="max-w-full h-auto border border-gray-300 rounded-lg shadow-md mx-auto mb-4"
           />
           <div className="flex gap-3 justify-center">
@@ -251,11 +360,84 @@ const CameraFeed = () => {
               onClick={clearImage}
               className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 font-medium"
             >
-              🗑️ Clear
+              🗑️ Clear Preview
             </button>
           </div>
+          {isSaving && (
+            <div className="mt-3 text-center">
+              <div className="inline-flex items-center px-4 py-2 bg-blue-100 text-blue-800 rounded-lg">
+                <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mr-2"></div>
+                Saving to gallery...
+              </div>
+            </div>
+          )}
         </div>
       )}
+
+      {/* Image Gallery */}
+      <div className="mt-8">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-xl font-bold">Fitness Photo Gallery</h3>
+          <button
+            onClick={loadSavedImages}
+            className="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded-lg transition-colors duration-200 text-sm"
+            disabled={isLoadingGallery}
+          >
+            {isLoadingGallery ? "🔄" : "🔄"} Refresh
+          </button>
+        </div>
+
+        {isLoadingGallery ? (
+          <div className="text-center py-8">
+            <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+            <p className="text-gray-600">Loading gallery...</p>
+          </div>
+        ) : savedImages.length > 0 ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {savedImages.map((image) => (
+              <div key={image.fileName} className="relative group">
+                <img
+                  src={`http://localhost:8000${image.imageUrl}`}
+                  alt={`Fitness photo ${image.fileName}`}
+                  className="w-full h-32 object-cover rounded-lg shadow-md border border-gray-200 transition-transform duration-200 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 rounded-lg transition-all duration-200 flex items-center justify-center">
+                  <div className="opacity-0 group-hover:opacity-100 flex gap-2">
+                    <button
+                      onClick={() =>
+                        window.open(
+                          `http://localhost:8000${image.imageUrl}`,
+                          "_blank"
+                        )
+                      }
+                      className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-full text-sm"
+                      title="View Full Size"
+                    >
+                      👁️
+                    </button>
+                    <button
+                      onClick={() => deleteImageFromServer(image.fileName)}
+                      className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-full text-sm"
+                      title="Delete Image"
+                    >
+                      🗑️
+                    </button>
+                  </div>
+                </div>
+                <div className="mt-2 text-xs text-gray-500 text-center">
+                  {new Date(image.createdAt).toLocaleDateString()}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-8 text-gray-500">
+            <p className="text-lg mb-2">📸</p>
+            <p>No photos in gallery yet.</p>
+            <p className="text-sm">Capture your first fitness photo above!</p>
+          </div>
+        )}
+      </div>
 
       {/* Error Display */}
       {error && (
@@ -267,4 +449,4 @@ const CameraFeed = () => {
   );
 };
 
-export default CameraFeed;  
+export default CameraFeed;
