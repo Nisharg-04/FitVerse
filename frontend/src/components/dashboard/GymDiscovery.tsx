@@ -15,7 +15,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
-import DeliveryMap from "../../pages/DeliveryMap";
+import {
+  LazyDeliveryMap,
+  MapSuspenseWrapper,
+  LazyMapSection,
+} from "@/components/ui/LazyComponents";
+import {
+  preloadLeafletResources,
+  preloadMapAssets,
+} from "@/utils/mapPreloader";
 import axios from "axios";
 
 interface GymData {
@@ -241,7 +249,17 @@ const GymDiscovery = () => {
           </CardHeader>
           <CardContent>
             <div className="relative w-full h-[400px] rounded-lg overflow-hidden border border-border/50">
-              <DeliveryMap height={100} width={100} />
+              <LazyMapSection
+                onPreload={() => {
+                  // Preload Leaflet resources and map assets early
+                  preloadLeafletResources();
+                  preloadMapAssets();
+                }}
+              >
+                <MapSuspenseWrapper height={400}>
+                  <LazyDeliveryMap height={100} width={100} />
+                </MapSuspenseWrapper>
+              </LazyMapSection>
             </div>
           </CardContent>
         </Card>

@@ -16,18 +16,18 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // Middleware to parse JSON and URL-encoded data
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '50mb' })); // Increased limit for image data
 
 app.use(
   express.json({
-    limit: "16kb",
+    limit: "50mb", // Increased limit for image data
   })
 );
 
 app.use(
   express.urlencoded({
     extended: true,
-    limit: "16kb",
+    limit: "50mb", // Increased limit for image data
   })
 );
 
@@ -59,6 +59,7 @@ import adminRoutes from "./routes/admin.route.js";
 import chatroutes from "./routes/chatbot.routes.js";
 import adsRoutes from "./routes/ads.routes.js";
 import googleRoutes from "./routes/google.routes.js";
+import imageRoutes from "./routes/image.route.js";
 
 // Use user routes
 app.use("/api/user", userRoutes);
@@ -67,6 +68,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/chatbot", chatroutes);
 app.use("/api/advertisement", adsRoutes);
 app.use("/api/google", googleRoutes);
+app.use("/api/image", imageRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
