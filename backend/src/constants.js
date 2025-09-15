@@ -1,8 +1,8 @@
 export const DB_NAME = "FitVerse";
 
+<<<<<<< HEAD
 
 
-export const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
 export const roles = ["user", "owner", "admin"];
 
 export function getGymApproveMailContent(
@@ -171,6 +171,68 @@ export function getGymRejectMailContent(ownerName, gymName, reason, adminName) {
               You may correct the issues and resubmit your application.<br/><br/>
               Thank you for your understanding.<br/>
               – FitVerse Team
+            </td>
+          </tr>
+          
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+export function getAdvertisementRejectionContent(
+  ownerName,
+  title,
+  reason,
+  adminName
+) {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Advertisement Rejection Notice</title>
+</head>
+<body style="margin:0; padding:0; font-family: Arial, Helvetica, sans-serif; background:#f9fafb; color:#111827;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="padding:20px;">
+    <tr>
+      <td align="center">
+        <table width="600" style="background:#ffffff; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.08); padding:24px;">
+          
+          <!-- Header -->
+          <tr>
+            <td style="font-size:20px; font-weight:bold; color:#b91c1c; padding-bottom:16px; border-bottom: 1px solid #f3f4f6;">
+              Advertisement Update
+            </td>
+          </tr>
+          
+          <!-- Message -->
+          <tr>
+            <td style="font-size:16px; line-height:1.6; color:#374151; padding-top: 16px;">
+              Hello <strong>${ownerName}</strong>,<br/><br/>
+              We regret to inform you that your advertisement, "<strong>${title}</strong>", could not be approved for display on FitVerse.
+            </td>
+          </tr>
+
+          <!-- Reason -->
+          <tr>
+             <td style="padding-top: 20px;">
+                <table cellpadding="0" cellspacing="0" width="100%" style="font-size:15px; background:#fef2f2; border:1px solid #fecaca; border-radius:8px; padding:16px; color:#991b1b;">
+                    <tr>
+                        <td><strong>Reason for rejection:</strong><br/>${reason}</td>
+                    </tr>
+                </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="font-size:14px; color:#6b7280; padding-top:20px; line-height:1.5;">
+              Rejected by: <strong>${adminName}</strong><br/>
+              Please ensure your ad complies with our content guidelines before resubmitting.<br/><br/>
+              Thank you for your understanding.<br/>
+              – The FitVerse Team
             </td>
           </tr>
           
