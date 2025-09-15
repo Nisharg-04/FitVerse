@@ -1,9 +1,5 @@
 import { Advertisement } from "../models/advertisement.model.js";
-<<<<<<< HEAD
-// import { AdvertisementView } from "../models/advertisementView.model.js";
-=======
 import { AdvertisementView } from "../models/advertisementView.model.js";
->>>>>>> d9553b2d8aee4aa72ce182bccba71b28a4d94f9c
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import mongoose from "mongoose";
 
@@ -138,54 +134,6 @@ export const getActiveAdvertisements = async (req, res) => {
   }
 };
 
-<<<<<<< HEAD
-// // ---------------------- Advertisement Views ---------------------- //
-
-// // Track Ad View
-// export const trackAdView = async (req, res) => {
-//   try {
-//     const { userId, advertisementId } = req.body;
-
-//     let view = await AdvertisementView.findOne({ userId, advertisementId });
-//     if (!view) {
-//       view = await AdvertisementView.create({ userId, advertisementId });
-//     }
-
-//     res.json({ success: true, view });
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// };
-
-// // Track Ad Click
-// export const trackAdClick = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-
-//     const view = await AdvertisementView.findByIdAndUpdate(id, { clicked: true }, { new: true });
-//     if (!view) return res.status(404).json({ error: "Ad View not found" });
-
-//     res.json({ success: true, view });
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// };
-
-// // Get Views for an Ad
-// export const getAdViewsByAdId = async (req, res) => {
-//   try {
-//     const { adId } = req.params;
-
-//     const views = await AdvertisementView.find({ advertisementId: adId });
-//     const totalViews = views.length;
-//     const totalClicks = views.filter(v => v.clicked).length;
-
-//     res.json({ totalViews, totalClicks, CTR: totalViews ? (totalClicks / totalViews) * 100 : 0 });
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// };
-=======
 // ---------------------- Advertisement Views ---------------------- //
 
 // Track Ad View
@@ -244,4 +192,3 @@ export const getUserViewedAds = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
->>>>>>> d9553b2d8aee4aa72ce182bccba71b28a4d94f9c

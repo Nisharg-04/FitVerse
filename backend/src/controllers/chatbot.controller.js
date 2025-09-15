@@ -695,248 +695,6 @@
 // Done
 
 
-// import { asyncHandler } from "../utils/asyncHandler.js"; 
-// import { ApiError } from "../utils/ApiError.js"; 
-// import { ApiResponse } from "../utils/ApiResponse.js"; 
-// import { GEMINI_API_URL } from "../constants.js"; 
-// import axios from "axios"; 
-// import fs from "fs";
-// import path from "path";
-
-// const GEMINI_API_KEY = process.env.GEMINI_API_KEY; 
-
-// const RESTRICTION_MESSAGE = 
-//     "💪 I can only assist with fitness, gym, workout, nutrition, health, and wellness-related topics. Please ask about exercises, training routines, diet plans, gym equipment, health advice, or food nutrition analysis!"; 
-
-// // Function to convert image to base64
-// const imageToBase64 = (imagePath) => {
-//     try {
-//         const imageBuffer = fs.readFileSync(imagePath);
-//         const base64String = imageBuffer.toString('base64');
-//         return base64String;
-//     } catch (error) {
-//         console.error('Error converting image to base64:', error);
-//         return null;
-//     }
-// };
-
-// // Function to get image mime type
-// const getImageMimeType = (imagePath) => {
-//     const ext = path.extname(imagePath).toLowerCase();
-//     const mimeTypes = {
-//         '.jpg': 'image/jpeg',
-//         '.jpeg': 'image/jpeg',
-//         '.png': 'image/png',
-//         '.gif': 'image/gif',
-//         '.webp': 'image/webp'
-//     };
-//     return mimeTypes[ext] || 'image/jpeg';
-// };
-
-// const chat = asyncHandler(async (req, res) => { 
-//     const { message, history: historyString } = req.body; 
-//     const imageFile = req.file; // Image file from multer
-
-//     if (!message) { 
-//         throw new ApiError(400, "Message is required"); 
-//     } 
-
-//     // Parse history if it's a string (from form-data)
-//     let history;
-//     try {
-//         if (typeof historyString === 'string') {
-//             history = JSON.parse(historyString);
-//         } else {
-//             history = historyString;
-//         }
-//     } catch (error) {
-//         throw new ApiError(400, "Invalid history format. Must be a valid JSON array");
-//     }
-
-//     if (!history || !Array.isArray(history)) { 
-//         throw new ApiError(400, "History must be an array"); 
-//     } 
-
-//     // Create the JSON prompt for validation and response
-//     const jsonPrompt = `
-// You are a specialized fitness and nutrition AI assistant. Your task is to:
-
-// 1. FIRST: Analyze if the user's message and/or image is related to ANY of these topics:
-//    - Fitness and exercise
-//    - Gym workouts and equipment
-//    - Nutrition and food analysis
-//    - Health and wellness
-//    - Diet planning
-//    - Bodybuilding and muscle building
-//    - Weight loss/gain
-//    - Sports and physical activities
-//    - Food nutritional content analysis
-//    - Meal planning for fitness goals
-
-// 2. SECOND: If relevant, provide a helpful response with emojis. If not relevant, decline politely.
-
-// IMPORTANT: Food images and nutrition analysis requests are ALWAYS considered fitness-related topics.
-
-// Please respond in this exact JSON format:
-// {
-//     "is_fitness_related": boolean,
-//     "confidence_score": number (1-10),
-//     "detected_topics": ["topic1", "topic2"],
-//     "reason": "explanation of why it is or isn't fitness related",
-//     "response": "your actual response to the user (only if is_fitness_related is true, otherwise empty string)"
-// }
-
-// User's message: "${message}"
-// ${imageFile ? "User has also provided an image for analysis." : "No image provided."}
-// `;
-
-//     // Format chat history for context (simplified for the main prompt)
-//     const contextHistory = history.slice(-3).map((msg) => 
-//         `${msg.role}: ${msg.content}`
-//     ).join('\n');
-
-//     // Prepare the current message parts
-//     let messageParts = [{ 
-//         text: `${contextHistory ? 'Previous context:\n' + contextHistory + '\n\n' : ''}${jsonPrompt}` 
-//     }];
-
-//     // If image is provided, add it to the message
-//     if (imageFile) {
-//         const imagePath = imageFile.path;
-//         const base64Image = imageToBase64(imagePath);
-//         const mimeType = getImageMimeType(imagePath);
-
-//         if (base64Image) {
-//             messageParts.push({
-//                 inline_data: {
-//                     mime_type: mimeType,
-//                     data: base64Image
-//                 }
-//             });
-//         }
-
-//         // Clean up uploaded file after processing
-//         try {
-//             fs.unlinkSync(imagePath);
-//         } catch (error) {
-//             console.error('Error deleting uploaded file:', error);
-//         }
-//     }
-
-//     try {
-//         // Single API call with JSON prompting
-//         const response = await axios.post( 
-//             `${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, 
-//             { 
-//                 contents: [{
-//                     role: "user", 
-//                     parts: messageParts 
-//                 }],
-//                 generationConfig: {
-//                     temperature: 0.3
-//                 }
-//             } 
-//         ); 
-
-//         const aiResponse = response.data.candidates[0]?.content?.parts[0]?.text || 
-//             "Sorry, I couldn't process that.";
-
-//         // Parse the JSON response
-//         let parsedResponse;
-//         try {
-//             // Clean the response to extract JSON
-//             const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
-//             if (jsonMatch) {
-//                 parsedResponse = JSON.parse(jsonMatch[0]);
-//             } else {
-//                 throw new Error("No JSON found in response");
-//             }
-//         } catch (parseError) {
-//             console.error('JSON parsing error:', parseError);
-//             // Fallback response
-//             parsedResponse = {
-//                 is_fitness_related: false,
-//                 confidence_score: 1,
-//                 detected_topics: [],
-//                 reason: "Unable to parse AI response",
-//                 response: ""
-//             };
-//         }
-
-//         // Determine final reply
-//         const finalReply = parsedResponse.is_fitness_related && parsedResponse.response 
-//             ? parsedResponse.response 
-//             : RESTRICTION_MESSAGE;
-
-//         // Return response with validation details
-//         return res.status(200).json(new ApiResponse({ 
-//             statusCode: 200, 
-//             data: { 
-//                 reply: finalReply,
-//                 validation_result: {
-//                     is_fitness_related: parsedResponse.is_fitness_related,
-//                     confidence_score: parsedResponse.confidence_score,
-//                     detected_topics: parsedResponse.detected_topics,
-//                     reason: parsedResponse.reason
-//                 }
-//             }, 
-//             message: parsedResponse.is_fitness_related 
-//                 ? "Chat response generated successfully" 
-//                 : "Request not related to fitness topics",
-//             success: true
-//         })); 
-
-//     } catch (error) {
-//         console.error('Gemini API Error:', error.response?.data || error.message);
-        
-//         // Clean up uploaded file in case of error
-//         if (imageFile && fs.existsSync(imageFile.path)) {
-//             try {
-//                 fs.unlinkSync(imageFile.path);
-//             } catch (unlinkError) {
-//                 console.error('Error deleting uploaded file after API error:', unlinkError);
-//             }
-//         }
-        
-//         throw new ApiError(500, "Failed to generate chat response");
-//     }
-// }); 
-
-// export { chat };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// controllers/chatbot.controller.js
 import { asyncHandler } from "../utils/asyncHandler.js"; 
 import { ApiError } from "../utils/ApiError.js"; 
 import { ApiResponse } from "../utils/ApiResponse.js"; 
@@ -975,36 +733,13 @@ const getImageMimeType = (imagePath) => {
     return mimeTypes[ext] || 'image/jpeg';
 };
 
-// Function to clean up uploaded files
-const cleanupFiles = (files) => {
-    if (!files) return;
-    
-    const filesToClean = Array.isArray(files) ? files : [files];
-    filesToClean.forEach(file => {
-        if (file && fs.existsSync(file.path)) {
-            try {
-                fs.unlinkSync(file.path);
-            } catch (error) {
-                console.error('Error deleting uploaded file:', error);
-            }
-        }
-    });
-};
-
 const chat = asyncHandler(async (req, res) => { 
     const { message, history: historyString } = req.body; 
-    const imageFiles = req.files || []; // Multiple image files from multer
+    const imageFile = req.file; // Image file from multer
 
     if (!message) { 
         throw new ApiError(400, "Message is required"); 
-    }
-
-    // Check if more than 5 images are uploaded
-    if (imageFiles.length > 5) {
-        // Clean up uploaded files
-        cleanupFiles(imageFiles);
-        throw new ApiError(400, "Maximum 5 images allowed. Please upload up to 5 food photos only.");
-    }
+    } 
 
     // Parse history if it's a string (from form-data)
     let history;
@@ -1015,20 +750,18 @@ const chat = asyncHandler(async (req, res) => {
             history = historyString;
         }
     } catch (error) {
-        cleanupFiles(imageFiles);
         throw new ApiError(400, "Invalid history format. Must be a valid JSON array");
     }
 
     if (!history || !Array.isArray(history)) { 
-        cleanupFiles(imageFiles);
         throw new ApiError(400, "History must be an array"); 
     } 
 
-    // Create the JSON prompt for nutrition analysis
+    // Create the JSON prompt for validation and response
     const jsonPrompt = `
-You are a specialized nutrition analysis AI. Your task is to:
+You are a specialized fitness and nutrition AI assistant. Your task is to:
 
-1. FIRST: Analyze if the user's message and/or images are related to ANY of these topics:
+1. FIRST: Analyze if the user's message and/or image is related to ANY of these topics:
    - Fitness and exercise
    - Gym workouts and equipment
    - Nutrition and food analysis
@@ -1040,48 +773,21 @@ You are a specialized nutrition analysis AI. Your task is to:
    - Food nutritional content analysis
    - Meal planning for fitness goals
 
-2. SECOND: If the request is fitness-related AND contains food images, provide ONLY the exact JSON response format below. If it's fitness-related but not food analysis, provide a helpful response. If not fitness-related, decline politely.
+2. SECOND: If relevant, provide a helpful response with emojis. If not relevant, decline politely.
 
-IMPORTANT RULES:
-- Food images and nutrition analysis requests are ALWAYS considered fitness-related topics
-- For food analysis, respond with ONLY the exact JSON format specified below
-- Calculate the SUM of all nutritional values from ALL food items shown in the images
-- Don't ask questions, just provide the nutritional information
-- Use standard serving sizes for calculations
+IMPORTANT: Food images and nutrition analysis requests are ALWAYS considered fitness-related topics.
 
-For food analysis, respond with this EXACT JSON format and nothing else:
-{
-    "is_fitness_related": true,
-    "food_analysis": {
-        "food-names": "comma,separated,food,names",
-        "calories": number,
-        "carbs": number,
-        "protein": number,
-        "sugar": number,
-        "fat": number
-    }
-}
-
-For non-food fitness topics, respond in this format:
+Please respond in this exact JSON format:
 {
     "is_fitness_related": boolean,
     "confidence_score": number (1-10),
     "detected_topics": ["topic1", "topic2"],
-    "reason": "explanation",
-    "response": "your helpful response with emojis"
-}
-
-For non-fitness topics, respond:
-{
-    "is_fitness_related": false,
-    "confidence_score": number (1-10),
-    "detected_topics": [],
-    "reason": "explanation of why it's not fitness related",
-    "response": ""
+    "reason": "explanation of why it is or isn't fitness related",
+    "response": "your actual response to the user (only if is_fitness_related is true, otherwise empty string)"
 }
 
 User's message: "${message}"
-${imageFiles.length > 0 ? `User has provided ${imageFiles.length} image(s) for analysis.` : "No images provided."}
+${imageFile ? "User has also provided an image for analysis." : "No image provided."}
 `;
 
     // Format chat history for context (simplified for the main prompt)
@@ -1094,25 +800,27 @@ ${imageFiles.length > 0 ? `User has provided ${imageFiles.length} image(s) for a
         text: `${contextHistory ? 'Previous context:\n' + contextHistory + '\n\n' : ''}${jsonPrompt}` 
     }];
 
-    // Process multiple images if provided
-    if (imageFiles.length > 0) {
-        for (const imageFile of imageFiles) {
-            const imagePath = imageFile.path;
-            const base64Image = imageToBase64(imagePath);
-            const mimeType = getImageMimeType(imagePath);
+    // If image is provided, add it to the message
+    if (imageFile) {
+        const imagePath = imageFile.path;
+        const base64Image = imageToBase64(imagePath);
+        const mimeType = getImageMimeType(imagePath);
 
-            if (base64Image) {
-                messageParts.push({
-                    inline_data: {
-                        mime_type: mimeType,
-                        data: base64Image
-                    }
-                });
-            }
+        if (base64Image) {
+            messageParts.push({
+                inline_data: {
+                    mime_type: mimeType,
+                    data: base64Image
+                }
+            });
         }
 
-        // Clean up uploaded files after processing
-        cleanupFiles(imageFiles);
+        // Clean up uploaded file after processing
+        try {
+            fs.unlinkSync(imagePath);
+        } catch (error) {
+            console.error('Error deleting uploaded file:', error);
+        }
     }
 
     try {
@@ -1125,8 +833,7 @@ ${imageFiles.length > 0 ? `User has provided ${imageFiles.length} image(s) for a
                     parts: messageParts 
                 }],
                 generationConfig: {
-                    temperature: 0.2, // Lower temperature for more consistent JSON output
-                    maxOutputTokens: 1000,
+                    temperature: 0.3
                 }
             } 
         ); 
@@ -1146,8 +853,6 @@ ${imageFiles.length > 0 ? `User has provided ${imageFiles.length} image(s) for a
             }
         } catch (parseError) {
             console.error('JSON parsing error:', parseError);
-            console.error('Raw AI response:', aiResponse);
-            
             // Fallback response
             parsedResponse = {
                 is_fitness_related: false,
@@ -1158,53 +863,348 @@ ${imageFiles.length > 0 ? `User has provided ${imageFiles.length} image(s) for a
             };
         }
 
-        // Determine final reply based on response type
-        let finalReply;
-        let responseMessage;
+        // Determine final reply
+        const finalReply = parsedResponse.is_fitness_related && parsedResponse.response 
+            ? parsedResponse.response 
+            : RESTRICTION_MESSAGE;
 
-        if (parsedResponse.is_fitness_related && parsedResponse.food_analysis) {
-            // Food analysis case - return the exact JSON format requested
-            finalReply = parsedResponse.food_analysis;
-            responseMessage = "Food nutrition analysis completed successfully";
-        } else if (parsedResponse.is_fitness_related && parsedResponse.response) {
-            // Other fitness topics
-            finalReply = parsedResponse.response;
-            responseMessage = "Chat response generated successfully";
-        } else {
-            // Not fitness related
-            finalReply = RESTRICTION_MESSAGE;
-            responseMessage = "Request not related to fitness topics";
-        }
-
-        // Return response
+        // Return response with validation details
         return res.status(200).json(new ApiResponse({ 
             statusCode: 200, 
             data: { 
                 reply: finalReply,
-                ...(parsedResponse.food_analysis ? {} : {
-                    validation_result: {
-                        is_fitness_related: parsedResponse.is_fitness_related,
-                        confidence_score: parsedResponse.confidence_score || 0,
-                        detected_topics: parsedResponse.detected_topics || [],
-                        reason: parsedResponse.reason || ""
-                    }
-                })
+                validation_result: {
+                    is_fitness_related: parsedResponse.is_fitness_related,
+                    confidence_score: parsedResponse.confidence_score,
+                    detected_topics: parsedResponse.detected_topics,
+                    reason: parsedResponse.reason
+                }
             }, 
-            message: responseMessage,
+            message: parsedResponse.is_fitness_related 
+                ? "Chat response generated successfully" 
+                : "Request not related to fitness topics",
             success: true
         })); 
 
     } catch (error) {
         console.error('Gemini API Error:', error.response?.data || error.message);
         
-        // Clean up uploaded files in case of error
-        cleanupFiles(imageFiles);
+        // Clean up uploaded file in case of error
+        if (imageFile && fs.existsSync(imageFile.path)) {
+            try {
+                fs.unlinkSync(imageFile.path);
+            } catch (unlinkError) {
+                console.error('Error deleting uploaded file after API error:', unlinkError);
+            }
+        }
         
         throw new ApiError(500, "Failed to generate chat response");
     }
 }); 
 
 export { chat };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// // controllers/chatbot.controller.js
+// import { asyncHandler } from "../utils/asyncHandler.js"; 
+// import { ApiError } from "../utils/ApiError.js"; 
+// import { ApiResponse } from "../utils/ApiResponse.js"; 
+// import { GEMINI_API_URL } from "../constants.js"; 
+// import axios from "axios"; 
+// import fs from "fs";
+// import path from "path";
+
+// const GEMINI_API_KEY = process.env.GEMINI_API_KEY; 
+
+// const RESTRICTION_MESSAGE = 
+//     "💪 I can only assist with fitness, gym, workout, nutrition, health, and wellness-related topics. Please ask about exercises, training routines, diet plans, gym equipment, health advice, or food nutrition analysis!"; 
+
+// // Function to convert image to base64
+// const imageToBase64 = (imagePath) => {
+//     try {
+//         const imageBuffer = fs.readFileSync(imagePath);
+//         const base64String = imageBuffer.toString('base64');
+//         return base64String;
+//     } catch (error) {
+//         console.error('Error converting image to base64:', error);
+//         return null;
+//     }
+// };
+
+// // Function to get image mime type
+// const getImageMimeType = (imagePath) => {
+//     const ext = path.extname(imagePath).toLowerCase();
+//     const mimeTypes = {
+//         '.jpg': 'image/jpeg',
+//         '.jpeg': 'image/jpeg',
+//         '.png': 'image/png',
+//         '.gif': 'image/gif',
+//         '.webp': 'image/webp'
+//     };
+//     return mimeTypes[ext] || 'image/jpeg';
+// };
+
+// // Function to clean up uploaded files
+// const cleanupFiles = (files) => {
+//     if (!files) return;
+    
+//     const filesToClean = Array.isArray(files) ? files : [files];
+//     filesToClean.forEach(file => {
+//         if (file && fs.existsSync(file.path)) {
+//             try {
+//                 fs.unlinkSync(file.path);
+//             } catch (error) {
+//                 console.error('Error deleting uploaded file:', error);
+//             }
+//         }
+//     });
+// };
+
+// const chat = asyncHandler(async (req, res) => { 
+//     const { message, history: historyString } = req.body; 
+//     const imageFiles = req.files || []; // Multiple image files from multer
+
+//     if (!message) { 
+//         throw new ApiError(400, "Message is required"); 
+//     }
+
+//     // Check if more than 5 images are uploaded
+//     if (imageFiles.length > 5) {
+//         // Clean up uploaded files
+//         cleanupFiles(imageFiles);
+//         throw new ApiError(400, "Maximum 5 images allowed. Please upload up to 5 food photos only.");
+//     }
+
+//     // Parse history if it's a string (from form-data)
+//     let history;
+//     try {
+//         if (typeof historyString === 'string') {
+//             history = JSON.parse(historyString);
+//         } else {
+//             history = historyString;
+//         }
+//     } catch (error) {
+//         cleanupFiles(imageFiles);
+//         throw new ApiError(400, "Invalid history format. Must be a valid JSON array");
+//     }
+
+//     if (!history || !Array.isArray(history)) { 
+//         cleanupFiles(imageFiles);
+//         throw new ApiError(400, "History must be an array"); 
+//     } 
+
+//     // Create the JSON prompt for nutrition analysis
+//     const jsonPrompt = `
+// You are a specialized nutrition analysis AI. Your task is to:
+
+// 1. FIRST: Analyze if the user's message and/or images are related to ANY of these topics:
+//    - Fitness and exercise
+//    - Gym workouts and equipment
+//    - Nutrition and food analysis
+//    - Health and wellness
+//    - Diet planning
+//    - Bodybuilding and muscle building
+//    - Weight loss/gain
+//    - Sports and physical activities
+//    - Food nutritional content analysis
+//    - Meal planning for fitness goals
+
+// 2. SECOND: If the request is fitness-related AND contains food images, provide ONLY the exact JSON response format below. If it's fitness-related but not food analysis, provide a helpful response. If not fitness-related, decline politely.
+
+// IMPORTANT RULES:
+// - Food images and nutrition analysis requests are ALWAYS considered fitness-related topics
+// - For food analysis, respond with ONLY the exact JSON format specified below
+// - Calculate the SUM of all nutritional values from ALL food items shown in the images
+// - Don't ask questions, just provide the nutritional information
+// - Use standard serving sizes for calculations
+
+// For food analysis, respond with this EXACT JSON format and nothing else:
+// {
+//     "is_fitness_related": true,
+//     "food_analysis": {
+//         "food-names": "comma,separated,food,names",
+//         "calories": number,
+//         "carbs": number,
+//         "protein": number,
+//         "sugar": number,
+//         "fat": number
+//     }
+// }
+
+// For non-food fitness topics, respond in this format:
+// {
+//     "is_fitness_related": boolean,
+//     "confidence_score": number (1-10),
+//     "detected_topics": ["topic1", "topic2"],
+//     "reason": "explanation",
+//     "response": "your helpful response with emojis"
+// }
+
+// For non-fitness topics, respond:
+// {
+//     "is_fitness_related": false,
+//     "confidence_score": number (1-10),
+//     "detected_topics": [],
+//     "reason": "explanation of why it's not fitness related",
+//     "response": ""
+// }
+
+// User's message: "${message}"
+// ${imageFiles.length > 0 ? `User has provided ${imageFiles.length} image(s) for analysis.` : "No images provided."}
+// `;
+
+//     // Format chat history for context (simplified for the main prompt)
+//     const contextHistory = history.slice(-3).map((msg) => 
+//         `${msg.role}: ${msg.content}`
+//     ).join('\n');
+
+//     // Prepare the current message parts
+//     let messageParts = [{ 
+//         text: `${contextHistory ? 'Previous context:\n' + contextHistory + '\n\n' : ''}${jsonPrompt}` 
+//     }];
+
+//     // Process multiple images if provided
+//     if (imageFiles.length > 0) {
+//         for (const imageFile of imageFiles) {
+//             const imagePath = imageFile.path;
+//             const base64Image = imageToBase64(imagePath);
+//             const mimeType = getImageMimeType(imagePath);
+
+//             if (base64Image) {
+//                 messageParts.push({
+//                     inline_data: {
+//                         mime_type: mimeType,
+//                         data: base64Image
+//                     }
+//                 });
+//             }
+//         }
+
+//         // Clean up uploaded files after processing
+//         cleanupFiles(imageFiles);
+//     }
+
+//     try {
+//         // Single API call with JSON prompting
+//         const response = await axios.post( 
+//             `${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, 
+//             { 
+//                 contents: [{
+//                     role: "user", 
+//                     parts: messageParts 
+//                 }],
+//                 generationConfig: {
+//                     temperature: 0.2, // Lower temperature for more consistent JSON output
+//                     maxOutputTokens: 1000,
+//                 }
+//             } 
+//         ); 
+
+//         const aiResponse = response.data.candidates[0]?.content?.parts[0]?.text || 
+//             "Sorry, I couldn't process that.";
+
+//         // Parse the JSON response
+//         let parsedResponse;
+//         try {
+//             // Clean the response to extract JSON
+//             const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
+//             if (jsonMatch) {
+//                 parsedResponse = JSON.parse(jsonMatch[0]);
+//             } else {
+//                 throw new Error("No JSON found in response");
+//             }
+//         } catch (parseError) {
+//             console.error('JSON parsing error:', parseError);
+//             console.error('Raw AI response:', aiResponse);
+            
+//             // Fallback response
+//             parsedResponse = {
+//                 is_fitness_related: false,
+//                 confidence_score: 1,
+//                 detected_topics: [],
+//                 reason: "Unable to parse AI response",
+//                 response: ""
+//             };
+//         }
+
+//         // Determine final reply based on response type
+//         let finalReply;
+//         let responseMessage;
+
+//         if (parsedResponse.is_fitness_related && parsedResponse.food_analysis) {
+//             // Food analysis case - return the exact JSON format requested
+//             finalReply = parsedResponse.food_analysis;
+//             responseMessage = "Food nutrition analysis completed successfully";
+//         } else if (parsedResponse.is_fitness_related && parsedResponse.response) {
+//             // Other fitness topics
+//             finalReply = parsedResponse.response;
+//             responseMessage = "Chat response generated successfully";
+//         } else {
+//             // Not fitness related
+//             finalReply = RESTRICTION_MESSAGE;
+//             responseMessage = "Request not related to fitness topics";
+//         }
+
+//         // Return response
+//         return res.status(200).json(new ApiResponse({ 
+//             statusCode: 200, 
+//             data: { 
+//                 reply: finalReply,
+//                 ...(parsedResponse.food_analysis ? {} : {
+//                     validation_result: {
+//                         is_fitness_related: parsedResponse.is_fitness_related,
+//                         confidence_score: parsedResponse.confidence_score || 0,
+//                         detected_topics: parsedResponse.detected_topics || [],
+//                         reason: parsedResponse.reason || ""
+//                     }
+//                 })
+//             }, 
+//             message: responseMessage,
+//             success: true
+//         })); 
+
+//     } catch (error) {
+//         console.error('Gemini API Error:', error.response?.data || error.message);
+        
+//         // Clean up uploaded files in case of error
+//         cleanupFiles(imageFiles);
+        
+//         throw new ApiError(500, "Failed to generate chat response");
+//     }
+// }); 
+
+// export { chat };
 
 // "which is this food? how much nutritions i will get from this food? list all"
 
