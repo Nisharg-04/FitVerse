@@ -16,7 +16,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // Middleware to parse JSON and URL-encoded data
-app.use(bodyParser.json({ limit: '50mb' })); // Increased limit for image data
+app.use(bodyParser.json({ limit: "50mb" })); // Increased limit for image data
 
 app.use(
   express.json({
@@ -60,6 +60,7 @@ import chatroutes from "./routes/chatbot.routes.js";
 import adsRoutes from "./routes/ads.routes.js";
 import googleRoutes from "./routes/google.routes.js";
 import imageRoutes from "./routes/image.route.js";
+import nutritionRoutes from "./routes/nutrition.route.js";
 
 // Use user routes
 app.use("/api/user", userRoutes);
@@ -69,6 +70,7 @@ app.use("/api/chatbot", chatroutes);
 app.use("/api/advertisement", adsRoutes);
 app.use("/api/google", googleRoutes);
 app.use("/api/image", imageRoutes);
+app.use("/api/nutrition", nutritionRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
