@@ -60,6 +60,7 @@ import chatroutes from "./routes/chatbot.routes.js";
 import googleRoutes from "./routes/google.routes.js";
 import imageRoutes from "./routes/image.route.js";
 import nutritionRoutes from "./routes/nutrition.route.js";
+import adsRoutes from "./routes/ads.routes.js";
 
 // Use user routes
 app.use("/api/user", userRoutes);
