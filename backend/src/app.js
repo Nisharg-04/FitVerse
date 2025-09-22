@@ -57,10 +57,10 @@ import userRoutes from "./routes/user.route.js";
 import gymRoutes from "./routes/gym.route.js";
 import adminRoutes from "./routes/admin.route.js";
 import chatroutes from "./routes/chatbot.routes.js";
-import adsRoutes from "./routes/ads.routes.js";
 import googleRoutes from "./routes/google.routes.js";
 import imageRoutes from "./routes/image.route.js";
 import nutritionRoutes from "./routes/nutrition.route.js";
+import adsRoutes from "./routes/ads.routes.js";
 
 // Use user routes
 app.use("/api/user", userRoutes);
