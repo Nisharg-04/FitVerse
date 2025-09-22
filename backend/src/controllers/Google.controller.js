@@ -25,27 +25,38 @@ const generateAccessAndRefreshToken = async (user) => {
 // To get access token from refreshtoken of google
 const getValidAccessToken = async (userId) => {
   const doc = await GoogleTokens.findOne({ userId });
-  if (!doc) throw new Error("no_tokens");
+  if (!doc) {
+    throw new ApiError(400, "no_token");
+  }
 
   // If not expired, use it
   const now = Date.now();
-  if (doc.access_token && doc.expiry_date && now < doc.expiry_date - 60_000) {
+  if (doc.access_token && doc.expiry_date && now < doc.expiry_date - 60000) {
     return doc.access_token;
   }
 
   // Refresh using refresh_token
-  if (!doc.refresh_token) throw new Error("no_refresh_token");
-
+  if (!doc.refresh_token) {
+    throw new ApiError(400, "no_refresh_token");
+  }
   const params = new URLSearchParams({
-    client_id: GOOGLE_CLIENT_ID,
-    client_secret: GOOGLE_CLIENT_SECRET,
+    client_id: process.env.GOOGLE_CLIENT_ID,
+    client_secret: process.env.GOOGLE_CLIENT_SECRET,
     grant_type: "refresh_token",
     refresh_token: doc.refresh_token,
   });
 
-  const r = await axios.post("https://oauth2.googleapis.com/token", params, {
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-  });
+  const r = await axios
+    .post("https://oauth2.googleapis.com/token", params, {
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    })
+    .catch((error) => {
+      throw error;
+    });
+
+  if (r.status !== 200) {
+    throw new ApiError(400, "invalid_refresh_token");
+  }
 
   const { access_token, expires_in, scope, token_type } = r.data;
   const newExpiry = Date.now() + expires_in * 1000;
@@ -203,6 +214,10 @@ const getSteps = asyncHandler(async (req, res) => {
   try {
     const accessToken = await getValidAccessToken(req.user._id);
 
+    if (!accessToken) {
+      throw new ApiError(400, "no_token");
+    }
+
     const end = Date.now();
     const start = end - 7 * 24 * 60 * 60 * 1000;
 
@@ -219,10 +234,24 @@ const getSteps = asyncHandler(async (req, res) => {
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
 
+    const data = r?.data?.bucket;
+
+    const response = [];
+
+    data.map((dayData) => {
+      const temp = {};
+      temp.startTime = dayData?.startTimeMillis;
+      temp.endTime = dayData?.endTimeMillis;
+      temp.steps = dayData?.dataset[0]?.point[0]?.value[0]?.intVal || 0;
+      response.push(temp);
+    });
+
+    console.log(response);
+
     return res.status(200).json(
       new ApiResponse({
         statusCode: 200,
-        data: r.data,
+        data: response,
         message: "Steps fetched successfully",
       })
     );

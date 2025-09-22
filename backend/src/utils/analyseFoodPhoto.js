@@ -42,14 +42,14 @@ const generatePrompt = (imagePaths) => {
             "food_name" : string,
             "calories" : number,
             "carbs" : number,
-            "protine" : number,
+            "protein" : number,
             "sugar" : number,
             "fat" : number
           }
         }
 
         food_name should be comma separated if multiple food items are present in the photo
-        calories, carbs, protine, sugar, fat should be in grams
+        calories, carbs, protein, sugar, fat should be in grams
 
         Give only JSON response. No other text.
         Use given format only

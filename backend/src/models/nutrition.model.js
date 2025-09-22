@@ -11,9 +11,8 @@ const nutritionSchema = new mongoose.Schema(
     consumptionTime: {
       type: Date,
     },
-    MealType: {
+    mealType: {
       type: String,
-      enum: ["Breakfast", "Lunch", "Dinner", "Snack", "Unknown"],
     },
     foodItem: {
       type: String,
@@ -24,7 +23,7 @@ const nutritionSchema = new mongoose.Schema(
     carbs: {
       type: Number,
     },
-    protine: {
+    protein: {
       type: Number,
     },
     sugar: {

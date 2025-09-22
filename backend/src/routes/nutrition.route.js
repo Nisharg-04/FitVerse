@@ -10,6 +10,7 @@ const router = Router();
 
 router.post(
   "/addNutrition",
+  verifyJWT,
   upload.fields([
     {
       name: "photos",
@@ -19,6 +20,6 @@ router.post(
   addNutrition
 );
 
-router.post("getNutritionHistory", verifyJWT, getNutritionHistory);
+router.get("/getNutritionHistory", verifyJWT, getNutritionHistory);
 
 export default router;
