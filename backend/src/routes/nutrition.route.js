@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   addNutrition,
+  addNutritionManual,
   getNutritionHistory,
 } from "../controllers/Nutrition.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
@@ -19,6 +20,8 @@ router.post(
   ]),
   addNutrition
 );
+
+router.post("/addNutritionManual", verifyJWT, addNutritionManual);
 
 router.get("/getNutritionHistory", verifyJWT, getNutritionHistory);
 

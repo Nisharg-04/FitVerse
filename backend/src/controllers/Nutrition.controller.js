@@ -4,7 +4,6 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { Nutrition } from "../models/nutrition.model.js";
 import { analyseFoodPhoto } from "../utils/analyseFoodPhoto.js";
 
-// TODO: IMPLEMENT
 const addNutrition = asyncHandler(async (req, res) => {
   // get userId from req
 
@@ -72,7 +71,54 @@ const addNutrition = asyncHandler(async (req, res) => {
   );
 });
 
-// TODO: IMPLEMENT
+const addNutritionManual = asyncHandler(async (req, res) => {
+  const userId = req?.user?._id;
+
+  const {
+    consumptionTime,
+    mealType,
+    foodItem,
+    calories,
+    carbs,
+    protein,
+    sugar,
+    fat,
+  } = req.body;
+
+  if (
+    !consumptionTime ||
+    !mealType ||
+    !foodItem ||
+    !calories ||
+    !carbs ||
+    !protein ||
+    !sugar ||
+    !fat
+  ) {
+    throw new ApiError(400, "All fields are required");
+  }
+
+  const nutrition = await Nutrition.create({
+    userId,
+    consumptionTime: new Date(consumptionTime),
+    mealType,
+    foodItem,
+    calories,
+    carbs,
+    protein,
+    sugar,
+    fat,
+  });
+
+  return res.status(201).json(
+    new ApiResponse({
+      statusCode: 201,
+      message: "Nutrition added successfully",
+      data: nutrition,
+    })
+  );
+});
+
 const getNutritionHistory = asyncHandler(async (req, res) => {
   const userId = req?.user?._id;
 
@@ -89,4 +135,4 @@ const getNutritionHistory = asyncHandler(async (req, res) => {
   );
 });
 
-export { addNutrition, getNutritionHistory };
+export { addNutrition, addNutritionManual, getNutritionHistory };
