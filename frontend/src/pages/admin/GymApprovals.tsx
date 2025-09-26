@@ -38,10 +38,13 @@ const GymApprovals = () => {
 
   const fetchPendingGyms = async () => {
     try {
-      const { data } = await axios.get("/admin/pending-gym-requests", {
-        withCredentials: true,
-      });
-      console.log("Fetched pending gyms:", data.data);
+      const { data } = await axios.get(
+        "http://localhost:8000/api/admin/pending-gym-requests",
+        {
+          withCredentials: true,
+        }
+      );
+      console.log("Fetched pending gyms:", data);
       setPendingGyms(data.data);
     } catch (error) {
       console.error("Error fetching pending gyms:", error);
@@ -94,6 +97,7 @@ const GymApprovals = () => {
       </div>
     );
   }
+  console.log("Pending gyms:", pendingGyms);
 
   return (
     <div className="container mx-auto p-6 max-w-7xl">
@@ -107,7 +111,7 @@ const GymApprovals = () => {
           </CardDescription>
         </CardHeader>
       </Card>
-
+      ;
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {pendingGyms.length === 0 ? (
           <div className="col-span-full text-center text-muted-foreground py-8">

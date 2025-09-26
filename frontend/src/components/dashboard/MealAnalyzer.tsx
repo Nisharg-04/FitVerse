@@ -49,14 +49,14 @@ const MealAnalyzer = () => {
   // Prevent body scroll when modal is open
   useEffect(() => {
     if (showHistoryModal) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     }
 
     // Cleanup function to reset body scroll when component unmounts
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     };
   }, [showHistoryModal]);
 

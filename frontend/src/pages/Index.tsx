@@ -40,6 +40,7 @@ import CameraFeed from "../components/CameraFeed";
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const [showPopupAd, setShowPopupAd] = useState(false);
   const prefersReducedMotion = useReducedMotion();
   const lowEndDevice = typeof window !== "undefined" ? isLowEndDevice() : false;
 

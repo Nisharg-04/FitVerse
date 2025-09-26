@@ -24,6 +24,7 @@ import SelectLocation from "./pages/SelectLocation";
 import GymApprovals from "./pages/admin/GymApprovals";
 import AdminPanel from "./pages/admin/AdminPanel";
 import GymDetails from "./pages/admin/GymDetails";
+import ManageAdvertisements from "./pages/ManageAdvertisements";
 import { useState } from "react";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import PublicOnlyRoute from "./components/auth/PublicOnlyRoute";
@@ -32,6 +33,7 @@ import { LatLngExpression } from "leaflet";
 import { useDispatch } from "react-redux";
 import { getUser } from "./redux/slices/authSlice";
 import { useEffect } from "react";
+import SimpleGlobalAdvertisements from "./components/SimpleGlobalAdvertisements";
 
 const App: React.FC = () => {
   const [selectedPosition, setSelectedPosition] =
@@ -47,6 +49,8 @@ const App: React.FC = () => {
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          {/* Simple Global Advertisement System */}
+          <SimpleGlobalAdvertisements />
           <Routes>
             <Route path="/" element={<Layout />}>
               {/* Public Routes */}
@@ -130,6 +134,14 @@ const App: React.FC = () => {
                 element={
                   <ProtectedRoute allowedRoles={["admin", "owner"]}>
                     <AddNewGym />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/manage-advertisements"
+                element={
+                  <ProtectedRoute allowedRoles={["admin", "owner"]}>
+                    <ManageAdvertisements />
                   </ProtectedRoute>
                 }
               />

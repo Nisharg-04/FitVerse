@@ -6,13 +6,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { 
+import {
   Activity,
   Users,
   DollarSign,
   CheckCircle2,
   Dumbbell,
-  Clock
+  Clock,
 } from "lucide-react";
 
 interface GymStats {
@@ -88,9 +88,7 @@ const StatCard = ({
   <Card className="hover:shadow-lg transition-shadow">
     <div className="p-6">
       <div className="flex items-center space-x-4">
-        <div className={`p-2 rounded-full ${color}`}>
-          {icon}
-        </div>
+        <div className={`p-2 rounded-full ${color}`}>{icon}</div>
         <div>
           <p className="text-2xl font-bold">{value}</p>
           <p className="text-muted-foreground text-sm">{label}</p>
@@ -134,12 +132,20 @@ const GymDashboard = () => {
     <div className="container mx-auto p-6">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-4xl font-bold">{stats.gymName} Dashboard</h1>
-        <Button 
-          onClick={() => navigate('/add-new-gym')} 
-          className="bg-primary text-white hover:bg-primary/90"
-        >
-          Add New Gym
-        </Button>
+        <div className="flex gap-3">
+          <Button
+            onClick={() => navigate("/manage-advertisements")}
+            className="bg-purple-600 text-white hover:bg-purple-700"
+          >
+            Manage Ads
+          </Button>
+          <Button
+            onClick={() => navigate("/add-new-gym")}
+            className="bg-primary text-white hover:bg-primary/90"
+          >
+            Add New Gym
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -182,10 +188,14 @@ const GymDashboard = () => {
                   </Avatar>
                   <div>
                     <p className="font-medium">{checkin.name}</p>
-                    <p className="text-sm text-muted-foreground">{checkin.time}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {checkin.time}
+                    </p>
                   </div>
                 </div>
-                {idx < recentCheckins.length - 1 && <Separator className="mt-4" />}
+                {idx < recentCheckins.length - 1 && (
+                  <Separator className="mt-4" />
+                )}
               </div>
             ))}
           </ScrollArea>
@@ -199,7 +209,9 @@ const GymDashboard = () => {
                 <div className="flex items-center space-x-4">
                   <Avatar>
                     <AvatarImage src={cls.trainerAvatar} />
-                    <AvatarFallback><Dumbbell className="w-4 h-4" /></AvatarFallback>
+                    <AvatarFallback>
+                      <Dumbbell className="w-4 h-4" />
+                    </AvatarFallback>
                   </Avatar>
                   <div>
                     <p className="font-medium">{cls.title}</p>
@@ -209,7 +221,9 @@ const GymDashboard = () => {
                     </p>
                   </div>
                 </div>
-                {idx < upcomingClasses.length - 1 && <Separator className="mt-4" />}
+                {idx < upcomingClasses.length - 1 && (
+                  <Separator className="mt-4" />
+                )}
               </div>
             ))}
           </ScrollArea>
@@ -219,19 +233,25 @@ const GymDashboard = () => {
           <h2 className="text-2xl font-semibold mb-4">Gym Details</h2>
           <div className="space-y-6">
             <div>
-              <p className="text-sm text-muted-foreground mb-2">Total Check-ins</p>
+              <p className="text-sm text-muted-foreground mb-2">
+                Total Check-ins
+              </p>
               <p className="text-2xl font-bold">{stats.totalCheckins}</p>
               <Progress value={75} className="mt-2" />
             </div>
             <Separator />
             <div>
-              <p className="text-sm text-muted-foreground mb-2">Number of Trainers</p>
+              <p className="text-sm text-muted-foreground mb-2">
+                Number of Trainers
+              </p>
               <p className="text-2xl font-bold">{stats.trainers}</p>
               <Progress value={90} className="mt-2" />
             </div>
             <Separator />
             <div>
-              <p className="text-sm text-muted-foreground mb-2">Active Classes</p>
+              <p className="text-sm text-muted-foreground mb-2">
+                Active Classes
+              </p>
               <p className="text-2xl font-bold">{stats.classes}</p>
               <Progress value={60} className="mt-2" />
             </div>
