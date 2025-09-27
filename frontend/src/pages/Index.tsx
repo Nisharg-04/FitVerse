@@ -40,6 +40,7 @@ import CameraFeed from "../components/CameraFeed";
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const [showPopupAd, setShowPopupAd] = useState(false);
   const prefersReducedMotion = useReducedMotion();
   const lowEndDevice = typeof window !== "undefined" ? isLowEndDevice() : false;
 
@@ -132,8 +133,7 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       {/* Development Performance Monitor */}
       <PerformanceMonitor />
-      {/* Next-Level Hero Section - Optimized for immediate loading */}
-      <CameraFeed />
+
       <div>
         <h1>REMOVE IT</h1>
         <GoogleFitConnectButton />
