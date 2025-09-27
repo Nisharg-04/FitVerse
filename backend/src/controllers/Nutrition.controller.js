@@ -110,11 +110,13 @@ const addNutritionManual = asyncHandler(async (req, res) => {
     fat,
   });
 
+  const response = {...nutrition, userId: undefined, createdAt: undefined, updatedAt: undefined, __v: undefined};
+
   return res.status(201).json(
     new ApiResponse({
       statusCode: 201,
       message: "Nutrition added successfully",
-      data: nutrition,
+      data: response,
     })
   );
 });

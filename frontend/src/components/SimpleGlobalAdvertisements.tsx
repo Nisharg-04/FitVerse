@@ -80,6 +80,7 @@ const SimpleGlobalAdvertisements: React.FC = () => {
         setTimeout(() => {
           if (mounted) {
             setShowBanner(true);
+            // setShowPopup(true);
           }
         }, 2000);
       }
@@ -136,7 +137,7 @@ const SimpleGlobalAdvertisements: React.FC = () => {
     <>
       {/* Banner Ad */}
       {showBanner && (
-        <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b shadow-lg">
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-b shadow-lg">
           <div className="flex items-center justify-between p-4 max-w-6xl mx-auto">
             <div className="flex items-center space-x-4">
               <img
