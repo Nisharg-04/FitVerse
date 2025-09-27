@@ -186,9 +186,9 @@ const GymDetails = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
                     <DollarSign className="h-4 w-4 mr-2 text-muted-foreground" />
-                    <span>Monthly Fee</span>
+                    <span>Per hour Fee</span>
                   </div>
-                  <span>₹{gym.monthlyFee}</span>
+                  <span>₹{gym.perHourPrice}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
