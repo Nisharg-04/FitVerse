@@ -11,6 +11,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@paypal/paypal-server-sdk": "^0.5.1",
     "axios": "^1.11.0",
     "bcrypt": "^6.0.0",
     "body-parser": "^2.2.0",
@@ -26,6 +27,7 @@
     "mongoose": "^8.16.5",
     "multer": "^2.0.2",
     "nodemailer": "^7.0.5",
+    "qrcode": "^1.5.4",
     "winston": "^3.17.0"
   },
   "devDependencies": {

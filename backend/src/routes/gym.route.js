@@ -3,6 +3,7 @@ import {
   addGymRequest,
   getNearbyGyms,
   getGymById,
+  getQrCode,
 } from "../controllers/gym.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
@@ -17,5 +18,6 @@ router.post(
 );
 router.post("/nearby-gyms", getNearbyGyms);
 router.get("/:gymId", getGymById);
+router.get("/qrcode/:gymId", getQrCode);
 
 export default router;
