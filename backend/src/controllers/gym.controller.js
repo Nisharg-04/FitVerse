@@ -5,6 +5,7 @@ import { User } from "../models/user.model.js";
 import { Gym } from "../models/gym.model.js";
 import { sendMail } from "../utils/sendMail.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { generateQrCode } from "../utils/generateQrCode.js";
 
 const addGymRequest = asyncHandler(async (req, res) => {
   // get gym details
@@ -20,6 +21,8 @@ const addGymRequest = asyncHandler(async (req, res) => {
     latitude,
     longitude,
   } = req.body;
+
+  console.log(req.body);
 
   if (
     !name ||
@@ -125,4 +128,30 @@ const getGymById = asyncHandler(async (req, res) => {
   );
 });
 
-export { addGymRequest, getNearbyGyms, getGymById };
+const getQrCode = asyncHandler(async (req, res) => {
+  const { gymId } = req.params;
+
+  if (!gymId) {
+    throw new ApiError(400, "Gym ID is required");
+  }
+
+  const gym = await Gym.findById(gymId);
+
+  if (!gym) {
+    throw new ApiError(404, "Gym not found");
+  }
+
+  // generate qr code
+  const qrCodeImage = await generateQrCode(gymId);
+
+  res.status(200).json(
+    new ApiResponse({
+      statusCode: 200,
+      message: "QR Code generated successfully",
+      data: { qrCodeImage },
+      success: true,
+    })
+  );
+});
+
+export { addGymRequest, getNearbyGyms, getGymById, getQrCode };

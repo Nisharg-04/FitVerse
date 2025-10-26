@@ -37,6 +37,9 @@ import Footer from "@/components/layout/Footer";
 import GoogleGeminiEffectDemo from "@/components/ui/google-gemini-effect-demo";
 import GoogleFitConnectButton from "../components/GoogleFitConnectButton";
 import CameraFeed from "../components/CameraFeed";
+import Payment from "../components/Payment";
+import GymQrDisplay from "../components/GymQrDisplay";
+import QRScannerComponent from "../components/QRScannerComponent";
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -138,6 +141,26 @@ const Index = () => {
         <h1>REMOVE IT</h1>
         <GoogleFitConnectButton />
       </div>
+
+      <div>
+        <h1>
+          REMOVE IT TOO FOR PAYMENT DEMO ONLY
+        </h1>
+        <Payment amountInfo={{amount: 100}}/>
+      </div>
+
+      <div>
+        <h1>
+          REMOVE IT
+        </h1>
+        <GymQrDisplay />
+      </div>
+
+      <div>
+        <h1>REMOVE IT</h1>
+        <QRScannerComponent />
+      </div>
+
       {/* Next-Level Hero Section */}
       <section className="relative overflow-hidden min-h-screen flex items-center">
         <div className="container mx-auto px-4 py-20">

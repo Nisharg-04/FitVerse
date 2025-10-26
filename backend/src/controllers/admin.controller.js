@@ -251,10 +251,18 @@ const getActiveAdvertisements = asyncHandler(async (req, res) => {
   );
 });
 
+// TODO: implement
+const payGym = asyncHandler(async (req, res) => {});
+
+// TODO: implement
+const getGymPaymentDetails = asyncHandler(async (req, res) => {});
+
 export {
   getAllPendingGymRequest,
   setGymVerification,
   getAllAdvertisements,
   deleteAdvertisement,
   getActiveAdvertisements,
+  payGym, 
+  getGymPaymentDetails
 };

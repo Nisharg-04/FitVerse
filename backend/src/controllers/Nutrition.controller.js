@@ -110,7 +110,13 @@ const addNutritionManual = asyncHandler(async (req, res) => {
     fat,
   });
 
-  const response = {...nutrition, userId: undefined, createdAt: undefined, updatedAt: undefined, __v: undefined};
+  const response = {
+    ...nutrition,
+    userId: undefined,
+    createdAt: undefined,
+    updatedAt: undefined,
+    __v: undefined,
+  };
 
   return res.status(201).json(
     new ApiResponse({
@@ -137,4 +143,16 @@ const getNutritionHistory = asyncHandler(async (req, res) => {
   );
 });
 
-export { addNutrition, addNutritionManual, getNutritionHistory };
+// TODO: implement
+const getFoodSuggestion = asyncHandler(async (req, res) => {});
+
+// TODO: implement
+const addNutritionGoal = asyncHandler(async (req, res) => {});
+
+export {
+  addNutrition,
+  addNutritionManual,
+  getNutritionHistory,
+  getFoodSuggestion,
+  addNutritionGoal,
+};

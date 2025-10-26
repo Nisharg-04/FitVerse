@@ -18,7 +18,6 @@ const userPaymentSchema = new mongoose.Schema(
     },
     paymentInfo: {
       type: Object,
-      required: true,
     },
     success: {
       type: Boolean,
