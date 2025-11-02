@@ -4,7 +4,10 @@ import {
   rechargeAccountComplete,
   accessGym,
   getRechargeHistory,
-  getGymAccessHistory,
+  getGymAccessHistoryForUser,
+  getGymAccessHistoryForGym,
+  getUserBalance,
+  getGymBalance,
 } from "../controllers/payment.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 
@@ -18,6 +21,12 @@ router.post("/accessGym", verifyJWT, accessGym);
 
 router.get("/getRechargeHistory", verifyJWT, getRechargeHistory);
 
-router.get("/getGymAccessHistory", verifyJWT, getGymAccessHistory);
+router.get("/getGymAccessHistoryForUser", verifyJWT, getGymAccessHistoryForUser);
+
+router.get("/getGymAccessHistoryForGym/:gymId", verifyJWT, getGymAccessHistoryForGym);
+
+router.get("/getUserBalance", verifyJWT, getUserBalance);
+
+router.get("/getGymBalance/:gymId", verifyJWT, getGymBalance);
 
 export default router;

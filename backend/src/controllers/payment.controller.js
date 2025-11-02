@@ -230,6 +230,10 @@ const accessGym = asyncHandler(async (req, res) => {
 
   await user.save();
 
+  gym.paymentRemaining = gym.paymentRemaining + gym.perHourPrice;
+
+  await gym.save();
+
   const response = {
     ...gymAccess._doc,
     remainingBalance: user.balance,
@@ -271,7 +275,7 @@ const getRechargeHistory = asyncHandler(async (req, res) => {
   );
 });
 
-const getGymAccessHistory = asyncHandler(async (req, res) => {
+const getGymAccessHistoryForUser = asyncHandler(async (req, res) => {
   const userId = req.user._id;
 
   const gymAccessHistory = await GymAccessLog.aggregate([
@@ -284,13 +288,31 @@ const getGymAccessHistory = asyncHandler(async (req, res) => {
         localField: "gymId",
         foreignField: "_id",
         as: "gymDetails",
-      }
+        pipeline: [
+          {
+            $project: {
+              name: 1,
+              location: 1,
+              address: 1,
+              contactNumber: 1,
+              contactEmail: 1,
+            },
+          },
+        ],
+      },
     },
     {
       $unwind: "$gymDetails",
     },
     {
       $sort: { accessTime: -1 },
+    },
+    {
+      $project: {
+        gymDetails: 1,
+        amountPaid: 1,
+        accessTime: 1,
+      },
     },
   ]);
 
@@ -303,10 +325,127 @@ const getGymAccessHistory = asyncHandler(async (req, res) => {
   );
 });
 
+const getGymAccessHistoryForGym = asyncHandler(async (req, res) => {
+  const gymId = req.params.gymId;
+
+  if (!gymId) {
+    throw new ApiError(400, "Gym ID is required");
+  }
+
+  const gym = await Gym.findById(gymId);
+
+  if (!gym) {
+    throw new ApiError(404, "Gym not found");
+  }
+
+  // if(gym.ownerId.toString() !== req.user._id.toString()){
+  //   throw new ApiError(403, "You are not authorized to view this gym's access history");
+  // }
+
+  const gymAccessHistory = await GymAccessLog.aggregate([
+    {
+      $match: {
+        gymId: gym._id,
+      },
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "userId",
+        foreignField: "_id",
+        as: "userDetails",
+        pipeline: [
+          {
+            $project: {
+              name: 1,
+              email: 1,
+              contactNumber: 1,
+              avatar: 1,
+            },
+          },
+        ],
+      },
+    },
+    {
+      $unwind: "$userDetails",
+    },
+    {
+      $sort: { accessTime: -1 },
+    },
+    {
+      $project: {
+        userDetails: 1,
+        amountPaid: 1,
+        accessTime: 1,
+      },
+    },
+  ]);
+
+  res.status(200).json(
+    new ApiResponse({
+      statusCode: 200,
+      message: "Gym access history fetched successfully",
+      data: gymAccessHistory,
+    })
+  );
+});
+
+const getUserBalance = asyncHandler(async (req, res) => {
+  const user = req.user;
+
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  res.status(200).json(
+    new ApiResponse({
+      statusCode: 200,
+      message: "User balance fetched successfully",
+      data: {
+        balance: user.balance,
+      },
+    })
+  );
+});
+
+const getGymBalance = asyncHandler(async (req, res) => {
+  const gymId = req.params.gymId;
+
+  if (!gymId) {
+    throw new ApiError(400, "Gym ID is required");
+  }
+
+  const gym = await Gym.findById(gymId);
+
+  if (!gym) {
+    throw new ApiError(404, "Gym not found");
+  }
+
+  // if (gym.ownerId.toString() !== req.user._id.toString()) {
+  //   throw new ApiError(
+  //     403,
+  //     "You are not authorized to view this gym's balance"
+  //   );
+  // }
+
+  res.status(200).json(
+    new ApiResponse({
+      statusCode: 200,
+      message: "Gym balance fetched successfully",
+      data: {
+        balance: gym.paymentRemaining,
+      },
+    })
+  );
+});
+
 export {
   rechargeAccountCreate,
   rechargeAccountComplete,
   accessGym,
   getRechargeHistory,
-  getGymAccessHistory,
+  getGymAccessHistoryForUser,
+  getGymAccessHistoryForGym,
+  getUserBalance,
+  getGymBalance,
 };
