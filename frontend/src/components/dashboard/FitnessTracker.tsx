@@ -1,63 +1,79 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Activity, Footprints, Flame, Clock, TrendingUp, Target } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { useStore } from '@/store/useStore';
+import React from "react";
+import { motion } from "framer-motion";
+import {
+  Activity,
+  Footprints,
+  Flame,
+  Clock,
+  TrendingUp,
+  Target,
+} from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { useStore } from "@/store/useStore";
+import GoogleFitConnectButton from "@/components/GoogleFitConnectButton";
 
 const FitnessTracker = () => {
   const { todayStats, fitnessData } = useStore();
 
   const quickStats = [
     {
-      title: 'Steps Today',
+      title: "Steps Today",
       value: todayStats.steps.toLocaleString(),
       target: fitnessData.goals.daily.steps.toLocaleString(),
       icon: Footprints,
-      color: 'text-primary',
-      bgColor: 'bg-primary/10',
-      progress: (todayStats.steps / fitnessData.goals.daily.steps) * 100
+      color: "text-primary",
+      bgColor: "bg-primary/10",
+      progress: (todayStats.steps / fitnessData.goals.daily.steps) * 100,
     },
     {
-      title: 'Calories Burned',
+      title: "Calories Burned",
       value: todayStats.calories.toLocaleString(),
       target: fitnessData.goals.daily.calories.toLocaleString(),
       icon: Flame,
-      color: 'text-warning',
-      bgColor: 'bg-warning/10',
-      progress: (todayStats.calories / fitnessData.goals.daily.calories) * 100
+      color: "text-warning",
+      bgColor: "bg-warning/10",
+      progress: (todayStats.calories / fitnessData.goals.daily.calories) * 100,
     },
     {
-      title: 'Active Minutes',
+      title: "Active Minutes",
       value: fitnessData.activeMinutes.toString(),
       target: (fitnessData.goals.weekly.activeMinutes / 7).toFixed(0),
       icon: Clock,
-      color: 'text-success',
-      bgColor: 'bg-success/10',
-      progress: (fitnessData.activeMinutes / (fitnessData.goals.weekly.activeMinutes / 7)) * 100
+      color: "text-success",
+      bgColor: "bg-success/10",
+      progress:
+        (fitnessData.activeMinutes /
+          (fitnessData.goals.weekly.activeMinutes / 7)) *
+        100,
     },
     {
-      title: 'Workouts',
+      title: "Workouts",
       value: todayStats.workouts.toString(),
-      target: '1',
+      target: "1",
       icon: Activity,
-      color: 'text-secondary',
-      bgColor: 'bg-secondary/10',
-      progress: (todayStats.workouts / 1) * 100
-    }
+      color: "text-secondary",
+      bgColor: "bg-secondary/10",
+      progress: (todayStats.workouts / 1) * 100,
+    },
   ];
 
   const weeklyData = [
-    { name: 'Mon', steps: 8500, calories: 320, workouts: 1 },
-    { name: 'Tue', steps: 12000, calories: 480, workouts: 1 },
-    { name: 'Wed', steps: 9800, calories: 390, workouts: 0 },
-    { name: 'Thu', steps: 11200, calories: 420, workouts: 1 },
-    { name: 'Fri', steps: 13500, calories: 520, workouts: 1 },
-    { name: 'Sat', steps: 15000, calories: 580, workouts: 2 },
-    { name: 'Sun', steps: 8547, calories: 340, workouts: 0 }
+    { name: "Mon", steps: 8500, calories: 320, workouts: 1 },
+    { name: "Tue", steps: 12000, calories: 480, workouts: 1 },
+    { name: "Wed", steps: 9800, calories: 390, workouts: 0 },
+    { name: "Thu", steps: 11200, calories: 420, workouts: 1 },
+    { name: "Fri", steps: 13500, calories: 520, workouts: 1 },
+    { name: "Sat", steps: 15000, calories: 580, workouts: 2 },
+    { name: "Sun", steps: 8547, calories: 340, workouts: 0 },
   ];
 
-  const CircularProgress = ({ percentage, size = 120, strokeWidth = 8, color = "text-primary" }) => {
+  const CircularProgress = ({
+    percentage,
+    size = 120,
+    strokeWidth = 8,
+    color = "text-primary",
+  }) => {
     const radius = (size - strokeWidth) / 2;
     const circumference = radius * 2 * Math.PI;
     const strokeDasharray = circumference;
@@ -103,8 +119,13 @@ const FitnessTracker = () => {
           <h2 className="text-2xl font-bold bg-gradient-to-r from-primary via-secondary to-success bg-clip-text text-transparent">
             Fitness Tracker
           </h2>
-          <p className="text-muted-foreground">Track your daily activity and progress</p>
+          <p className="text-muted-foreground">
+            Track your daily activity and progress
+          </p>
         </div>
+
+        {/* Google Fit Connect Button */}
+        <GoogleFitConnectButton />
 
         {/* Circular Progress Rings */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
@@ -118,17 +139,21 @@ const FitnessTracker = () => {
               <Card className="fitness-card text-center">
                 <CardContent className="p-6">
                   <div className="flex flex-col items-center space-y-4">
-                    <CircularProgress 
-                      percentage={Math.min(100, stat.progress)} 
+                    <CircularProgress
+                      percentage={Math.min(100, stat.progress)}
                       color={stat.color}
                     />
                     <div>
-                      <div className={`w-8 h-8 rounded-full ${stat.bgColor} flex items-center justify-center mx-auto mb-2`}>
+                      <div
+                        className={`w-8 h-8 rounded-full ${stat.bgColor} flex items-center justify-center mx-auto mb-2`}
+                      >
                         <stat.icon className={`h-4 w-4 ${stat.color}`} />
                       </div>
                       <h3 className="font-semibold text-sm">{stat.title}</h3>
                       <p className="text-xl font-bold">{stat.value}</p>
-                      <p className="text-xs text-muted-foreground">of {stat.target}</p>
+                      <p className="text-xs text-muted-foreground">
+                        of {stat.target}
+                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -152,9 +177,14 @@ const FitnessTracker = () => {
                   <div key={day.name} className="flex items-center space-x-4">
                     <span className="w-8 text-sm font-medium">{day.name}</span>
                     <div className="flex-1">
-                      <Progress value={(day.steps / 15000) * 100} className="h-3" />
+                      <Progress
+                        value={(day.steps / 15000) * 100}
+                        className="h-3"
+                      />
                     </div>
-                    <span className="text-sm font-medium">{day.steps.toLocaleString()}</span>
+                    <span className="text-sm font-medium">
+                      {day.steps.toLocaleString()}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -176,7 +206,11 @@ const FitnessTracker = () => {
                     {todayStats.steps}/{fitnessData.goals.daily.steps}
                   </span>
                 </div>
-                <Progress value={(todayStats.steps / fitnessData.goals.daily.steps) * 100} />
+                <Progress
+                  value={
+                    (todayStats.steps / fitnessData.goals.daily.steps) * 100
+                  }
+                />
               </div>
 
               <div className="space-y-3">
@@ -186,7 +220,11 @@ const FitnessTracker = () => {
                     {todayStats.water}/{fitnessData.goals.daily.water} glasses
                   </span>
                 </div>
-                <Progress value={(todayStats.water / fitnessData.goals.daily.water) * 100} />
+                <Progress
+                  value={
+                    (todayStats.water / fitnessData.goals.daily.water) * 100
+                  }
+                />
               </div>
 
               <div className="space-y-3">
@@ -196,7 +234,12 @@ const FitnessTracker = () => {
                     {todayStats.calories}/{fitnessData.goals.daily.calories}
                   </span>
                 </div>
-                <Progress value={(todayStats.calories / fitnessData.goals.daily.calories) * 100} />
+                <Progress
+                  value={
+                    (todayStats.calories / fitnessData.goals.daily.calories) *
+                    100
+                  }
+                />
               </div>
             </CardContent>
           </Card>

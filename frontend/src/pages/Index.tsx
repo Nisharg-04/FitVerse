@@ -14,6 +14,10 @@ import {
   ArrowRight,
   Play,
   Check,
+  Wallet,
+  Plus,
+  Minus,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -44,6 +48,10 @@ import QRScannerComponent from "../components/QRScannerComponent";
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showPopupAd, setShowPopupAd] = useState(false);
+  const [showRechargeModal, setShowRechargeModal] = useState(false);
+  const [rechargeAmount, setRechargeAmount] = useState(100);
+  const [showPayment, setShowPayment] = useState(false);
+  const [selectedAmount, setSelectedAmount] = useState(100);
   const prefersReducedMotion = useReducedMotion();
   const lowEndDevice = typeof window !== "undefined" ? isLowEndDevice() : false;
 
@@ -55,7 +63,7 @@ const Index = () => {
     // Simulate loading the essential content
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 2000); // Shorter loading time
+    }, 0); // Shorter loading time
 
     return () => clearTimeout(timer);
   }, []);
@@ -134,33 +142,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Development Performance Monitor */}
-      <PerformanceMonitor />
-
-      <div>
-        <h1>REMOVE IT</h1>
-        <GoogleFitConnectButton />
-      </div>
-
-      <div>
-        <h1>
-          REMOVE IT TOO FOR PAYMENT DEMO ONLY
-        </h1>
-        <Payment amountInfo={{amount: 100}}/>
-      </div>
-
-      <div>
-        <h1>
-          REMOVE IT
-        </h1>
-        <GymQrDisplay />
-      </div>
-
-      <div>
-        <h1>REMOVE IT</h1>
-        <QRScannerComponent />
-      </div>
-
       {/* Next-Level Hero Section */}
       <section className="relative overflow-hidden min-h-screen flex items-center">
         <div className="container mx-auto px-4 py-20">

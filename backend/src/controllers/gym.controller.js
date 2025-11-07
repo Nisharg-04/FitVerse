@@ -7,6 +7,24 @@ import { sendMail } from "../utils/sendMail.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { generateQrCode } from "../utils/generateQrCode.js";
 
+const getGymByOwnerId = asyncHandler(async (req, res) => {
+  const ownerId = req.user.id;
+  if (!ownerId) {
+    throw new ApiError(400, "Owner ID is required");
+  }
+  const gyms = await Gym.find({ ownerId: ownerId });
+
+
+  res.status(200).json(
+    new ApiResponse({
+      statusCode: 200,
+      message: "Gyms fetched successfully",
+      data: gyms,
+      success: true,
+    })
+  );
+}
+);
 const addGymRequest = asyncHandler(async (req, res) => {
   // get gym details
   const {
@@ -154,4 +172,4 @@ const getQrCode = asyncHandler(async (req, res) => {
   );
 });
 
-export { addGymRequest, getNearbyGyms, getGymById, getQrCode };
+export { addGymRequest, getNearbyGyms, getGymById, getQrCode, getGymByOwnerId };

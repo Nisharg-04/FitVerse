@@ -19,7 +19,7 @@ export default function QRScannerComponent() {
       }
 
       const gymId = parsed.gymId;
-      setData(`✅ Valid QR detected! Gym ID: ${gymId}`);
+      setData(`Valid QR detected! Gym ID: ${gymId}`);
       console.log("Valid FitVerse QR scanned:", gymId);
 
       // ✅ Stop scanning once a valid QR is found
@@ -61,7 +61,7 @@ export default function QRScannerComponent() {
         />
       ) : (
         <div className="text-green-600 font-medium">
-          Scanning stopped — valid QR detected ✅
+          Scanning stopped — valid QR detected
         </div>
       )}
 

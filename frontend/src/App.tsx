@@ -21,6 +21,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import GymDashboard from "./pages/GymDashboard";
 import AddNewGym from "./pages/AddNewGym";
 import SelectLocation from "./pages/SelectLocation";
+import GymList from "./pages/GymList";
 import GymApprovals from "./pages/admin/GymApprovals";
 import AdminPanel from "./pages/admin/AdminPanel";
 import GymDetails from "./pages/admin/GymDetails";
@@ -123,6 +124,14 @@ const App: React.FC = () => {
 
               <Route
                 path="/gymdashboard"
+                element={
+                  <ProtectedRoute allowedRoles={["admin", "owner"]}>
+                    <GymList />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/gymdashboard/:gymId"
                 element={
                   <ProtectedRoute allowedRoles={["admin", "owner"]}>
                     <GymDashboard />

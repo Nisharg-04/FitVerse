@@ -4,6 +4,7 @@ import {
   getNearbyGyms,
   getGymById,
   getQrCode,
+  getGymByOwnerId,
 } from "../controllers/gym.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
@@ -17,6 +18,7 @@ router.post(
   addGymRequest
 );
 router.post("/nearby-gyms", getNearbyGyms);
+router.post("/findGymByOwner", verifyJWT, getGymByOwnerId);
 router.get("/:gymId", getGymById);
 router.get("/qrcode/:gymId", getQrCode);
 

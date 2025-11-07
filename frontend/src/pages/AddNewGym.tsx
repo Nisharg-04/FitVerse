@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit';
+import { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,7 +10,6 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import SelectLocation from "./SelectLocation";
 import { addGym } from "@/redux/slices/gymSlice";
-
 
 interface GymFormData {
   name: string;
@@ -27,8 +26,6 @@ interface GymFormData {
 }
 
 export default function AddNewGym() {
-      const [selectedPosition, setSelectedPosition] =
-    useState<LatLngExpression | null>(null);
   const navigate = useNavigate();
   const dispatch = useDispatch<ThunkDispatch<any, void, AnyAction>>();
   const { toast } = useToast();
@@ -45,11 +42,13 @@ export default function AddNewGym() {
     features: "",
     latitude: "",
     longitude: "",
-    images: []
+    images: [],
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData(prev => ({
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setFormData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
     }));
@@ -62,21 +61,22 @@ export default function AddNewGym() {
       let isValid = true;
 
       for (const file of selectedFiles) {
-        if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        if (file.size > 5 * 1024 * 1024) {
+          // 5MB limit
           toast({
             title: "File too large",
             description: `${file.name} is larger than 5MB. Please select smaller images.`,
-            variant: "destructive"
+            variant: "destructive",
           });
           isValid = false;
           break;
         }
 
-        if (!file.type.startsWith('image/')) {
+        if (!file.type.startsWith("image/")) {
           toast({
             title: "Invalid file type",
             description: `${file.name} is not an image file.`,
-            variant: "destructive"
+            variant: "destructive",
           });
           isValid = false;
           break;
@@ -84,16 +84,16 @@ export default function AddNewGym() {
       }
 
       if (isValid) {
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
           images: selectedFiles,
         }));
-        
+
         // Create previews for valid images
-        const previews = selectedFiles.map(file => URL.createObjectURL(file));
-        setImagesPreview(prev => {
+        const previews = selectedFiles.map((file) => URL.createObjectURL(file));
+        setImagesPreview((prev) => {
           // Clean up old preview URLs
-          prev.forEach(url => URL.revokeObjectURL(url));
+          prev.forEach((url) => URL.revokeObjectURL(url));
           return previews;
         });
       }
@@ -102,13 +102,18 @@ export default function AddNewGym() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validate required fields
-    if (!formData.name || !formData.addressLine || !formData.city || !formData.state) {
+    if (
+      !formData.name ||
+      !formData.addressLine ||
+      !formData.city ||
+      !formData.state
+    ) {
       toast({
         title: "Missing information",
         description: "Please fill in all required fields.",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
@@ -117,7 +122,7 @@ export default function AddNewGym() {
       toast({
         title: "Invalid phone number",
         description: "Please enter a valid phone number.",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
@@ -126,7 +131,7 @@ export default function AddNewGym() {
       toast({
         title: "Invalid price format",
         description: "Please enter a valid price (e.g., 299.99).",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
@@ -135,46 +140,54 @@ export default function AddNewGym() {
       toast({
         title: "Images required",
         description: "Please upload at least one image of your gym.",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
-      formData.latitude = selectedPosition ? selectedPosition[0].toString() : "";
-        formData.longitude = selectedPosition ? selectedPosition[1].toString() : "";
+    // Ensure location was selected via SelectLocation (which sets formData.latitude/longitude)
+    if (!formData.latitude || !formData.longitude) {
+      toast({
+        title: "Location required",
+        description: "Please select a location on the map.",
+        variant: "destructive",
+      });
+      return;
+    }
     try {
       setLoading(true);
       const formDataToSend = new FormData();
-      
+
       // Append all form data except images
       Object.entries(formData).forEach(([key, value]) => {
-        if (key !== 'images') {
+        if (key !== "images") {
           formDataToSend.append(key, value);
         }
       });
-      
+
       // Append images
       formData.images.forEach((file) => {
-        formDataToSend.append('images', file);
+        formDataToSend.append("images", file);
       });
 
       const resultAction = await dispatch(addGym(formDataToSend));
-      
+
       if (addGym.fulfilled.match(resultAction)) {
         toast({
           title: "Success!",
           description: "Your gym has been added successfully.",
         });
-        navigate('/gymdashboard');
+        navigate("/gymdashboard");
       }
     } catch (error: unknown) {
-      const errorMessage = error && typeof error === 'object' && 'data' in error 
-        ? (error.data as { message?: string })?.message 
-        : "Something went wrong. Please try again.";
-        
+      const errorMessage =
+        error && typeof error === "object" && "data" in error
+          ? (error.data as { message?: string })?.message
+          : "Something went wrong. Please try again.";
+
       toast({
         title: "Failed to add gym",
         description: errorMessage,
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -185,7 +198,7 @@ export default function AddNewGym() {
     <div className="container mx-auto py-8">
       <Card className="max-w-3xl mx-auto p-6">
         <h1 className="text-2xl font-bold mb-6">Add New Gym</h1>
-        
+
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <Label htmlFor="name">Gym Name</Label>
@@ -297,10 +310,10 @@ export default function AddNewGym() {
                 height={30}
                 width={100}
                 onLocationSelect={(lat, lng) => {
-                  setFormData(prev => ({
+                  setFormData((prev) => ({
                     ...prev,
                     latitude: lat.toString(),
-                    longitude: lng.toString()
+                    longitude: lng.toString(),
                   }));
                 }}
               />
@@ -328,7 +341,10 @@ export default function AddNewGym() {
               {imagesPreview.length > 0 && (
                 <div className="grid grid-cols-3 gap-4 mt-4">
                   {imagesPreview.map((preview, index) => (
-                    <div key={index} className="relative aspect-square rounded-lg overflow-hidden">
+                    <div
+                      key={index}
+                      className="relative aspect-square rounded-lg overflow-hidden"
+                    >
                       <img
                         src={preview}
                         alt={`Preview ${index + 1}`}

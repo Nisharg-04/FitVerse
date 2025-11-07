@@ -1,61 +1,65 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { 
-  Activity, 
-  Target, 
-  TrendingUp, 
-  Flame, 
-  Footprints, 
+import React from "react";
+import { motion } from "framer-motion";
+import {
+  Activity,
+  Target,
+  TrendingUp,
+  Flame,
+  Footprints,
   Clock,
   MapPin,
   Trophy,
   Zap,
-  Apple
-} from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { useStore } from '@/store/useStore';
+  Apple,
+} from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { useStore } from "@/store/useStore";
+import GymAccessHistory from "./GymAccessHistory";
 const DashboardOverview = () => {
   const { user, fitnessData, todayStats, checkedInGym } = useStore();
 
   const quickStats = [
     {
-      title: 'Steps Today',
+      title: "Steps Today",
       value: todayStats.steps.toLocaleString(),
       target: fitnessData.goals.daily.steps.toLocaleString(),
       icon: Footprints,
-      color: 'text-primary',
-      bgColor: 'bg-primary/10',
-      progress: (todayStats.steps / fitnessData.goals.daily.steps) * 100
+      color: "text-primary",
+      bgColor: "bg-primary/10",
+      progress: (todayStats.steps / fitnessData.goals.daily.steps) * 100,
     },
     {
-      title: 'Calories Burned',
+      title: "Calories Burned",
       value: todayStats.calories.toLocaleString(),
       target: fitnessData.goals.daily.calories.toLocaleString(),
       icon: Flame,
-      color: 'text-warning',
-      bgColor: 'bg-warning/10',
-      progress: (todayStats.calories / fitnessData.goals.daily.calories) * 100
+      color: "text-warning",
+      bgColor: "bg-warning/10",
+      progress: (todayStats.calories / fitnessData.goals.daily.calories) * 100,
     },
     {
-      title: 'Active Minutes',
+      title: "Active Minutes",
       value: fitnessData.activeMinutes.toString(),
       target: (fitnessData.goals.weekly.activeMinutes / 7).toFixed(0),
       icon: Clock,
-      color: 'text-success',
-      bgColor: 'bg-success/10',
-      progress: (fitnessData.activeMinutes / (fitnessData.goals.weekly.activeMinutes / 7)) * 100
+      color: "text-success",
+      bgColor: "bg-success/10",
+      progress:
+        (fitnessData.activeMinutes /
+          (fitnessData.goals.weekly.activeMinutes / 7)) *
+        100,
     },
     {
-      title: 'Workouts',
+      title: "Workouts",
       value: todayStats.workouts.toString(),
-      target: '1',
+      target: "1",
       icon: Activity,
-      color: 'text-secondary',
-      bgColor: 'bg-secondary/10',
-      progress: (todayStats.workouts / 1) * 100
-    }
+      color: "text-secondary",
+      bgColor: "bg-secondary/10",
+      progress: (todayStats.workouts / 1) * 100,
+    },
   ];
 
   const container = {
@@ -63,14 +67,14 @@ const DashboardOverview = () => {
     show: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1
-      }
-    }
+        staggerChildren: 0.1,
+      },
+    },
   };
 
   const item = {
     hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0 }
+    show: { opacity: 1, y: 0 },
   };
 
   return (
@@ -84,7 +88,7 @@ const DashboardOverview = () => {
         >
           <div className="relative z-10">
             <h1 className="text-3xl font-bold mb-2">
-              Welcome back, {user?.name?.split(' ')[0]}! 👋
+              Welcome back, {user?.name?.split(" ")[0]}! 👋
             </h1>
             <p className="text-primary-foreground/80 mb-4">
               Ready to crush your fitness goals today?
@@ -92,18 +96,26 @@ const DashboardOverview = () => {
             {checkedInGym ? (
               <div className="flex items-center space-x-2">
                 <MapPin className="h-4 w-4" />
-                <span className="text-sm">Currently at {checkedInGym.name}</span>
+                <span className="text-sm">
+                  Currently at {checkedInGym.name}
+                </span>
               </div>
             ) : (
-              <Button variant="secondary" className="bg-white/20 text-white border-white/30 hover:bg-white/30">
+              <Button
+                variant="secondary"
+                className="bg-white/20 text-white border-white/30 hover:bg-white/30"
+              >
                 Find Nearby Gyms
               </Button>
             )}
           </div>
-          
+
           {/* Animated Background Elements */}
           <div className="absolute -top-16 -right-16 w-32 h-32 rounded-full bg-white/10 animate-pulse-soft" />
-          <div className="absolute -bottom-8 -left-8 w-24 h-24 rounded-full bg-white/5 animate-pulse-soft" style={{ animationDelay: '1s' }} />
+          <div
+            className="absolute -bottom-8 -left-8 w-24 h-24 rounded-full bg-white/5 animate-pulse-soft"
+            style={{ animationDelay: "1s" }}
+          />
         </motion.div>
 
         {/* Quick Stats Grid */}
@@ -118,20 +130,29 @@ const DashboardOverview = () => {
               <Card className="fitness-card hover:scale-105 transition-transform duration-300">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <div className={`w-12 h-12 rounded-xl ${stat.bgColor} flex items-center justify-center`}>
+                    <div
+                      className={`w-12 h-12 rounded-xl ${stat.bgColor} flex items-center justify-center`}
+                    >
                       <stat.icon className={`h-6 w-6 ${stat.color}`} />
                     </div>
                     <div className="text-right">
                       <p className="text-2xl font-bold">{stat.value}</p>
-                      <p className="text-sm text-muted-foreground">of {stat.target}</p>
+                      <p className="text-sm text-muted-foreground">
+                        of {stat.target}
+                      </p>
                     </div>
                   </div>
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
                       <span>{stat.title}</span>
-                      <span className={stat.color}>{Math.min(100, stat.progress).toFixed(0)}%</span>
+                      <span className={stat.color}>
+                        {Math.min(100, stat.progress).toFixed(0)}%
+                      </span>
                     </div>
-                    <Progress value={Math.min(100, stat.progress)} className="h-2" />
+                    <Progress
+                      value={Math.min(100, stat.progress)}
+                      className="h-2"
+                    />
                   </div>
                 </CardContent>
               </Card>
@@ -161,7 +182,11 @@ const DashboardOverview = () => {
                       {todayStats.steps}/{fitnessData.goals.daily.steps}
                     </span>
                   </div>
-                  <Progress value={(todayStats.steps / fitnessData.goals.daily.steps) * 100} />
+                  <Progress
+                    value={
+                      (todayStats.steps / fitnessData.goals.daily.steps) * 100
+                    }
+                  />
                 </div>
 
                 <div className="space-y-3">
@@ -171,7 +196,11 @@ const DashboardOverview = () => {
                       {todayStats.water}/{fitnessData.goals.daily.water} glasses
                     </span>
                   </div>
-                  <Progress value={(todayStats.water / fitnessData.goals.daily.water) * 100} />
+                  <Progress
+                    value={
+                      (todayStats.water / fitnessData.goals.daily.water) * 100
+                    }
+                  />
                 </div>
 
                 <div className="space-y-3">
@@ -181,7 +210,12 @@ const DashboardOverview = () => {
                       {todayStats.calories}/{fitnessData.goals.daily.calories}
                     </span>
                   </div>
-                  <Progress value={(todayStats.calories / fitnessData.goals.daily.calories) * 100} />
+                  <Progress
+                    value={
+                      (todayStats.calories / fitnessData.goals.daily.calories) *
+                      100
+                    }
+                  />
                 </div>
 
                 <Button className="w-full btn-gradient mt-4">
@@ -249,7 +283,9 @@ const DashboardOverview = () => {
                     </div>
                     <div>
                       <p className="font-semibold">10K Steps</p>
-                      <p className="text-sm text-muted-foreground">Completed 3 days in a row</p>
+                      <p className="text-sm text-muted-foreground">
+                        Completed 3 days in a row
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -261,7 +297,9 @@ const DashboardOverview = () => {
                     </div>
                     <div>
                       <p className="font-semibold">Workout Streak</p>
-                      <p className="text-sm text-muted-foreground">5 days in a row</p>
+                      <p className="text-sm text-muted-foreground">
+                        5 days in a row
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -273,7 +311,9 @@ const DashboardOverview = () => {
                     </div>
                     <div>
                       <p className="font-semibold">Goal Master</p>
-                      <p className="text-sm text-muted-foreground">Hit all weekly targets</p>
+                      <p className="text-sm text-muted-foreground">
+                        Hit all weekly targets
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -281,6 +321,8 @@ const DashboardOverview = () => {
             </CardContent>
           </Card>
         </motion.div>
+
+
       </div>
     </div>
   );

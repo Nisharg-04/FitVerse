@@ -9,6 +9,7 @@ import {
   Search,
   Filter,
   ArrowRight,
+  X,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,8 @@ import {
   preloadMapAssets,
 } from "@/utils/mapPreloader";
 import axios from "axios";
+import QRScannerComponent from "../QRScannerComponent";
+import GymAccessHistory from "./GymAccessHistory";
 
 interface GymData {
   _id: string;
@@ -54,6 +57,7 @@ interface FormattedGym {
 
 const GymDiscovery = () => {
   const navigate = useNavigate();
+  const [isQRScannerOpen, setIsQRScannerOpen] = useState(false);
   const [nearbyGyms, setNearbyGyms] = useState<FormattedGym[]>([
     {
       id: "1",
@@ -90,7 +94,10 @@ const GymDiscovery = () => {
     },
   ]);
   const [loading, setLoading] = useState(true);
-
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 },
+  };
   useEffect(() => {
     const fetchNearbyGyms = async () => {
       try {
@@ -141,7 +148,10 @@ const GymDiscovery = () => {
               Find and check-in to gyms nearby
             </p>
           </div>
-          <Button className="bg-gradient-to-r from-primary to-secondary">
+          <Button
+            className="bg-gradient-to-r from-primary to-secondary"
+            onClick={() => setIsQRScannerOpen(true)}
+          >
             <QrCode className="h-4 w-4 mr-2" />
             QR Check-In
           </Button>
@@ -264,6 +274,42 @@ const GymDiscovery = () => {
           </CardContent>
         </Card>
       </div>
+      {/* Gym Access History */}
+      <motion.div
+        variants={item}
+        initial="hidden"
+        animate="show"
+        className="mt-10"
+      >
+        <GymAccessHistory />
+      </motion.div>
+
+      {/* QR Scanner Modal */}
+      {isQRScannerOpen && (
+        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            transition={{ duration: 0.2 }}
+            className="relative w-full max-w-2xl max-h-[90vh] bg-background rounded-2xl shadow-2xl border border-border overflow-hidden"
+          >
+            {/* Close Button */}
+            <button
+              onClick={() => setIsQRScannerOpen(false)}
+              title="Close QR Scanner"
+              className="absolute top-4 right-4 z-10 p-2 rounded-full bg-background/80 hover:bg-background transition-colors"
+            >
+              <X className="h-6 w-6 text-foreground" />
+            </button>
+
+            {/* QR Scanner Component */}
+            <div className="w-full h-full flex items-center justify-center p-6">
+              <QRScannerComponent />
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { X } from "lucide-react";
+import { X, Zap, ExternalLink } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Advertisement {
   _id: string;
@@ -135,73 +136,152 @@ const SimpleGlobalAdvertisements: React.FC = () => {
 
   return (
     <>
-      {/* Banner Ad */}
-      {showBanner && (
-        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-b shadow-lg">
-          <div className="flex items-center justify-between p-4 max-w-6xl mx-auto">
-            <div className="flex items-center space-x-4">
-              <img
-                src={currentAd.imageUrl}
-                alt={currentAd.title}
-                className="w-12 h-12 rounded object-cover"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = "/placeholder-ad.png";
-                }}
-              />
-              <div>
-                <h4 className="font-semibold text-gray-900">
-                  {currentAd.title}
-                </h4>
-                <p className="text-sm text-gray-600">{currentAd.description}</p>
-                <p className="text-xs text-gray-500">
-                  by {currentAd.advertiserName}
+      {/* Notification Banner Ad - Top Right */}
+      <AnimatePresence>
+        {showBanner && (
+          <motion.div
+            initial={{ opacity: 0, x: 400, y: 0 }}
+            animate={{ opacity: 1, x: 0, y: 0 }}
+            exit={{ opacity: 0, x: 400, y: 0 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            className="fixed top-24 right-6 z-40 max-w-sm"
+          >
+            <div className="bg-gradient-to-r from-primary/90 to-secondary/90 backdrop-blur-lg rounded-xl shadow-xl border border-primary/20 overflow-hidden hover:shadow-2xl transition-shadow">
+              {/* Content Container */}
+              <div className="p-4 space-y-3">
+                {/* Header */}
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-start gap-3 flex-1">
+                    <div className="w-12 h-12 rounded-lg bg-white/20 flex items-center justify-center flex-shrink-0">
+                      <img
+                        src={currentAd.imageUrl}
+                        alt={currentAd.title}
+                        className="w-full h-full rounded-lg object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src =
+                            "/placeholder-ad.png";
+                        }}
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Zap className="w-4 h-4 text-yellow-300 flex-shrink-0" />
+                        <h4 className="font-bold text-white text-sm truncate">
+                          {currentAd.title}
+                        </h4>
+                      </div>
+                      <p className="text-xs text-white/80 line-clamp-2">
+                        {currentAd.description}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setShowBanner(false)}
+                    className="p-1.5 hover:bg-white/20 rounded-lg transition-colors flex-shrink-0 text-white/80 hover:text-white"
+                    title="Close advertisement"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* Action Button */}
+                <a
+                  href={currentAd.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setShowBanner(false)}
+                  className="block"
+                >
+                  <button className="w-full bg-white/20 hover:bg-white/30 text-white font-semibold py-2 px-3 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm">
+                    <span>Learn More</span>
+                    <ExternalLink className="w-4 h-4" />
+                  </button>
+                </a>
+
+                {/* Footer */}
+                <p className="text-xs text-white/60 text-center">
+                  Ad by {currentAd.advertiserName}
                 </p>
               </div>
             </div>
-            <button
-              onClick={() => setShowBanner(false)}
-              className="p-2 hover:bg-gray-100 rounded transition-colors"
-              title="Close advertisement"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* Popup Ad */}
-      {showPopup && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-white rounded-xl shadow-2xl w-96 max-w-[90vw] overflow-hidden">
-            <div className="relative">
-              <img
-                src={currentAd.imageUrl}
-                alt={currentAd.title}
-                className="w-full h-48 object-cover"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = "none";
-                }}
-              />
-              <button
-                onClick={() => setShowPopup(false)}
-                className="absolute top-2 right-2 w-8 h-8 bg-black/50 text-white rounded-full flex items-center justify-center hover:bg-black/70 transition-colors"
-                title="Close advertisement"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-            <div className="p-6">
-              <h4 className="font-semibold text-gray-900 mb-2 text-lg">
-                {currentAd.title}
-              </h4>
-              <p className="text-gray-600 mb-4">{currentAd.description}</p>
-              <p className="text-sm text-gray-500">
-                by {currentAd.advertiserName}
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Popup Ad - Full Screen Modal (unchanged) */}
+      <AnimatePresence>
+        {showPopup && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="bg-gradient-to-br from-background to-background/95 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-primary/20"
+            >
+              {/* Image Container */}
+              <div className="relative h-64 overflow-hidden bg-gradient-to-br from-primary/10 to-secondary/10">
+                <img
+                  src={currentAd.imageUrl}
+                  alt={currentAd.title}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = "none";
+                  }}
+                />
+                {/* Close Button */}
+                <button
+                  onClick={() => setShowPopup(false)}
+                  className="absolute top-4 right-4 w-10 h-10 bg-background/90 text-foreground rounded-full flex items-center justify-center hover:bg-background transition-colors shadow-lg"
+                  title="Close advertisement"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Content */}
+              <div className="p-6 space-y-4">
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Zap className="w-5 h-5 text-secondary" />
+                    <h3 className="font-bold text-lg text-foreground">
+                      {currentAd.title}
+                    </h3>
+                  </div>
+                  <p className="text-muted-foreground">
+                    {currentAd.description}
+                  </p>
+                </div>
+
+                {/* Action Button */}
+                <a
+                  href={currentAd.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setShowPopup(false)}
+                  className="block"
+                >
+                  <button className="w-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white font-bold py-3 px-4 rounded-lg transition-opacity flex items-center justify-center gap-2">
+                    <span>Explore Now</span>
+                    <ExternalLink className="w-4 h-4" />
+                  </button>
+                </a>
+
+                {/* Footer */}
+                <p className="text-xs text-muted-foreground text-center border-t border-border/50 pt-3">
+                  Advertisement by {currentAd.advertiserName}
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 };

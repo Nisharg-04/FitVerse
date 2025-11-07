@@ -37,9 +37,15 @@ const initialState: GymState = {
 export const addGym = createAsyncThunk(
   "gym/addGym",
   async (formData: FormData) => {
+    console.log("FormData entries:");
+    for (const pair of formData.entries()) {
+      console.log(`${pair[0]}: ${pair[1]}`);
+    }
   const response = await axios.post(`${API_URL}/gym/add-gym`, formData, {
                 withCredentials: true
-            });
+  });
+    
+    
             return response.data;
   }
 );

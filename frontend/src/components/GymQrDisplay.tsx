@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 
-export default function GymQrDisplay() {
+export default function GymQrDisplay({ id }) {
   const [qrData, setQrData] = useState(null);
   const server = import.meta.env.VITE_BACKEND_URL;
 
   const fetchQr = async () => {
-    const res = await fetch(`${server}/gym/qrcode/68a7b5a37a99b05a75ca85e3`); // example gym ID
+    const res = await fetch(`${server}/gym/qrcode/${id}`); // example gym ID
     const data = await res.json();
     console.log(data);
     setQrData(data.data.qrCodeImage);
