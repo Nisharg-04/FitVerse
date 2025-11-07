@@ -102,7 +102,7 @@ const GymDiscovery = () => {
     const fetchNearbyGyms = async () => {
       try {
         const { data } = await axios.post(
-          "http://localhost:8000/api/gym/nearby-gyms",
+          `${import.meta.env.VITE_BACKEND_URL}/gym/nearby-gyms`,
           {
             longitude: 72.92299183119165,
             latitude: 22.550397327332604,

@@ -162,7 +162,7 @@ const FitnessCameraFeed = ({
       console.log("Meal Type:", nutritionFormData.mealType);
 
       const response = await fetch(
-        "http://localhost:8000/api/nutrition/addNutrition",
+        `${import.meta.env.VITE_BACKEND_URL}/nutrition/addNutrition`,
         {
           method: "POST",
           body: formDataToSend,

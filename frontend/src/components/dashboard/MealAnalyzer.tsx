@@ -194,7 +194,7 @@ const MealAnalyzer = () => {
     try {
       setIsLoadingHistory(true);
       const response = await fetch(
-        "http://localhost:8000/api/nutrition/getNutritionHistory",
+        `${import.meta.env.VITE_BACKEND_URL}/nutrition/getNutritionHistory`,
         {
           method: "GET",
           credentials: "include", // Include cookies for session management
@@ -277,7 +277,7 @@ const MealAnalyzer = () => {
       console.log("Sending manual meal data:", nutritionData);
 
       const response = await fetch(
-        "http://localhost:8000/api/nutrition/addNutritionManual",
+        `${import.meta.env.VITE_BACKEND_URL}/nutrition/addNutritionManual`,
         {
           method: "POST",
           headers: {

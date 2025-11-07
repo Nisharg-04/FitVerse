@@ -72,8 +72,13 @@ const DeliveryMap: React.FC<DeliveryMapProps> = ({
   width = 80,
 }) => {
   const navigate = useNavigate();
-  const defaultPosition = useMemo<LatLngExpression>(() => [22.3072, 73.1812], []); // fallback: Vadodara
-  const [userPosition, setUserPosition] = useState<LatLngExpression | null>(null);
+  const defaultPosition = useMemo<LatLngExpression>(
+    () => [22.3072, 73.1812],
+    []
+  ); // fallback: Vadodara
+  const [userPosition, setUserPosition] = useState<LatLngExpression | null>(
+    null
+  );
   const [loading, setLoading] = useState(true);
 
   const [gymsCoord, setGymsCoord] = useState<
@@ -107,7 +112,7 @@ const DeliveryMap: React.FC<DeliveryMapProps> = ({
     const options = {
       enableHighAccuracy: true,
       timeout: 10000, // Increased timeout
-      maximumAge: 0
+      maximumAge: 0,
     };
 
     const watchId = navigator.geolocation.watchPosition(
@@ -129,12 +134,14 @@ const DeliveryMap: React.FC<DeliveryMapProps> = ({
         console.log("No user position yet");
         return;
       }
-      
+
       try {
         console.log("Fetching gyms for position:", userPosition);
-        const coords = Array.isArray(userPosition) ? userPosition : [userPosition.lat, userPosition.lng];
+        const coords = Array.isArray(userPosition)
+          ? userPosition
+          : [userPosition.lat, userPosition.lng];
         const res = await axios.post(
-          "http://localhost:8000/api/gym/nearby-gyms",
+          `${import.meta.env.VITE_BACKEND_URL}/gym/nearby-gyms`,
           {
             latitude: coords[0],
             longitude: coords[1],
@@ -170,7 +177,7 @@ const DeliveryMap: React.FC<DeliveryMapProps> = ({
   const fetchGymDetails = async (id: string) => {
     try {
       const res = await axios
-        .get(`http://localhost:8000/api/gym/${id}`)
+        .get(`${import.meta.env.VITE_BACKEND_URL}/gym/${id}`)
         .then((res) => res.data)
         .then((data) => data.data);
       console.log(res);
@@ -193,12 +200,14 @@ const DeliveryMap: React.FC<DeliveryMapProps> = ({
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center" style={{ height: `${height}rem`, width: `${width}%` }}>
+      <div
+        className="flex items-center justify-center"
+        style={{ height: `${height}rem`, width: `${width}%` }}
+      >
         <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
       </div>
     );
   }
-  
 
   return (
     <MapContainer
@@ -207,10 +216,10 @@ const DeliveryMap: React.FC<DeliveryMapProps> = ({
       style={{
         height: `${height}rem`,
         width: `${width}%`,
-        minHeight: '300px'
+        minHeight: "300px",
       }}
     >
-      <TileLayer 
+      <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       />
@@ -237,23 +246,37 @@ const DeliveryMap: React.FC<DeliveryMapProps> = ({
           <Popup>
             {selectedGym && selectedGym._id === gym._id ? (
               <div className="p-3 max-w-[280px] bg-white rounded-lg shadow-sm">
-                <h3 className="text-lg font-bold mb-3 text-primary border-b pb-2">{selectedGym.name}</h3>
+                <h3 className="text-lg font-bold mb-3 text-primary border-b pb-2">
+                  {selectedGym.name}
+                </h3>
                 <div className="space-y-3 text-sm">
                   <p className="flex items-start group transition-all duration-200 hover:bg-gray-50 p-1 rounded">
-                    <span className="font-semibold min-w-[70px] text-gray-700">Address:</span>
-                    <span className="ml-2 text-gray-600 group-hover:text-gray-900">{selectedGym.address}</span>
+                    <span className="font-semibold min-w-[70px] text-gray-700">
+                      Address:
+                    </span>
+                    <span className="ml-2 text-gray-600 group-hover:text-gray-900">
+                      {selectedGym.address}
+                    </span>
                   </p>
                   <p className="flex items-start group transition-all duration-200 hover:bg-gray-50 p-1 rounded">
-                    <span className="font-semibold min-w-[70px] text-gray-700">Owner:</span>
-                    <span className="ml-2 text-gray-600 group-hover:text-gray-900">{selectedGym.owner}</span>
+                    <span className="font-semibold min-w-[70px] text-gray-700">
+                      Owner:
+                    </span>
+                    <span className="ml-2 text-gray-600 group-hover:text-gray-900">
+                      {selectedGym.owner}
+                    </span>
                   </p>
                   <p className="flex items-start group transition-all duration-200 hover:bg-gray-50 p-1 rounded">
-                    <span className="font-semibold min-w-[70px] text-gray-700">Contact:</span>
-                    <span className="ml-2 text-gray-600 group-hover:text-gray-900">{selectedGym.contact}</span>
+                    <span className="font-semibold min-w-[70px] text-gray-700">
+                      Contact:
+                    </span>
+                    <span className="ml-2 text-gray-600 group-hover:text-gray-900">
+                      {selectedGym.contact}
+                    </span>
                   </p>
                 </div>
                 <div className="mt-4 pt-3 border-t">
-                  <button 
+                  <button
                     onClick={(e) => {
                       e.preventDefault(); // Prevent popup from closing
                       navigate(`/gym/${selectedGym._id}`);
@@ -264,13 +287,18 @@ const DeliveryMap: React.FC<DeliveryMapProps> = ({
                   >
                     <span className="relative z-10 flex items-center justify-center gap-2">
                       View Details
-                      <svg 
-                        className="w-4 h-4 transition-transform duration-200 transform group-hover:translate-x-1" 
-                        fill="none" 
-                        viewBox="0 0 24 24" 
+                      <svg
+                        className="w-4 h-4 transition-transform duration-200 transform group-hover:translate-x-1"
+                        fill="none"
+                        viewBox="0 0 24 24"
                         stroke="currentColor"
                       >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
                       </svg>
                     </span>
                     <div className="absolute inset-0 bg-white/10 transform -skew-x-12 -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
@@ -281,8 +309,18 @@ const DeliveryMap: React.FC<DeliveryMapProps> = ({
               <div className="p-3 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer">
                 <span className="font-medium text-primary">{gym.name}</span>
                 <p className="text-sm text-gray-600 mt-2 flex items-center gap-1.5">
-                  <svg className="w-4 h-4 animate-pulse text-primary/70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <svg
+                    className="w-4 h-4 animate-pulse text-primary/70"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                   Click to view more details
                 </p>
