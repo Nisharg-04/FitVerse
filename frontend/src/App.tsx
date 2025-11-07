@@ -35,6 +35,7 @@ import { useDispatch } from "react-redux";
 import { getUser } from "./redux/slices/authSlice";
 import { useEffect } from "react";
 import SimpleGlobalAdvertisements from "./components/SimpleGlobalAdvertisements";
+import FitnessAIChatbot from "./components/FitnessAIChatbot";
 
 const App: React.FC = () => {
   const [selectedPosition, setSelectedPosition] =
@@ -52,6 +53,10 @@ const App: React.FC = () => {
         <BrowserRouter>
           {/* Simple Global Advertisement System */}
           <SimpleGlobalAdvertisements />
+
+          {/* Fitness AI Chatbot */}
+          <FitnessAIChatbot />
+
           <Routes>
             <Route path="/" element={<Layout />}>
               {/* Public Routes */}
