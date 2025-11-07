@@ -436,9 +436,9 @@ const MealAnalyzer = () => {
           {/* Meal Logging */}
           <div className="lg:col-span-2">
             <Card className="fitness-card">
-              <CardHeader>
-                <CardTitle>Today's Meals</CardTitle>
-                <div className="flex gap-2">
+              <CardHeader className="pb-3">
+                <CardTitle className="mb-4">Today's Meals</CardTitle>
+                <div className="flex gap-2 flex-wrap">
                   {mealTimes.map((meal) => (
                     <Button
                       key={meal.value}
@@ -446,39 +446,59 @@ const MealAnalyzer = () => {
                         selectedMeal === meal.value ? "default" : "outline"
                       }
                       size="sm"
+                      className="text-xs sm:text-sm"
                       onClick={() => setSelectedMeal(meal.value)}
                     >
-                      {meal.icon} {meal.name}
+                      <span className="hidden sm:inline">{meal.icon}</span>
+                      <span className="sm:hidden">{meal.icon}</span>
+                      <span className="hidden xs:inline ml-1">{meal.name}</span>
                     </Button>
                   ))}
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {todaysMeals[selectedMeal as keyof typeof todaysMeals]?.map(
                     (meal, index) => (
                       <motion.div
                         key={index}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        className="flex justify-between items-center p-3 rounded-lg bg-muted/50"
+                        className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 p-3 rounded-lg bg-muted/50"
                       >
-                        <div>
-                          <h4 className="font-medium">{meal.name}</h4>
-                          <p className="text-sm text-muted-foreground">
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-medium text-sm sm:text-base truncate">
+                            {meal.name}
+                          </h4>
+                          <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2">
                             {meal.calories} cal • {meal.protein}g protein •{" "}
-                            {meal.carbs}g carbs • {meal.fat}g fat
+                            {meal.carbs}g carbs
+                            <span className="hidden sm:inline">
+                              {" "}
+                              • {meal.fat}g fat
+                            </span>
                           </p>
                         </div>
-                        <Badge variant="secondary">{meal.calories} cal</Badge>
+                        <Badge
+                          variant="secondary"
+                          className="w-fit text-xs sm:text-sm"
+                        >
+                          {meal.calories} cal
+                        </Badge>
                       </motion.div>
                     )
                   )}
 
-                  <Button variant="outline" className="w-full mt-4">
+                  <Button
+                    variant="outline"
+                    className="w-full mt-4 text-xs sm:text-sm"
+                  >
                     <Plus className="h-4 w-4 mr-2" />
-                    Add Food to{" "}
-                    {mealTimes.find((m) => m.value === selectedMeal)?.name}
+                    <span className="hidden sm:inline">
+                      Add Food to{" "}
+                      {mealTimes.find((m) => m.value === selectedMeal)?.name}
+                    </span>
+                    <span className="sm:hidden">Add Food</span>
                   </Button>
                 </div>
               </CardContent>
