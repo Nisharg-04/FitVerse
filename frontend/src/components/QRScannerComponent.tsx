@@ -58,6 +58,11 @@ export default function QRScannerComponent() {
           onError={handleError}
           onScan={handleScan}
           style={{ width: "300px" }}
+          constraints={{
+            video: {
+              facingMode: "environment", // Use back camera on mobile
+            },
+          }}
         />
       ) : (
         <div className="text-green-600 font-medium">

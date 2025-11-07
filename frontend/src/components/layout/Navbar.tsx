@@ -79,17 +79,6 @@ const Navbar: React.FC = () => {
 
     return (
       <>
-        <Link to="/cart">
-          <Button variant="ghost" size="icon" className="relative">
-            <ShoppingCart className="h-4 w-4" />
-            {cartItemsCount > 0 && (
-              <Badge className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 text-[10px]">
-                {cartItemsCount}
-              </Badge>
-            )}
-          </Button>
-        </Link>
-
         <Link to="/notifications">
           <Button variant="ghost" size="icon" className="relative">
             <Bell className="h-4 w-4" />
@@ -310,46 +299,74 @@ const Navbar: React.FC = () => {
               </Link>
             ))}
 
+          {/* Role-based Dashboard Links */}
+          {isAuthenticated && user?.role === "admin" && (
+            <Link
+              to="/admin"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className={cn(
+                "block py-2 text-base font-medium transition-colors hover:text-primary",
+                pathname.startsWith("/admin")
+                  ? "text-foreground"
+                  : "text-foreground/60"
+              )}
+            >
+              Admin Panel
+            </Link>
+          )}
+          {isAuthenticated && user?.role === "user" && (
+            <Link
+              to="/dashboard"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className={cn(
+                "block py-2 text-base font-medium transition-colors hover:text-primary",
+                pathname.startsWith("/dashboard")
+                  ? "text-foreground"
+                  : "text-foreground/60"
+              )}
+            >
+              Dashboard
+            </Link>
+          )}
+          {isAuthenticated && user?.role === "owner" && (
+            <Link
+              to="/gymdashboard"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className={cn(
+                "block py-2 text-base font-medium transition-colors hover:text-primary",
+                pathname.startsWith("/gymdashboard")
+                  ? "text-foreground"
+                  : "text-foreground/60"
+              )}
+            >
+              Gym Dashboard
+            </Link>
+          )}
+
+          {/* After Navigation Items */}
+          {afterNavItems
+            .filter((item) => !item.protected || isAuthenticated)
+            .map((item, idx) => (
+              <Link
+                key={`mobile-after-link-${idx}`}
+                to={item.link}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={cn(
+                  "block py-2 text-base font-medium transition-colors hover:text-primary",
+                  pathname === item.link
+                    ? "text-foreground"
+                    : "text-foreground/60"
+                )}
+              >
+                {item.title}
+              </Link>
+            ))}
+
           {/* Auth Section */}
           <div className="flex w-full flex-col gap-4 pt-6 border-t border-border">
             {isAuthenticated ? (
               <>
                 <div className="flex flex-col gap-3">
-                  <Link to="/cart" onClick={() => setIsMobileMenuOpen(false)}>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="relative w-full justify-start"
-                    >
-                      <ShoppingCart className="h-4 w-4 mr-2" />
-                      Cart
-                      {cartItemsCount > 0 && (
-                        <Badge className="ml-auto h-5 w-5 flex items-center justify-center p-0 text-xs bg-primary">
-                          {cartItemsCount}
-                        </Badge>
-                      )}
-                    </Button>
-                  </Link>
-
-                  <Link
-                    to="/notifications"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="relative w-full justify-start"
-                    >
-                      <Bell className="h-4 w-4 mr-2" />
-                      Alerts
-                      {unreadCount > 0 && (
-                        <Badge className="ml-auto h-5 w-5 flex items-center justify-center p-0 text-xs bg-destructive">
-                          {unreadCount}
-                        </Badge>
-                      )}
-                    </Button>
-                  </Link>
-
                   <Link
                     to="/profile"
                     onClick={() => setIsMobileMenuOpen(false)}
