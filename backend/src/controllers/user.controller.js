@@ -136,8 +136,8 @@ const loginUser = asyncHandler(async (req, res) => {
   // set cookies
   const options = {
     httpOnly: true,
-    secure: false, // ✅ Only send cookie over HTTPS
-    sameSite: "lax", // ✅ Allow cross-site cookies (e.g., Vercel -> Render)
+    secure: true, // ✅ Only send cookie over HTTPS
+    sameSite: "none", // ✅ Allow cross-site cookies (e.g., Vercel -> Render)
     maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
   };
 
@@ -218,9 +218,9 @@ const logoutUser = asyncHandler(async (req, res) => {
   // clear cookies
   const options = {
     httpOnly: true,
-    secure: false,
-    sameSite: "strict",
-    maxAge: 1000 * 60 * 60 * 24 * 7,
+    secure: true, // ✅ Only send cookie over HTTPS
+    sameSite: "none", // ✅ Allow cross-site cookies (e.g., Vercel -> Render)
+    maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
   };
 
   // send response
@@ -327,8 +327,8 @@ const googleOAuth = asyncHandler(async (req, res) => {
         ;
         const options = {
           httpOnly: true,
-          secure: false,
-          sameSite: "strict",
+          secure: true, // ✅ Only send cookie over HTTPS
+          sameSite: "none", // ✅ Allow cross-site cookies (e.g., Vercel -> Render)
           maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
         };
 
@@ -363,11 +363,10 @@ const googleOAuth = asyncHandler(async (req, res) => {
 
         const options = {
           httpOnly: true,
-          secure: false,
-          sameSite: "strict",
+          secure: true, // ✅ Only send cookie over HTTPS
+          sameSite: "none", // ✅ Allow cross-site cookies (e.g., Vercel -> Render)
           maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
         };
-
         return res
           .status(200)
           .cookie("accessToken", accessToken, options)
