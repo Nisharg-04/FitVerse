@@ -56,7 +56,7 @@ const GymDetails = () => {
     const fetchGymDetails = async () => {
       try {
         const { data } = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/api/gym/${gymId}`,
+          `${import.meta.env.VITE_BACKEND_URL}/gym/${gymId}`,
           {
             withCredentials: true,
           }
