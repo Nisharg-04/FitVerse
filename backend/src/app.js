@@ -7,11 +7,16 @@ import { ApiResponse } from "./utils/ApiResponse.js";
 const app = express();
 
 // CORS options on the backend
-const corsOptions = {
-  origin: `${process.env.FRONTEND_HOST}:${process.env.FRONTEND_PORT}`, // Match the frontend origin
-  credentials: true, // Allow sending cookies
-};
 
+
+
+const corsOptions = {
+  origin:
+    process.env.NODE_ENV === "production"
+      ? `${process.env.FRONTEND_HOST}`
+      : `${process.env.FRONTEND_HOST}:${process.env.FRONTEND_PORT}`,
+  credentials: true,
+};
 // CORS middleware
 app.use(cors(corsOptions));
 
