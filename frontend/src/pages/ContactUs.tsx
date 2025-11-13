@@ -23,14 +23,14 @@ const ContactUs = () => {
 
     try {
       // TODO: Implement contact form submission
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       toast({
         title: "Message Sent!",
         description: "We'll get back to you as soon as possible.",
         variant: "default",
       });
-      
+
       setFormData({
         name: "",
         email: "",
@@ -52,7 +52,7 @@ const ContactUs = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
@@ -65,7 +65,7 @@ const ContactUs = () => {
         <div className="text-center mb-16">
           <h1 className="text-4xl font-bold mb-4">Get in Touch</h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Have questions about FitVerse? We're here to help! Send us a message 
+            Have questions about FitVerse? We're here to help! Send us a message
             and we'll get back to you as soon as possible.
           </p>
         </div>
@@ -79,11 +79,11 @@ const ContactUs = () => {
                 <div>
                   <h3 className="font-semibold mb-2">Visit Us</h3>
                   <p className="text-muted-foreground">
-                    123 Fitness Street
+                    BVM Engineering College
                     <br />
-                    Tech Hub, Digital City
+                    Vallabh Vidyanagar, Anand - 388 120
                     <br />
-                    12345
+                    Gujarat, India
                   </p>
                 </div>
               </div>
@@ -95,9 +95,7 @@ const ContactUs = () => {
                 <div>
                   <h3 className="font-semibold mb-2">Email Us</h3>
                   <p className="text-muted-foreground">
-                    support@fitverse.com
-                    <br />
-                    business@fitverse.com
+                    fitverse.team@gmail.com
                   </p>
                 </div>
               </div>
@@ -109,9 +107,11 @@ const ContactUs = () => {
                 <div>
                   <h3 className="font-semibold mb-2">Call Us</h3>
                   <p className="text-muted-foreground">
-                    +1 (555) 123-4567
+                    +91 83205 22371
                     <br />
-                    Mon - Fri, 9am - 6pm
+                    +91 95125 15257
+                    <br />
+                    +91 94265 68151
                   </p>
                 </div>
               </div>
@@ -172,11 +172,7 @@ const ContactUs = () => {
                 />
               </div>
 
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={loading}
-              >
+              <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? "Sending..." : "Send Message"}
               </Button>
             </form>
@@ -184,18 +180,29 @@ const ContactUs = () => {
         </div>
 
         {/* Map Section */}
-        <div className="mt-16">
+        <div className="mt-16 ">
           <Card className="p-4 h-[400px] overflow-hidden">
+            {/* Embed BVM Engineering College location */}
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d387193.305935303!2d-74.25986548248684!3d40.69714941932609!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c24fa5d33f083b%3A0xc80b8f06e177fe62!2sNew%20York%2C%20NY%2C%20USA!5e0!3m2!1sen!2sin!4v1650921*******"
-              width="100%"
-              height="100%"
-              style={{ border: 0 }}
+              src="https://www.google.com/maps?q=BVM+Engineering+College+Vallabh+Vidyanagar+Anand+Gujarat+India&output=embed"
+              className="w-full h-full border-0"
               allowFullScreen
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              title="FitVerse Location"
+              title="FitVerse Location - BVM Engineering College"
             />
+
+            {/* Fallback link in case the embed is blocked or fails to load */}
+            {/* <div className="mt-2 text-sm text-muted-foreground">
+              <a
+                href="https://www.google.com/maps?q=BVM+Engineering+College+Vallabh+Vidyanagar+Anand+Gujarat+India"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary underline"
+              >
+                Open in Google Maps
+              </a>
+            </div> */}
           </Card>
         </div>
       </div>

@@ -9,7 +9,7 @@ const AboutUs = () => {
     "Transform Your Life",
     "Strength in Community",
     "Your Fitness Journey Starts Here",
-    "FitVerse - Your Digital Fitness Partner"
+    "FitVerse - Your Digital Fitness Partner",
   ];
 
   return (
@@ -29,8 +29,9 @@ const AboutUs = () => {
                 Get Fit, Feel Confident
               </h1>
               <p className="mt-6 text-xl font-light max-w-2xl mx-auto">
-                Welcome to FitVerse, where technology meets fitness to create a 
-                community of motivated individuals striving for their best selves.
+                Welcome to FitVerse, where technology meets fitness to create a
+                community of motivated individuals striving for their best
+                selves.
               </p>
             </motion.div>
           </div>
@@ -44,16 +45,17 @@ const AboutUs = () => {
             <Card className="p-8 hover:shadow-lg transition-shadow">
               <h2 className="text-3xl font-bold mb-6">Our Mission</h2>
               <p className="text-muted-foreground leading-relaxed">
-                At FitVerse, we're committed to democratizing fitness by providing 
-                accessible, intelligent, and personalized solutions that empower 
-                individuals to take control of their health journey.
+                At FitVerse, we're committed to democratizing fitness by
+                providing accessible, intelligent, and personalized solutions
+                that empower individuals to take control of their health
+                journey.
               </p>
             </Card>
             <Card className="p-8 hover:shadow-lg transition-shadow">
               <h2 className="text-3xl font-bold mb-6">Our Vision</h2>
               <p className="text-muted-foreground leading-relaxed">
-                We envision a world where everyone has the tools, knowledge, and 
-                support they need to achieve their fitness goals, fostering a 
+                We envision a world where everyone has the tools, knowledge, and
+                support they need to achieve their fitness goals, fostering a
                 global community of healthy, confident individuals.
               </p>
             </Card>
@@ -64,20 +66,24 @@ const AboutUs = () => {
       {/* Core Values */}
       <section className="py-20 px-4 bg-muted/50">
         <div className="container mx-auto">
-          <h2 className="text-4xl font-bold text-center mb-16">Our Core Values</h2>
+          <h2 className="text-4xl font-bold text-center mb-16">
+            Our Core Values
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <Card className="p-6 text-center hover:shadow-lg transition-all hover:-translate-y-1">
               <Heart className="w-12 h-12 mx-auto mb-4 text-primary" />
               <h3 className="text-xl font-semibold mb-3">Passion</h3>
               <p className="text-muted-foreground">
-                We're passionate about fitness and helping others achieve their goals
+                We're passionate about fitness and helping others achieve their
+                goals
               </p>
             </Card>
             <Card className="p-6 text-center hover:shadow-lg transition-all hover:-translate-y-1">
               <Activity className="w-12 h-12 mx-auto mb-4 text-primary" />
               <h3 className="text-xl font-semibold mb-3">Innovation</h3>
               <p className="text-muted-foreground">
-                Constantly evolving and improving our technology for better results
+                Constantly evolving and improving our technology for better
+                results
               </p>
             </Card>
             <Card className="p-6 text-center hover:shadow-lg transition-all hover:-translate-y-1">
@@ -101,48 +107,53 @@ const AboutUs = () => {
       {/* Team Section */}
       <section className="py-20 px-4 bg-background">
         <div className="container mx-auto">
-          <h2 className="text-4xl font-bold text-center mb-16">Meet Our Team</h2>
+          <h2 className="text-4xl font-bold text-center mb-16">
+            Meet Our Team
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <Card className="p-6 text-center hover:shadow-lg transition-all hover:-translate-y-1">
               <div className="w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden">
-                <img 
-                  src="https://api.dicebear.com/7.x/avataaars/svg?seed=John" 
-                  alt="Team member" 
+                <img
+                  src="/nisharg.jpg"
+                  alt="Nisharg Soni"
                   className="w-full h-full object-cover"
                 />
               </div>
-              <h3 className="text-xl font-semibold mb-2">John Doe</h3>
-              <p className="text-primary mb-2">Founder & CEO</p>
+              <h3 className="text-xl font-semibold mb-2">Nisharg Soni</h3>
+              <p className="text-primary mb-2">Developer &amp; Co-founder</p>
               <p className="text-muted-foreground">
-                Passionate about making fitness accessible to everyone
+                Full-stack developer focused on building delightful fitness
+                experiences
               </p>
             </Card>
+
             <Card className="p-6 text-center hover:shadow-lg transition-all hover:-translate-y-1">
               <div className="w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden">
-                <img 
-                  src="https://api.dicebear.com/7.x/avataaars/svg?seed=Jane" 
-                  alt="Team member" 
+                <img
+                  src="/ayush.jpg"
+                  alt="Ayush Sarvaiya"
                   className="w-full h-full object-cover"
                 />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Jane Smith</h3>
-              <p className="text-primary mb-2">Head of Technology</p>
+              <h3 className="text-xl font-semibold mb-2">Ayush Sarvaiya</h3>
+              <p className="text-primary mb-2">Developer &amp; Co-founder</p>
               <p className="text-muted-foreground">
-                Leading our tech innovation for smarter fitness solutions
+                Passionate about frontend UX and performance optimizations
               </p>
             </Card>
+
             <Card className="p-6 text-center hover:shadow-lg transition-all hover:-translate-y-1">
               <div className="w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden">
-                <img 
-                  src="https://api.dicebear.com/7.x/avataaars/svg?seed=Mike" 
-                  alt="Team member" 
+                <img
+                  src="/dakshil.jpg"
+                  alt="Dakshil Gorasiya"
                   className="w-full h-full object-cover"
                 />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Mike Johnson</h3>
-              <p className="text-primary mb-2">Fitness Director</p>
+              <h3 className="text-xl font-semibold mb-2">Dakshil Gorasiya</h3>
+              <p className="text-primary mb-2">Developer &amp; Co-founder</p>
               <p className="text-muted-foreground">
-                Expert in creating effective fitness programs
+                Focused on backend services, integrations, and reliability
               </p>
             </Card>
           </div>
@@ -152,9 +163,11 @@ const AboutUs = () => {
       {/* Join Us Banner */}
       <section className="py-20 px-4 bg-primary text-white">
         <div className="container mx-auto text-center">
-          <h2 className="text-4xl font-bold mb-6">Join the FitVerse Community</h2>
+          <h2 className="text-4xl font-bold mb-6">
+            Join the FitVerse Community
+          </h2>
           <p className="text-xl mb-8 max-w-2xl mx-auto">
-            Start your fitness journey today and become part of a community that 
+            Start your fitness journey today and become part of a community that
             supports and motivates each other to achieve their fitness goals.
           </p>
           <Award className="w-16 h-16 mx-auto opacity-50" />
