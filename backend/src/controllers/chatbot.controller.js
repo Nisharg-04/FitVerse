@@ -44,7 +44,7 @@ const FITNESS_KEYWORDS = [
 
 // Greeting keywords - allow these even if not fitness-related
 const GREETING_KEYWORDS = [
-    "hi", "hello", "hey", "greetings", "what's up", "howdy", "good morning", "good afternoon", 
+    "hi", "hello", "hey", "greetings", "what's up", "howdy", "good morning", "good afternoon",
     "good evening", "sup", "yo", "hiya", "morning", "evening", "afternoon"
 ];
 

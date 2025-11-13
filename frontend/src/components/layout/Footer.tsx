@@ -1,57 +1,57 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { 
-  Dumbbell, 
-  Facebook, 
-  Instagram, 
-  Twitter, 
-  Youtube, 
-  Mail, 
-  Phone, 
+import React from "react";
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import {
+  Dumbbell,
+  Facebook,
+  Instagram,
+  Twitter,
+  Youtube,
+  Mail,
+  Phone,
   MapPin,
-  Heart
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+  Heart,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 const Footer = () => {
   const footerLinks = {
     product: [
-      { name: 'Gym Finder', href: '/gyms' },
-      { name: 'Workout Tracker', href: '/workouts' },
-      { name: 'Meal Planner', href: '/meals' },
-      { name: 'Progress Analytics', href: '/analytics' },
-      { name: 'Community', href: '/community' }
+      { name: "Gym Finder", href: "/gyms" },
+      { name: "Workout Tracker", href: "/workouts" },
+      { name: "Meal Planner", href: "/meals" },
+      { name: "Progress Analytics", href: "/analytics" },
+      { name: "Community", href: "/community" },
     ],
     company: [
-      { name: 'About Us', href: '/about' },
-      { name: 'Careers', href: '/careers' },
-      { name: 'Press Kit', href: '/press' },
-      { name: 'Partner Gyms', href: '/partners' },
-      { name: 'Become Partner', href: '/partner-signup' }
+      { name: "About Us", href: "/about" },
+      { name: "Careers", href: "/careers" },
+      { name: "Press Kit", href: "/press" },
+      { name: "Partner Gyms", href: "/partners" },
+      { name: "Become Partner", href: "/partner-signup" },
     ],
     support: [
-      { name: 'Help Center', href: '/help' },
-      { name: 'Safety', href: '/safety' },
-      { name: 'Community Guidelines', href: '/guidelines' },
-      { name: 'Contact Us', href: '/contact' },
-      { name: 'Bug Reports', href: '/bugs' }
+      { name: "Help Center", href: "/help" },
+      { name: "Safety", href: "/safety" },
+      { name: "Community Guidelines", href: "/guidelines" },
+      { name: "Contact Us", href: "/contact" },
+      { name: "Bug Reports", href: "/bugs" },
     ],
     legal: [
-      { name: 'Privacy Policy', href: '/privacy' },
-      { name: 'Terms of Service', href: '/terms' },
-      { name: 'Cookie Policy', href: '/cookies' },
-      { name: 'GDPR', href: '/gdpr' },
-      { name: 'Disclaimer', href: '/disclaimer' }
-    ]
+      { name: "Privacy Policy", href: "/privacy" },
+      { name: "Terms of Service", href: "/terms" },
+      { name: "Cookie Policy", href: "/cookies" },
+      { name: "GDPR", href: "/gdpr" },
+      { name: "Disclaimer", href: "/disclaimer" },
+    ],
   };
 
   const socialLinks = [
-    { icon: Facebook, href: 'https://facebook.com', label: 'Facebook' },
-    { icon: Instagram, href: 'https://instagram.com', label: 'Instagram' },
-    { icon: Twitter, href: 'https://twitter.com', label: 'Twitter' },
-    { icon: Youtube, href: 'https://youtube.com', label: 'YouTube' }
+    { icon: Facebook, href: "https://facebook.com", label: "Facebook" },
+    { icon: Instagram, href: "https://instagram.com", label: "Instagram" },
+    { icon: Twitter, href: "https://twitter.com", label: "Twitter" },
+    { icon: Youtube, href: "https://youtube.com", label: "YouTube" },
   ];
 
   return (
@@ -67,21 +67,20 @@ const Footer = () => {
             className="text-center max-w-2xl mx-auto"
           >
             <h3 className="text-3xl font-bold mb-4">
-              Stay updated with 
+              Stay updated with
               <span className="text-gradient"> FitVerse</span>
             </h3>
             <p className="text-muted-foreground mb-6">
-              Get the latest fitness tips, workout plans, and exclusive offers delivered to your inbox.
+              Get the latest fitness tips, workout plans, and exclusive offers
+              delivered to your inbox.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-              <Input 
-                type="email" 
-                placeholder="Enter your email" 
+              <Input
+                type="email"
+                placeholder="Enter your email"
                 className="flex-1"
               />
-              <Button className="btn-hero">
-                Subscribe
-              </Button>
+              <Button className="btn-hero">Subscribe</Button>
             </div>
             <p className="text-xs text-muted-foreground mt-3">
               No spam, unsubscribe at any time.
@@ -106,16 +105,18 @@ const Footer = () => {
                 <span className="text-2xl font-bold">FitVerse</span>
               </Link>
               <p className="text-muted-foreground mb-6 leading-relaxed">
-                Transform your fitness journey with our all-in-one platform. 
-                Discover gyms, track progress, plan meals, and connect with a 
+                Transform your fitness journey with our all-in-one platform.
+                Discover gyms, track progress, plan meals, and connect with a
                 global community of fitness enthusiasts.
               </p>
-              
+
               {/* Contact Info */}
               <div className="space-y-3">
                 <div className="flex items-center space-x-3 text-sm">
                   <Mail className="h-4 w-4 text-primary" />
-                  <span className="text-muted-foreground">fitverse.team@gmail.com</span>
+                  <span className="text-muted-foreground">
+                    fitverse.team@gmail.com
+                  </span>
                 </div>
                 <div className="flex items-center space-x-3 text-sm">
                   <Phone className="h-4 w-4 text-primary" />
@@ -123,7 +124,9 @@ const Footer = () => {
                 </div>
                 <div className="flex items-center space-x-3 text-sm">
                   <MapPin className="h-4 w-4 text-primary" />
-                  <span className="text-muted-foreground">BVM ENGINEERING COLLEGE, ANAND</span>
+                  <span className="text-muted-foreground">
+                    BVM ENGINEERING COLLEGE, ANAND
+                  </span>
                 </div>
               </div>
             </motion.div>
@@ -139,14 +142,18 @@ const Footer = () => {
               viewport={{ once: true }}
             >
               <h4 className="font-semibold mb-4 capitalize">
-                {category === 'product' ? 'Product' : 
-                 category === 'company' ? 'Company' :
-                 category === 'support' ? 'Support' : 'Legal'}
+                {category === "product"
+                  ? "Product"
+                  : category === "company"
+                  ? "Company"
+                  : category === "support"
+                  ? "Support"
+                  : "Legal"}
               </h4>
               <ul className="space-y-3">
                 {links.map((link) => (
                   <li key={link.name}>
-                    <Link 
+                    <Link
                       to={link.href}
                       className="text-muted-foreground hover:text-foreground transition-colors duration-200 text-sm"
                     >
@@ -201,7 +208,10 @@ const Footer = () => {
       {/* Background Elements */}
       <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-primary/5 blur-3xl animate-pulse-soft" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full bg-secondary/5 blur-3xl animate-pulse-soft" style={{ animationDelay: '2s' }} />
+        <div
+          className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full bg-secondary/5 blur-3xl animate-pulse-soft"
+          style={{ animationDelay: "2s" }}
+        />
       </div>
     </footer>
   );

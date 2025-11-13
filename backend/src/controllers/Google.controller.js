@@ -117,11 +117,10 @@ const googleOAuthLogin = asyncHandler(async (req, res) => {
         };
         const options = {
           httpOnly: true,
-          secure: false,
-          sameSite: "strict",
+          secure: true, // ✅ Only send cookie over HTTPS
+          sameSite: "none", // ✅ Allow cross-site cookies (e.g., Vercel -> Render)
           maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
         };
-
         return res
           .status(200)
           .cookie("accessToken", accessToken, options)
@@ -152,8 +151,8 @@ const googleOAuthLogin = asyncHandler(async (req, res) => {
 
         const options = {
           httpOnly: true,
-          secure: false,
-          sameSite: "strict",
+          secure: true, // ✅ Only send cookie over HTTPS
+          sameSite: "none", // ✅ Allow cross-site cookies (e.g., Vercel -> Render)
           maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
         };
 

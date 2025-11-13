@@ -240,11 +240,7 @@ const FitnessAIChatbot: React.FC = () => {
         }`}
         title={isOpen ? "Close chatbot" : "Open chatbot"}
       >
-        {isOpen ? (
-          <X className="w-6 h-6" />
-        ) : (
-          <Dumbbell className="w-6 h-6" />
-        )}
+        {isOpen ? <X className="w-6 h-6" /> : <Dumbbell className="w-6 h-6" />}
       </motion.button>
 
       {/* Notification Badge */}

@@ -39,7 +39,7 @@ const GymApprovals = () => {
   const fetchPendingGyms = async () => {
     try {
       const { data } = await axios.get(
-        "http://localhost:8000/api/admin/pending-gym-requests",
+        `${import.meta.env.VITE_BACKEND_URL}/admin/pending-gym-requests`,
         {
           withCredentials: true,
         }
