@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Apple,
@@ -32,7 +32,7 @@ const MealAnalyzer = () => {
   const [isManualFormOpen, setIsManualFormOpen] = useState(false);
   const [isSubmittingManual, setIsSubmittingManual] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
-  const [nutritionHistory, setNutritionHistory] = useState([]);
+  const [nutritionHistory, setNutritionHistory] = useState<NutritionItem[]>([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [formData, setFormData] = useState({
@@ -45,6 +45,21 @@ const MealAnalyzer = () => {
     sugar: "",
     fat: "",
   });
+
+  // Type for nutrition history items
+  type NutritionItem = {
+    _id?: string;
+    consumptionTime?: string;
+    createdAt?: string;
+    mealType?: string;
+    foodItem?: string;
+    name?: string;
+    calories?: number | string;
+    protein?: number | string;
+    carbs?: number | string;
+    fat?: number | string;
+    sugar?: number | string;
+  };
 
   // Prevent body scroll when modal is open
   useEffect(() => {
@@ -60,54 +75,84 @@ const MealAnalyzer = () => {
     };
   }, [showHistoryModal]);
 
-  const todaysMeals = {
-    breakfast: [
-      {
-        name: "Oatmeal with Berries",
-        calories: 350,
-        protein: 12,
-        carbs: 58,
-        fat: 8,
-      },
-      { name: "Greek Yogurt", calories: 130, protein: 15, carbs: 9, fat: 6 },
-    ],
-    lunch: [
-      {
-        name: "Grilled Chicken Salad",
-        calories: 420,
-        protein: 35,
-        carbs: 12,
-        fat: 18,
-      },
-      { name: "Brown Rice", calories: 220, protein: 5, carbs: 45, fat: 2 },
-    ],
-    dinner: [
-      {
-        name: "Salmon with Vegetables",
-        calories: 380,
-        protein: 28,
-        carbs: 15,
-        fat: 22,
-      },
-    ],
-    snacks: [
-      { name: "Almonds", calories: 160, protein: 6, carbs: 6, fat: 14 },
-      { name: "Apple", calories: 80, protein: 0, carbs: 21, fat: 0 },
-    ],
+  // Fetch nutrition history on component mount so Today's Meals is populated
+  useEffect(() => {
+    fetchNutritionHistory();
+  }, []);
+
+  // Refresh today's meals when a success popup appears (new meal added)
+  useEffect(() => {
+    if (showSuccessPopup) {
+      fetchNutritionHistory();
+    }
+  }, [showSuccessPopup]);
+
+  // Build today's meals dynamically from `nutritionHistory` fetched from the API.
+  // Group items by meal type (breakfast, lunch, dinner, snacks) and only include
+  // entries where consumptionTime is today.
+  const buildTodaysMeals = () => {
+    const todayStr = new Date().toISOString().split("T")[0];
+    const groups: Record<string, NutritionItem[]> = {
+      breakfast: [],
+      lunch: [],
+      dinner: [],
+      snacks: [],
+    };
+
+    nutritionHistory.forEach((item: NutritionItem) => {
+      // Normalize consumption time and meal type
+      const consumptionDate = item.consumptionTime
+        ? new Date(item.consumptionTime).toISOString().split("T")[0]
+        : null;
+
+      if (consumptionDate !== todayStr) return; // skip non-today entries
+
+      let type = (item.mealType || "").toString().toLowerCase();
+      if (type === "snack") type = "snacks";
+      if (!["breakfast", "lunch", "dinner", "snacks"].includes(type)) {
+        // fallback: place unknown types into snacks
+        type = "snacks";
+      }
+
+      groups[type].push({
+        ...item,
+        name: item.foodItem || item.name || "Unknown",
+        calories: Number(item.calories) || 0,
+        protein: Number(item.protein) || 0,
+        carbs: Number(item.carbs) || 0,
+        fat: Number(item.fat) || 0,
+      });
+    });
+
+    return groups;
   };
+
+  const todaysMeals = buildTodaysMeals();
 
   const totalCalories = Object.values(todaysMeals)
     .flat()
-    .reduce((sum, meal) => sum + meal.calories, 0);
+    .reduce(
+      (sum: number, meal: NutritionItem) => sum + (Number(meal.calories) || 0),
+      0
+    );
   const totalProtein = Object.values(todaysMeals)
     .flat()
-    .reduce((sum, meal) => sum + meal.protein, 0);
+    .reduce(
+      (sum: number, meal: NutritionItem) => sum + (Number(meal.protein) || 0),
+      0
+    );
   const totalCarbs = Object.values(todaysMeals)
     .flat()
-    .reduce((sum, meal) => sum + meal.carbs, 0);
+    .reduce(
+      (sum: number, meal: NutritionItem) => sum + (Number(meal.carbs) || 0),
+      0
+    );
   const totalFat = Object.values(todaysMeals)
     .flat()
-    .reduce((sum, meal) => sum + meal.fat, 0);
+    .reduce(
+      (sum: number, meal: NutritionItem) => sum + (Number(meal.fat) || 0),
+      0
+    );
 
   const goals = {
     calories: 2000,
@@ -123,26 +168,120 @@ const MealAnalyzer = () => {
     { name: "Snacks", value: "snacks", icon: "🍎" },
   ];
 
-  const suggestedMeals = [
-    {
-      name: "Protein Smoothie",
-      calories: 250,
-      protein: 25,
-      description: "Post-workout recovery",
-    },
-    {
-      name: "Quinoa Bowl",
-      calories: 380,
-      protein: 15,
-      description: "High fiber lunch",
-    },
-    {
-      name: "Grilled Fish",
-      calories: 320,
-      protein: 30,
-      description: "Lean dinner option",
-    },
-  ];
+  // Suggested meals will be fetched from the backend
+  type SuggestedMeal = {
+    id?: string;
+    name: string;
+    calories?: number;
+    protein?: number;
+    carbs?: number;
+    fat?: number;
+    sugar?: number;
+    reasoning?: string;
+    indianIngredients?: string[];
+    healthBenefits?: string;
+    description?: string;
+  };
+
+  // Shape returned by the suggestions API (partial/optional fields)
+  type APISuggestion = {
+    id?: string;
+    _id?: string;
+    food_name?: string;
+    name?: string;
+    description?: string;
+    calories?: number;
+    protein?: number;
+    carbs?: number;
+    fat?: number;
+    sugar?: number;
+    reasoning?: string;
+    indian_ingredients?: string[];
+    health_benefits?: string;
+  };
+
+  const [suggestedMeals, setSuggestedMeals] = useState<SuggestedMeal[]>([]);
+  const [predictedMealType, setPredictedMealType] = useState<string | null>(
+    null
+  );
+  const [predictionReasoning, setPredictionReasoning] = useState<string | null>(
+    null
+  );
+  const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
+
+  const fetchSuggestedMeals = useCallback(async () => {
+    try {
+      setIsLoadingSuggestions(true);
+      const res = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/nutrition/getFoodSuggestions`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
+
+      if (!res.ok) {
+        const errText = await res.text();
+        throw new Error(`Server error: ${res.status} - ${errText}`);
+      }
+
+      const payload = await res.json();
+
+      if (payload.success) {
+        // New API shape (demo): payload.data = { predicted_meal_type, prediction_reasoning, suggestions: [...] }
+        const data = payload.data;
+
+        // Save predicted meal type / reasoning if available
+        if (data && typeof data === "object") {
+          if (data.predicted_meal_type) {
+            setPredictedMealType(data.predicted_meal_type);
+          }
+          if (data.prediction_reasoning) {
+            setPredictionReasoning(data.prediction_reasoning);
+          }
+        }
+
+        // suggestions array is the canonical source for suggested meals
+        const suggestions = data?.suggestions;
+        if (Array.isArray(suggestions)) {
+          // Map API suggestion shape to our SuggestedMeal type
+          const mapped = suggestions.map((s: APISuggestion) => ({
+            id: s.id || s._id || undefined,
+            name: s.food_name || s.name || "Unknown",
+            description: s.description || "",
+            calories: s.calories,
+            protein: s.protein,
+            carbs: s.carbs,
+            fat: s.fat,
+            sugar: s.sugar,
+            reasoning: s.reasoning,
+            indianIngredients: s.indian_ingredients,
+            healthBenefits: s.health_benefits,
+          }));
+          setSuggestedMeals(mapped);
+        } else {
+          // backward-compat: older backend returned payload.data as array or single object
+          if (Array.isArray(data)) {
+            setSuggestedMeals(data as SuggestedMeal[]);
+          } else if (data) {
+            setSuggestedMeals([data as SuggestedMeal]);
+          } else {
+            setSuggestedMeals([]);
+          }
+        }
+      } else {
+        throw new Error(payload.message || "Failed to load suggestions");
+      }
+    } catch (error) {
+      console.error("Error fetching suggested meals:", error);
+    } finally {
+      setIsLoadingSuggestions(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchSuggestedMeals();
+  }, [fetchSuggestedMeals]);
 
   const handleAddMeal = () => {
     setIsAddMealDialogOpen(true);
@@ -514,26 +653,60 @@ const MealAnalyzer = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {suggestedMeals.map((meal, index) => (
-                  <div
-                    key={index}
-                    className="p-3 rounded-lg bg-gradient-to-r from-primary/5 to-secondary/5 border border-primary/10"
-                  >
-                    <h4 className="font-medium">{meal.name}</h4>
-                    <p className="text-sm text-muted-foreground mb-2">
-                      {meal.description}
-                    </p>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium">
-                        {meal.calories} cal • {meal.protein}g protein
-                      </span>
-                      <Button size="sm" variant="outline">
-                        Add
-                      </Button>
+              {/* Show predicted meal type / reasoning when available */}
+              {(predictedMealType || predictionReasoning) && (
+                <div className="mb-3 p-3 rounded-md bg-muted/20 border border-border/30">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <Badge variant="secondary" className="text-xs">
+                        {predictedMealType
+                          ? predictedMealType.toString()
+                          : "Suggestion"}
+                      </Badge>
+                      {predictionReasoning && (
+                        <p className="text-sm text-muted-foreground">
+                          {predictionReasoning}
+                        </p>
+                      )}
                     </div>
                   </div>
-                ))}
+                </div>
+              )}
+
+              <div className="space-y-4">
+                {isLoadingSuggestions ? (
+                  <div className="flex items-center justify-center py-6">
+                    <div className="w-5 h-5 border-2 border-green-500 border-t-transparent rounded-full animate-spin mr-3" />
+                    <span className="text-muted-foreground">
+                      Loading suggestions...
+                    </span>
+                  </div>
+                ) : Array.isArray(suggestedMeals) &&
+                  suggestedMeals.length > 0 ? (
+                  suggestedMeals.map((meal, index) => (
+                    <div
+                      key={index}
+                      className="p-3 rounded-lg bg-gradient-to-r from-primary/5 to-secondary/5 border border-primary/10"
+                    >
+                      <h4 className="font-medium">{meal.name}</h4>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        {meal.description}
+                      </p>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium">
+                          {meal.calories} cal • {meal.protein}g protein
+                        </span>
+                        <Button size="sm" variant="outline">
+                          Add
+                        </Button>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center text-sm text-muted-foreground py-4">
+                    No meal suggestions available.
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>

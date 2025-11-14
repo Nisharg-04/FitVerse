@@ -40,9 +40,9 @@ interface Advertisement {
   title: string;
   link: string;
   description: string;
-  advertisementName: string;
+  advertiserName: string;
   contactEmail: string;
-  validUpTo: string;
+  validUpto: string;
   image: string;
   isActive: boolean;
   createdAt: string;
@@ -53,9 +53,9 @@ interface CreateAdvertisementData {
   title: string;
   link: string;
   description: string;
-  advertisementName: string;
+  advertiserName: string;
   contactEmail: string;
-  validUpTo: string;
+  validUpto: string;
   image: File | null;
 }
 
@@ -72,15 +72,15 @@ const createAdvertisement = async (
   formData.append("title", data.title);
   formData.append("link", data.link);
   formData.append("description", data.description);
-  formData.append("advertisementName", data.advertisementName);
+  formData.append("advertiserName", data.advertiserName);
   formData.append("contactEmail", data.contactEmail);
-  formData.append("validUpTo", data.validUpTo);
+  formData.append("validUpto", data.validUpto);
   if (data.image) {
     formData.append("image", data.image);
   }
 
   const response = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}/api/advertisement/createAdvertisement`,
+    `${import.meta.env.VITE_BACKEND_URL}/advertisement/createAdvertisement`,
     {
       method: "POST",
       credentials: "include",
@@ -109,7 +109,7 @@ const updateAdvertisement = async (
   const response = await fetch(
     `${
       import.meta.env.VITE_BACKEND_URL
-    }/api/advertisement/updateAdvertisement/${id}`,
+    }/advertisement/updateAdvertisement/${id}`,
     {
       method: "PUT",
       credentials: "include",
@@ -129,7 +129,7 @@ const deleteAdvertisement = async (id: string): Promise<void> => {
   const response = await fetch(
     `${
       import.meta.env.VITE_BACKEND_URL
-    }/api/advertisement/deleteAdvertisement/${id}`,
+    }/advertisement/deleteAdvertisement/${id}`,
     {
       method: "DELETE",
       credentials: "include",
@@ -144,7 +144,7 @@ const deleteAdvertisement = async (id: string): Promise<void> => {
 
 const fetchAdvertisements = async (): Promise<Advertisement[]> => {
   const response = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}/api/advertisement/getMyAdvertisements`,
+    `${import.meta.env.VITE_BACKEND_URL}/advertisement/getAdvertisementByUser`,
     {
       method: "GET",
       credentials: "include",
@@ -169,9 +169,9 @@ const CreateAdvertisementForm: React.FC<{
     title: "",
     link: "",
     description: "",
-    advertisementName: "",
+    advertiserName: "",
     contactEmail: "",
-    validUpTo: "",
+    validUpto: "",
     image: null,
   });
   const [imagePreview, setImagePreview] = useState<string>("");
@@ -247,11 +247,11 @@ const CreateAdvertisementForm: React.FC<{
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="advertisementName">Advertisement Name *</Label>
+              <Label htmlFor="advertiserName">Advertisement Name *</Label>
               <Input
-                id="advertisementName"
-                name="advertisementName"
-                value={formData.advertisementName}
+                id="advertiserName"
+                name="advertiserName"
+                value={formData.advertiserName}
                 onChange={handleInputChange}
                 placeholder="Enter advertisement name"
                 required
@@ -300,12 +300,12 @@ const CreateAdvertisementForm: React.FC<{
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="validUpTo">Valid Up To *</Label>
+            <Label htmlFor="validUpto">Valid Up To *</Label>
             <Input
-              id="validUpTo"
-              name="validUpTo"
+              id="validUpto"
+              name="validUpto"
               type="date"
-              value={formData.validUpTo}
+              value={formData.validUpto}
               onChange={handleInputChange}
               required
             />
@@ -530,7 +530,7 @@ const AdvertisementCard: React.FC<{
     });
   };
 
-  const isExpired = new Date(advertisement.validUpTo) < new Date();
+  const isExpired = new Date(advertisement.validUpto) < new Date();
 
   return (
     <>
@@ -546,7 +546,7 @@ const AdvertisementCard: React.FC<{
                 {advertisement.title}
               </CardTitle>
               <CardDescription className="text-sm">
-                {advertisement.advertisementName}
+                {advertisement.advertiserName}
               </CardDescription>
             </div>
             <div className="flex gap-1">
@@ -574,7 +574,7 @@ const AdvertisementCard: React.FC<{
           <div className="flex items-center gap-4 text-xs text-muted-foreground">
             <div className="flex items-center gap-1">
               <Calendar className="w-3 h-3" />
-              <span>Valid until {formatDate(advertisement.validUpTo)}</span>
+              <span>Valid until {formatDate(advertisement.validUpto)}</span>
             </div>
             <div className="flex items-center gap-1">
               <Mail className="w-3 h-3" />

@@ -162,9 +162,9 @@ const getFoodSuggestion = asyncHandler(async (req, res) => {
   // Get the last meal type and determine next meal type
   const lastMealType = recentHistory[0].mealType.toLowerCase();
   let nextMealType;
-  
+
   // Define meal sequence
-  switch(lastMealType) {
+  switch (lastMealType) {
     case "breakfast":
       nextMealType = "lunch";
       break;
@@ -299,7 +299,7 @@ const getFoodSuggestion = asyncHandler(async (req, res) => {
 });
 
 // TODO: implement
-const addNutritionGoal = asyncHandler(async (req, res) => {});
+const addNutritionGoal = asyncHandler(async (req, res) => { });
 
 export {
   addNutrition,

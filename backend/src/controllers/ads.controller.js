@@ -11,6 +11,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 const createAdvertisement = asyncHandler(async (req, res) => {
   const { title, link, description, advertiserName, contactEmail, validUpto } =
     req.body;
+  console.log(req.body);
 
   if (
     !title ||
@@ -23,7 +24,9 @@ const createAdvertisement = asyncHandler(async (req, res) => {
     throw new ApiError(400, "All field are required");
   }
 
+
   const imageFile = req.file;
+
 
   if (!imageFile) {
     throw new ApiError(400, "Advertisement image is required");

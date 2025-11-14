@@ -234,12 +234,6 @@ const GymDiscovery = () => {
                             <ArrowRight className="h-3.5 w-3.5" />
                           </span>
                         </Button>
-                        <Button
-                          size="sm"
-                          className="flex-1 bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-opacity"
-                        >
-                          Check In
-                        </Button>
                       </div>
                     </div>
                   </CardContent>

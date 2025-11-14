@@ -21,6 +21,7 @@ import { motion } from "framer-motion";
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
 import { formatDistanceToNow } from "date-fns";
+import { useAuth } from "../hooks/useAuth";
 
 interface RechargeHistoryItem {
   _id: string;
@@ -112,6 +113,7 @@ const Dashboard: React.FC = () => {
       setBalanceLoading(false);
     }
   };
+  const { user } = useAuth();
 
   const fetchRechargeHistory = async () => {
     try {
@@ -142,11 +144,6 @@ const Dashboard: React.FC = () => {
   };
   const dashboardTabs = [
     {
-      title: "Overview",
-      value: "overview",
-      content: <DashboardOverview />,
-    },
-    {
       title: "Gym Discovery",
       value: "gyms",
       content: <GymDiscovery />,
@@ -165,72 +162,6 @@ const Dashboard: React.FC = () => {
       title: "Smart Health",
       value: "health",
       content: <SmartHealth />,
-    },
-    {
-      title: "Notifications",
-      value: "notifications",
-      content: (
-        <div className="w-full h-full rounded-2xl p-10 text-xl md:text-2xl font-bold text-foreground bg-gradient-to-br from-background via-background/95 to-background/90 border border-border/50">
-          <p className="mb-4">Notifications & Alerts</p>
-          <div className="text-base font-normal text-muted-foreground">
-            <p>
-              Manage your fitness notifications, gym offers, workout reminders,
-              and more.
-            </p>
-            <div className="mt-8 space-y-4">
-              <div className="p-4 rounded-lg bg-primary/5 border border-primary/10">
-                <h3 className="font-semibold text-primary">
-                  New Gym Nearby! 🏋️
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  PowerHouse Fitness just opened 0.3km from your location.
-                </p>
-              </div>
-              <div className="p-4 rounded-lg bg-success/5 border border-success/10">
-                <h3 className="font-semibold text-success">
-                  Goal Achieved! 🎯
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  You've reached your daily step goal of 10,000 steps!
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      ),
-    },
-    {
-      title: "Support",
-      value: "support",
-      content: (
-        <div className="w-full h-full rounded-2xl p-10 text-xl md:text-2xl font-bold text-foreground bg-gradient-to-br from-background via-background/95 to-background/90 border border-border/50">
-          <p className="mb-4">Help & Support</p>
-          <div className="text-base font-normal text-muted-foreground">
-            <p>
-              Get help with your fitness journey and connect with our support
-              team.
-            </p>
-            <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="p-6 rounded-lg bg-gradient-to-r from-primary/5 to-secondary/5 border border-primary/10">
-                <h3 className="font-semibold text-primary mb-2">FAQ</h3>
-                <p className="text-sm">
-                  Find answers to common questions about workouts, nutrition,
-                  and app features.
-                </p>
-              </div>
-              <div className="p-6 rounded-lg bg-gradient-to-r from-success/5 to-primary/5 border border-success/10">
-                <h3 className="font-semibold text-success mb-2">
-                  Contact Support
-                </h3>
-                <p className="text-sm">
-                  Get personalized help from our fitness and technical support
-                  team.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      ),
     },
   ];
 
@@ -321,6 +252,27 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-primary via-primary-light to-secondary p-8 text-white"
+        >
+          <div className="relative z-10">
+            <h1 className="text-3xl font-bold mb-2">
+              Welcome back, {user?.name}! 👋
+            </h1>
+            <p className="text-primary-foreground/80 mb-4">
+              Ready to crush your fitness goals today?
+            </p>
+          </div>
+
+          {/* Animated Background Elements */}
+          <div className="absolute -top-16 -right-16 w-32 h-32 rounded-full bg-white/10 animate-pulse-soft" />
+          <div
+            className="absolute -bottom-8 -left-8 w-24 h-24 rounded-full bg-white/5 animate-pulse-soft"
+            style={{ animationDelay: "1s" }}
+          />
+        </motion.div>
         {/* Tabs Container */}
         <div className="w-full">
           <Tabs

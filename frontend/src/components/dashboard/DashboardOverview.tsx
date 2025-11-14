@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import {
   Activity,
@@ -11,15 +11,27 @@ import {
   Trophy,
   Zap,
   Apple,
+  QrCode,
+  X,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useStore } from "@/store/useStore";
 import GymAccessHistory from "./GymAccessHistory";
+import { useAuth } from "../../hooks/useAuth";
+import QRScannerComponent from "../QRScannerComponent";
 const DashboardOverview = () => {
-  const { user, fitnessData, todayStats, checkedInGym } = useStore();
+  const { fitnessData, todayStats, checkedInGym } = useStore();
+  const [isQRScannerOpen, setIsQRScannerOpen] = useState(false);
+  const { user } = useAuth();
 
+  const motivationalQuotes = [
+    "The groundwork for all happiness is good health. - Leigh Hunt",
+    "Health is not about the weight you lose, but about the life you gain.",
+    "A healthy outside starts from the inside.",
+    "Your body can do it. It's time to convince your mind.",
+  ];
   const quickStats = [
     {
       title: "Steps Today",
@@ -76,7 +88,7 @@ const DashboardOverview = () => {
     hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0 },
   };
-
+  // console.log(user);
   return (
     <div className="w-full h-full rounded-2xl p-6 bg-gradient-to-br from-background via-background/95 to-background/90 border border-border/50">
       <div className="space-y-6">
@@ -88,26 +100,18 @@ const DashboardOverview = () => {
         >
           <div className="relative z-10">
             <h1 className="text-3xl font-bold mb-2">
-              Welcome back, {user?.name?.split(" ")[0]}! 👋
+              Welcome back, {user?.name}! 👋
             </h1>
             <p className="text-primary-foreground/80 mb-4">
               Ready to crush your fitness goals today?
             </p>
-            {checkedInGym ? (
-              <div className="flex items-center space-x-2">
-                <MapPin className="h-4 w-4" />
-                <span className="text-sm">
-                  Currently at {checkedInGym.name}
-                </span>
-              </div>
-            ) : (
-              <Button
-                variant="secondary"
-                className="bg-white/20 text-white border-white/30 hover:bg-white/30"
-              >
-                Find Nearby Gyms
-              </Button>
-            )}
+            <Button
+              className="bg-gradient-to-r from-primary to-secondary"
+              onClick={() => setIsQRScannerOpen(true)}
+            >
+              <QrCode className="h-4 w-4 mr-2" />
+              QR Check-In
+            </Button>
           </div>
 
           {/* Animated Background Elements */}
@@ -117,6 +121,20 @@ const DashboardOverview = () => {
             style={{ animationDelay: "1s" }}
           />
         </motion.div>
+        <Card className="fitness-card bg-gradient-to-r from-primary/10 via-secondary/10 to-success/10 border border-primary/20">
+          <CardContent className="p-6 text-center">
+            <h3 className="text-lg font-semibold mb-2">Daily Motivation</h3>
+            <p className="text-muted-foreground italic">
+              "
+              {
+                motivationalQuotes[
+                  new Date().getDay() % motivationalQuotes.length
+                ]
+              }
+              "
+            </p>
+          </CardContent>
+        </Card>
 
         {/* Quick Stats Grid */}
         <motion.div
@@ -321,9 +339,33 @@ const DashboardOverview = () => {
             </CardContent>
           </Card>
         </motion.div>
-
-
       </div>
+      {/* QR Scanner Modal */}
+      {isQRScannerOpen && (
+        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            transition={{ duration: 0.2 }}
+            className="relative w-full max-w-2xl max-h-[90vh] bg-background rounded-2xl shadow-2xl border border-border overflow-hidden"
+          >
+            {/* Close Button */}
+            <button
+              onClick={() => setIsQRScannerOpen(false)}
+              title="Close QR Scanner"
+              className="absolute top-4 right-4 z-10 p-2 rounded-full bg-background/80 hover:bg-background transition-colors"
+            >
+              <X className="h-6 w-6 text-foreground" />
+            </button>
+
+            {/* QR Scanner Component */}
+            <div className="w-full h-full flex items-center justify-center p-6">
+              <QRScannerComponent />
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 };
