@@ -62,7 +62,7 @@ const GymApprovals = () => {
     navigate("/admin/gym-approvals");
     try {
       await axios.post(
-        "/admin/set-gym-status",
+        `${import.meta.env.VITE_BACKEND_URL}/admin/set-gym-status`,
         {
           gymId,
           isVerified,
@@ -145,14 +145,19 @@ const GymApprovals = () => {
 
                   <div className="flex items-center gap-2 text-sm">
                     <Mail className="h-4 w-4 text-muted-foreground" />
-                    <span>{gym.email}</span>
+                    <span>{gym.contactEmail}</span>
                   </div>
 
                   <div className="flex items-center gap-2 text-sm">
                     <User className="h-4 w-4 text-muted-foreground" />
                     <div>
-                      {/* <p><span className="font-medium">Owner:</span> {gym.owner?.name}</p>
-                      <p className="text-muted-foreground">{gym.owner?.email}</p> */}
+                      <p>
+                        <span className="font-medium">Owner:</span>{" "}
+                        {gym.owner?.name}
+                      </p>
+                      <p className="text-muted-foreground">
+                        {gym.owner?.email}
+                      </p>
                     </div>
                   </div>
 
