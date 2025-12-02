@@ -138,7 +138,7 @@ export default function GymList() {
                 <div>
                   <h3 className="text-xl font-bold">{gym.name}</h3>
                   <p className="text-sm text-muted-foreground">
-                    {gym.city}, {gym.state}
+                    {gym.address.city}, {gym.address.state}
                   </p>
                 </div>
 
@@ -167,12 +167,12 @@ export default function GymList() {
                   <div className="pt-2">
                     <span
                       className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
-                        gym.approved
+                        gym.isVerified
                           ? "bg-green-100 text-green-800"
                           : "bg-yellow-100 text-yellow-800"
                       }`}
                     >
-                      {gym.approved ? "Approved" : "Pending Approval"}
+                      {gym.isVerified ? "Approved" : "Pending Approval"}
                     </span>
                   </div>
                 )}

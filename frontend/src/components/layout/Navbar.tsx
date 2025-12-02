@@ -79,7 +79,7 @@ const Navbar: React.FC = () => {
 
     return (
       <>
-        <Link to="/notifications">
+        {/* <Link to="/notifications">
           <Button variant="ghost" size="icon" className="relative">
             <Bell className="h-4 w-4" />
             {unreadCount > 0 && (
@@ -91,7 +91,7 @@ const Navbar: React.FC = () => {
               </Badge>
             )}
           </Button>
-        </Link>
+        </Link> */}
       </>
     );
   };
