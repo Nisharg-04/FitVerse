@@ -114,9 +114,9 @@ const SimpleGlobalAdvertisements: React.FC = () => {
               return currentType;
             });
           }
-        }, 2000);
+        }, 60 * 1000);
       }
-    }, 2 * 60 * 1000); // 2 minutes
+    }, 5 * 60 * 1000); // 2 minutes
 
     return () => {
       mounted = false;
