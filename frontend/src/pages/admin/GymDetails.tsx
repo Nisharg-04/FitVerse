@@ -146,26 +146,10 @@ const GymDetails = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  {gym.description || "No description available."}
+                  {gym.facilities || "Visit and explore facilities"}
                 </p>
               </CardContent>
             </Card>
-
-            {/* Facilities */}
-            {/* <Card>
-              <CardHeader>
-                <CardTitle>Facilities</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {gym.facilities.map((facility, index) => (
-                    <Badge key={index} variant="secondary">
-                      {facility}
-                    </Badge>
-                  ))}
-                </div>
-              </CardContent>
-            </Card> */}
           </div>
 
           {/* Right Column - Stats & Contact */}
@@ -197,13 +181,6 @@ const GymDetails = () => {
                   </div>
                   <span>{gym.rating}/5</span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <Users className="h-4 w-4 mr-2 text-muted-foreground" />
-                    <span>Members</span>
-                  </div>
-                  <span>{gym.memberCount}</span>
-                </div>
               </CardContent>
             </Card>
 
@@ -219,7 +196,7 @@ const GymDetails = () => {
                 </div>
                 <div className="flex items-center">
                   <Mail className="h-4 w-4 mr-2 text-muted-foreground" />
-                  <span>{gym.email}</span>
+                  <span>{gym.contactEmail}</span>
                 </div>
                 <div className="pt-4 border-t">
                   <p className="text-sm font-medium mb-2">Owner Information</p>

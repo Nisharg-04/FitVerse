@@ -114,7 +114,7 @@ const SimpleGlobalAdvertisements: React.FC = () => {
               return currentType;
             });
           }
-        }, 500);
+        }, 2000);
       }
     }, 2 * 60 * 1000); // 2 minutes
 
@@ -184,7 +184,7 @@ const SimpleGlobalAdvertisements: React.FC = () => {
                   </button>
                 </div>
 
-                {/* Action Button */}
+                {/* Action Button
                 <a
                   href={currentAd.link}
                   target="_blank"
@@ -196,7 +196,7 @@ const SimpleGlobalAdvertisements: React.FC = () => {
                     <span>Learn More</span>
                     <ExternalLink className="w-4 h-4" />
                   </button>
-                </a>
+                </a> */}
 
                 {/* Footer */}
                 <p className="text-xs text-white/60 text-center">
@@ -260,7 +260,7 @@ const SimpleGlobalAdvertisements: React.FC = () => {
                 </div>
 
                 {/* Action Button */}
-                <a
+                {/* <a
                   href={currentAd.link}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -271,7 +271,7 @@ const SimpleGlobalAdvertisements: React.FC = () => {
                     <span>Explore Now</span>
                     <ExternalLink className="w-4 h-4" />
                   </button>
-                </a>
+                </a> */}
 
                 {/* Footer */}
                 <p className="text-xs text-muted-foreground text-center border-t border-border/50 pt-3">
