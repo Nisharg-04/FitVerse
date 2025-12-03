@@ -5,6 +5,12 @@ import {
   getAllAdvertisements,
   deleteAdvertisement,
   getActiveAdvertisements,
+  getDashboardStats,
+  getRecentCheckins,
+  getRecentTransactions,
+  getAllUsers,
+  deleteUser,
+  changeUserRole
 } from "../controllers/admin.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 
@@ -20,5 +26,12 @@ router.get("/getAllAdvertisement", verifyJWT, getAllAdvertisements);
 router.delete("/deleteAdvertisement/:id", verifyJWT, deleteAdvertisement);
 
 router.get("/getActiveAdvertisement", verifyJWT, getActiveAdvertisements);
+router.get("/dashboard-stats", verifyJWT, getDashboardStats);
+
+router.get("/getRecentCheckins", verifyJWT, getRecentCheckins);
+router.get("/getRecentTransactions", verifyJWT, getRecentTransactions);
+router.get("/getAllUsers", verifyJWT, getAllUsers);
+router.delete("/deleteUser/:id", verifyJWT, deleteUser);
+router.post("/changeUserRole/:id", verifyJWT, changeUserRole);
 
 export default router;

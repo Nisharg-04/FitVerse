@@ -2,9 +2,11 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
+import { UserPayment } from "../models/userPayment.model.js";
 import { Gym } from "../models/gym.model.js";
 import { sendMail } from "../utils/sendMail.js";
 import { Advertisement } from "../models/advertisement.model.js";
+import { GymAccessLog } from "../models/gymAccessLog.model.js";
 import {
   getGymApproveMailContent,
   getGymRejectMailContent,
@@ -62,6 +64,105 @@ const getAllPendingGymRequest = asyncHandler(async (req, res) => {
       message: "Pending gym requests fetched successfully",
       data: gyms,
       success: true,
+    })
+  );
+});
+const getDashboardStats = asyncHandler(async (req, res) => {
+
+  // Current Month Range
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+
+  // Run all DB queries in parallel for better performance
+  const [
+    totalUsers,
+    activeGyms,
+    monthlyRevenueAgg,
+    totalTransactions
+  ] = await Promise.all([
+    User.countDocuments(),
+
+    Gym.countDocuments(), // Active gyms
+
+    UserPayment.aggregate([
+
+      {
+        $group: { _id: null, totalRevenue: { $sum: "$amount" } }
+      }
+    ]),
+
+    UserPayment.countDocuments({ success: true })
+  ]);
+
+  const monthlyRevenue =
+    monthlyRevenueAgg.length > 0 ? monthlyRevenueAgg[0].totalRevenue : 0;
+
+  return res.status(200).json(
+    new ApiResponse({
+      statusCode: 200,
+      message: "Dashboard stats fetched successfully",
+      data: {
+        totalUsers,
+        activeGyms,
+        monthlyRevenue,
+        totalTransactions,
+      },
+      success: true,
+    })
+  );
+});
+const getRecentCheckins = asyncHandler(async (req, res) => {
+  const logs = await GymAccessLog.aggregate([
+    { $sort: { accessTime: -1 } },
+    { $limit: 5 },
+
+    // join user
+    {
+      $lookup: {
+        from: "users",
+        localField: "userId",
+        foreignField: "_id",
+        as: "user",
+        pipeline: [
+          { $project: { name: 1, avatar: 1 } }
+        ]
+      }
+    },
+    { $unwind: "$user" },
+
+    // join gym
+    {
+      $lookup: {
+        from: "gyms",
+        localField: "gymId",
+        foreignField: "_id",
+        as: "gym",
+        pipeline: [
+          { $project: { name: 1 } }
+        ]
+      }
+    },
+    { $unwind: "$gym" },
+
+    {
+      $project: {
+        _id: 1,
+        amountPaid: 1,
+        accessTime: 1,
+        userName: "$user.name",
+        userAvatar: "$user.avatar",
+        gymName: "$gym.name"
+      }
+    }
+  ]);
+
+  res.status(200).json(
+    new ApiResponse({
+      statusCode: 200,
+      data: logs,
+      success: true,
+      message: "Recent check-ins fetched"
     })
   );
 });
@@ -250,12 +351,145 @@ const getActiveAdvertisements = asyncHandler(async (req, res) => {
     })
   );
 });
+const getRecentTransactions = asyncHandler(async (req, res) => {
+  const transactions = await UserPayment.aggregate([
+    { $match: { success: true } },
+    { $sort: { paymentDate: -1 } },
+    { $limit: 5 },
+
+    // Join user details
+    {
+      $lookup: {
+        from: "users",
+        localField: "userId",
+        foreignField: "_id",
+        as: "user",
+        pipeline: [
+          { $project: { name: 1, avatar: 1 } }
+        ]
+      }
+    },
+    { $unwind: "$user" },
+
+    {
+      $project: {
+        _id: 1,
+        amount: 1,
+        paymentDate: 1,
+        userName: "$user.name",
+        userAvatar: "$user.avatar"
+      }
+    }
+  ]);
+
+  res.status(200).json(
+    new ApiResponse({
+      statusCode: 200,
+      success: true,
+      message: "Recent transactions fetched",
+      data: transactions
+    })
+  );
+});
 
 // TODO: implement
-const payGym = asyncHandler(async (req, res) => {});
+const payGym = asyncHandler(async (req, res) => { });
 
 // TODO: implement
-const getGymPaymentDetails = asyncHandler(async (req, res) => {});
+const getGymPaymentDetails = asyncHandler(async (req, res) => { });
+const getAllUsers = asyncHandler(async (req, res) => {
+  const { page = 1, limit = 20, search = "" } = req.query;
+
+  const query = {
+    $or: [
+      { name: { $regex: search, $options: "i" } },
+      { email: { $regex: search, $options: "i" } },
+      { phoneNumber: { $regex: search, $options: "i" } },
+    ],
+  };
+
+  const skip = (page - 1) * limit;
+
+  const [users, total] = await Promise.all([
+    User.find(query)
+      .select("-password -refreshToken")
+      .skip(skip)
+      .limit(parseInt(limit))
+      .sort({ createdAt: -1 }),
+
+    User.countDocuments(query),
+  ]);
+
+  res.status(200).json(
+    new ApiResponse({
+      statusCode: 200,
+      success: true,
+      message: "Users fetched successfully",
+      data: {
+        users,
+        total,
+        page: Number(page),
+        pages: Math.ceil(total / limit),
+      },
+    })
+  );
+});
+const deleteUser = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id);
+
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  await user.deleteOne();
+
+  res.status(200).json(
+    new ApiResponse({
+      statusCode: 200,
+      message: "User deleted successfully",
+      success: true,
+    })
+  );
+});
+
+const changeUserRole = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { role } = req.body;
+
+  const validRoles = ["user", "admin", "owner"];
+  if (!validRoles.includes(role)) {
+    throw new ApiError(400, "Invalid role. Valid roles: user, admin, owner");
+  }
+
+  const user = await User.findById(id);
+
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  // Prevent changing your own role (if needed)
+  if (req.user._id.toString() === id) {
+    throw new ApiError(403, "You cannot change your own role");
+  }
+
+  user.role = role;
+  await user.save();
+
+  res.status(200).json(
+    new ApiResponse({
+      statusCode: 200,
+      success: true,
+      message: "User role updated successfully",
+      data: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        newRole: user.role,
+      },
+    })
+  );
+});
+
 
 export {
   getAllPendingGymRequest,
@@ -263,6 +497,13 @@ export {
   getAllAdvertisements,
   deleteAdvertisement,
   getActiveAdvertisements,
-  payGym, 
-  getGymPaymentDetails
+  payGym,
+  getGymPaymentDetails,
+  getDashboardStats,
+  getRecentCheckins,
+  getRecentTransactions,
+  getAllUsers,
+  deleteUser,
+  changeUserRole
+
 };

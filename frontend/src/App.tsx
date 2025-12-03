@@ -24,6 +24,7 @@ import SelectLocation from "./pages/SelectLocation";
 import GymList from "./pages/GymList";
 import GymApprovals from "./pages/admin/GymApprovals";
 import AdminPanel from "./pages/admin/AdminPanel";
+import ManageUsers from "./pages/admin/ManageUsers";
 import GymDetails from "./pages/admin/GymDetails";
 import ManageAdvertisements from "./pages/ManageAdvertisements";
 import { useState } from "react";
@@ -173,6 +174,14 @@ const App: React.FC = () => {
                 element={
                   <ProtectedRoute allowedRoles={["admin"]}>
                     <GymApprovals />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/manage-users"
+                element={
+                  <ProtectedRoute allowedRoles={["admin"]}>
+                    <ManageUsers />
                   </ProtectedRoute>
                 }
               />
