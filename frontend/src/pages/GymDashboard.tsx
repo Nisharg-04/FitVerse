@@ -895,7 +895,7 @@ const GymDashboard = () => {
                 ))}
             </div>
 
-            <Card className="p-6">
+            {/* <Card className="p-6">
               <h3 className="text-lg font-semibold mb-4">Payment History</h3>
               {isLoadingRevenue ? (
                 <div className="flex justify-center py-8">
@@ -959,7 +959,7 @@ const GymDashboard = () => {
                   </table>
                 </ScrollArea>
               )}
-            </Card>
+            </Card> */}
           </div>
         )}
       </div>
