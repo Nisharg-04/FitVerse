@@ -543,7 +543,10 @@ const GymDashboard = () => {
       {/* Header */}
       <div className="flex justify-between items-start mb-8 gap-4">
         <div className="flex-1">
-          <h1 className="text-4xl font-bold mb-4"> Manage {gymInfo.gymName}</h1>
+          <h1 className="text-4xl font-bold mb-4">
+            {" "}
+            Manage {gymInfo.name || gymInfo.gymName}
+          </h1>
           <p className="text-muted-foreground mb-4">{gymInfo.location}</p>
           <div className="flex gap-3">
             <Button
