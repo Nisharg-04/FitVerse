@@ -5,7 +5,7 @@ import axios from "axios";
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 // const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
-const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
+const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
 const SYSTEM_PROMPT = `You are FitVerse AI, a friendly and approachable fitness, nutrition, and health expert chatbot. You ONLY answer questions related to:
 - Fitness & Workouts (exercises, training routines, workout plans, gym workouts)
